@@ -111,26 +111,27 @@ class AuthController extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        // Validate user input
         $validator = Validator::make($request->all(),[
-            'name' => 'required|string',
-            'phone' => 'required|numeric|max:10',
-            'address' =>'required'
-            // 'email' => 'required|email|unique:users,email,'.$id
-        ],[
-            'name.required' => 'Name is required!',
-            'name.string' => 'Name must be a string!',
-            'phone.required' => 'Phone is required!',
-            'phone.numeric' => 'Phone must be numeric!',
-            'phone.max' => 'Phone number can have maximum 10 digits!',
-            'address.required' => 'Address is required!'
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'avatar' => 'nullable|string',
+            'address' => 'nullable|string',
+            'birthday' => 'nullable|date',
+            'collaborator' => 'boolean',
+            'points' => 'integer',
+            'membership_level' => 'string|in:basic,premium',
         ]);
         if ($validator->fails()) {
             return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 422);
         }
         $user->name = $request->input('name');
         $user->phone = $request->input('phone');
+        $user->avatar = $request->input('avatar');
         $user->address = $request->input('address');
+        $user->birthday = $request->input('birthday');
+        $user->collaborator = $request->input('collaborator');
+        $user->points = $request->input('points');
+        $user->membership_level = $request->input('membership_level');
         $user->save();
 
         return response()->json(['user' => $user]);
