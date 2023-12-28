@@ -231,15 +231,33 @@ class CategoryController extends Controller
         return response()->json(['category' => $category], 200);
     }
 
-    // Create a new category
     public function store(Request $request)
     {
+        // dd($request->input('name'));
         $request->validate([
             'name' => 'required|unique:categories',
             'parent_id' => 'nullable|exists:categories,id',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048', // Kiểm tra loại và kích thước file ảnh
+            'image_url' => 'nullable|url', // Kiểm tra định dạng URL
         ]);
 
-        $category = Category::create($request->all());
+        // Kiểm tra xem người dùng đã cung cấp file ảnh hay URL
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->storeAs('public/images/category_image', $imageName);
+            $imageUrl = asset('storage/images/category_image/' . $imageName);
+        } elseif ($request->filled('image_url')) {
+            $imageUrl = $request->input('image_url');
+        } else {
+            $imageUrl = null;
+        }
+
+        $category = Category::create([
+            'name' => $request->input('name'),
+            'parent_id' => $request->input('parent_id'),
+            'image' => $imageUrl,
+        ]);
 
         return response()->json(['category' => $category], 201);
     }
@@ -247,24 +265,38 @@ class CategoryController extends Controller
     // Update a category by ID
     public function update(Request $request, $id)
     {
-        $category = Category::find($id);
-
-        if (!$category) {
-            return response()->json(['message' => 'Category not found'], 404);
-        }
-
+        // dd($request->all());
         $request->validate([
-            'name' => [
-                'required',
-                Rule::unique('categories')->ignore($id),
-            ],
+            'name' => 'required|unique:categories,name,' . $id,
             'parent_id' => 'nullable|exists:categories,id',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'image_url' => 'nullable|url',
         ]);
 
-        $category->update($request->all());
+        $category = Category::findOrFail($id);
+
+        // Kiểm tra xem người dùng đã cung cấp file ảnh hay URL
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->storeAs('public/images/category_image', $imageName);
+            $imageUrl = asset('storage/images/category_image/' . $imageName);
+        } elseif ($request->filled('image_url')) {
+            $imageUrl = $request->input('image_url');
+        } else {
+            $imageUrl = null;
+        }
+
+        // Cập nhật thông tin của danh mục
+        $category->update([
+            'name' => $request->input('name'),
+            'parent_id' => $request->input('parent_id'),
+            'image' => $imageUrl,
+        ]);
 
         return response()->json(['category' => $category], 200);
     }
+
 
     // Delete a category by ID
     public function destroy($id)
@@ -275,6 +307,10 @@ class CategoryController extends Controller
             return response()->json(['message' => 'Category not found'], 404);
         }
 
+        $hasChildren = Category::where('parent_id', $id)->exists();
+        if ($hasChildren) {
+            return response()->json(['message' => 'Cannot delete category with children'], 422);
+        }
         // You may want to check if the category has children and handle it accordingly
         // For simplicity, I'm assuming you are not allowing deletion of categories with children in this example.
 
