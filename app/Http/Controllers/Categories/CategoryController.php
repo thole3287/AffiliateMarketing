@@ -245,8 +245,8 @@ class CategoryController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('public/images/category_image', $imageName);
-            $imageUrl = asset('storage/images/category_image/' . $imageName);
+            $image->storeAs('public/images/categories', $imageName);
+            $imageUrl = asset('storage/images/categories/' . $imageName);
         } elseif ($request->filled('image_url')) {
             $imageUrl = $request->input('image_url');
         } else {
@@ -267,7 +267,7 @@ class CategoryController extends Controller
     {
         // dd($request->all());
         $request->validate([
-            'name' => 'required|unique:categories,name,' . $id,
+            'name' => 'required|unique:categories,name,',
             'parent_id' => 'nullable|exists:categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'image_url' => 'nullable|url',
@@ -297,8 +297,6 @@ class CategoryController extends Controller
         return response()->json(['category' => $category], 200);
     }
 
-
-    // Delete a category by ID
     public function destroy($id)
     {
         $category = Category::find($id);
@@ -311,8 +309,13 @@ class CategoryController extends Controller
         if ($hasChildren) {
             return response()->json(['message' => 'Cannot delete category with children'], 422);
         }
-        // You may want to check if the category has children and handle it accordingly
-        // For simplicity, I'm assuming you are not allowing deletion of categories with children in this example.
+
+        if ($category->image) {
+            $imagePath = public_path('storage/images/category_image/') . basename($category->image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
 
         $category->delete();
 

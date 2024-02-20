@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Brands\BrandController;
 use App\Http\Controllers\Categories\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +35,9 @@ Route::group([
 
     // Route::post('send-password-reset-link', [PasswordResetRequestController::class, 'sendEmail']);
     // Route::post('/reset-password', [ChangePasswordController::class, 'passwordResetProcess'])->name('password.update');
+    Route::resource('categories', CategoryController::class);
+    Route::resource('brands', BrandController::class);
 });
-Route::resource('categories', CategoryController::class);
+// Route::put('/categories/{id}', [CategoryController::class, 'update']);
+// Route::apiResource('categories', CategoryController::class);
 // Route::put('/categories/{id}', [CategoryController::class, 'update']);

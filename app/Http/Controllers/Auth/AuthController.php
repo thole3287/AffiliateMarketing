@@ -19,18 +19,23 @@ class AuthController extends Controller
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
             'phone' => 'nullable|string|max:20',
-            'avatar' => 'nullable|string',
+            'photo' => 'nullable|string',
             'address' => 'nullable|string',
             'birthday' => 'nullable|date',
-            'is_admin' => 'string',
-            'collaborator' => 'boolean',
-            'points' => 'integer',
-            'membership_level' => 'string',
-            'password' => 'required|string|confirmed|min:6',
+            'role' => 'string',
+            // 'collaborator' => 'boolean',
+            // 'points' => 'integer',
+            // 'membership_level' => 'string',
+            'zalo_id' => 'required|unique:users',
+            // 'password' => 'required|string|min:6',
+
+            // 'password' => 'required|string|confirmed|min:6',
         ], [
             'name.required' => 'Name is required!',
             'name.string' => 'Name must be a string!',
             'name.between' => 'Name must be between 2 and 100 characters!',
+            'zalo_id.required' => 'Zalo ID is required!',
+            'username.required' => 'Username is required!',
             'email.required' => 'Email is required!',
             'email.string' => 'Email must be a string!',
             'email.email' => 'Email must be in the correct format!',
@@ -38,12 +43,11 @@ class AuthController extends Controller
             'email.unique' => 'This email is already registered!',
             'phone.string' => 'Phone must be a string!',
             'phone.max' => 'Phone can be at most 20 characters long!',
-            'avatar.string' => 'Avatar must be a string!',
-            // Thêm các thông báo lỗi cụ thể cho các trường mới tương ứng
-            'password.required' => 'Password is required!',
-            'password.string' => 'Password must be a string!',
-            'password.confirmed' => 'Password confirmation does not match!',
-            'password.min' => 'Password must be at least 6 characters long!',
+            'photo.string' => 'Avatar must be a string!',
+            // 'password.required' => 'Password is required!',
+            // 'password.string' => 'Password must be a string!',
+            // 'password.confirmed' => 'Password confirmation does not match!',
+            // 'password.min' => 'Password must be at least 6 characters long!',
             ]);
 
         if ($validator->fails()) {
@@ -52,9 +56,13 @@ class AuthController extends Controller
 
         $user = User::create(array_merge(
             $validator->validated(),
-            ['password' => Hash::make($request->password)]
+            [
+                'password' => bcrypt($request->zalo_id),
+                'username' => $request->zalo_id,
+                'zalo_id' => $request->zalo_id,
+            ]
         ));
-
+        // dd( $user);
         return response()->json([
             'message' => 'User successfully registered',
             'user' => $user
@@ -92,16 +100,23 @@ class AuthController extends Controller
      */
     public function login(Request $request){
     	$validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+            'zalo_id' => 'required|string',
             'password' => 'required|string|min:6',
         ]);
+
+        // dd($validator);
         
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-        if (! $token = auth()->attempt($validator->validated())) {
+        // if (! $token = auth()->attempt($validator->validated())) {
+        //     return response()->json(['error' => 'Unauthorized'], 401);
+        // }
+        
+        if (! $token = auth()->attempt(['zalo_id' => $request->input('zalo_id', $request->zalo_id), 'password' => $request->password])) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+        
         return $this->createNewToken($token);
     }
     public function update(Request $request, $id)
