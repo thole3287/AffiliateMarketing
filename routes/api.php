@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Brands\BrandController;
 use App\Http\Controllers\Categories\CategoryController;
+use App\Http\Controllers\Products\ProductsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,7 @@ Route::group([
     'prefix' => 'auth'
 ], function ($router) {
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/admin/login', [AuthController::class, 'loginWeb']);
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
@@ -38,6 +40,8 @@ Route::group([
 });
 Route::resource('categories', CategoryController::class);
 Route::resource('brands', BrandController::class);
+Route::resource('products', ProductsController::class);
+
 // Route::put('/categories/{id}', [CategoryController::class, 'update']);
 // Route::apiResource('categories', CategoryController::class);
 // Route::put('/categories/{id}', [CategoryController::class, 'update']);

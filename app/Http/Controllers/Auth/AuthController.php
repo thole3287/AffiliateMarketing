@@ -6,13 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator; 
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 class AuthController extends Controller
 {
- 
-  
+
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -105,20 +108,42 @@ class AuthController extends Controller
         ]);
 
         // dd($validator);
-        
+
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
         // if (! $token = auth()->attempt($validator->validated())) {
         //     return response()->json(['error' => 'Unauthorized'], 401);
         // }
-        
+
         if (! $token = auth()->attempt(['zalo_id' => $request->input('zalo_id', $request->zalo_id), 'password' => $request->password])) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        
+
+
         return $this->createNewToken($token);
     }
+
+    public function loginWeb(Request $request)
+    {
+        $credentials = $request->only('username', 'password');
+
+        // Thử đăng nhập bằng username
+        try {
+            if (! $token = JWTAuth::attempt($credentials)) {
+                $credentials = $request->only('email', 'password');
+
+                if (! $token = JWTAuth::attempt($credentials)) {
+                    return response()->json(['error' => 'Invalid credentials'], 401);
+                }
+            }
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Could not create token'], 500);
+        }
+
+        return response()->json(compact('token'));
+    }
+
     public function update(Request $request, $id)
     {
         $user = User::find($id);

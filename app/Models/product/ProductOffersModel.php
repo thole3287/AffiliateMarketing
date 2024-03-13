@@ -9,6 +9,6 @@ class ProductOffersModel extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    protected $table = 'product_offers';
+    protected $table = 'product_offer';
     public $timestamps = false;
 }

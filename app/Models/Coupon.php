@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Models\product;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductModel extends Model
+class Coupon extends Model
 {
     use HasFactory;
-    protected $table = 'product';
-    protected $guarded = [];
 }

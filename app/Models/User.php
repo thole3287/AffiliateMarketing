@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Models\product\Product;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -56,5 +58,13 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims() {
         return [];
     }    
+
+    public function vendorShop() {
+        return $this->hasOne(VendorShop::class);
+    }
+
+    public function products() {
+        return $this->hasMany(Product::class, 'vendor_id');
+    }
 
 }

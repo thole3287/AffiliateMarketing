@@ -6,12 +6,11 @@ use App\Models\product\Product;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Brand extends Model
+class ProductOffer extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'slug', 'image'];
 
-    public function products() {
-        return $this->hasMany(Product::class, 'brand_id');
+    public function product() {
+        return $this->belongsTo(Product::class, 'offer_product_id');
     }
 }
