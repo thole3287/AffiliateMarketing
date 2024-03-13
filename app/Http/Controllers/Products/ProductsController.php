@@ -50,7 +50,7 @@ class ProductsController extends Controller
             $image = $request->file('image');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('storage/product_thumbnails'), $imageName); // Di chuyển ảnh vào thư mục public
-            $imageUrl = asset('storage/product_thumbnails' . $imageName);
+            $imageUrl = asset('storage/product_thumbnails/' . $imageName);
             $data['product_thumbbail'] = $imageUrl;
         } elseif ($request->filled('product_thumbbail_url')) {
             // Handle case when thumbnail is provided as URL
