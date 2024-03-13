@@ -47,7 +47,8 @@ class ProductsController extends Controller
 
         // Upload and save product thumbnail
         if ($request->hasFile('product_thumbbail')) {
-            $image = $request->file('image');
+            $image = $request->file('product_thumbbail');
+            // dd()
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('storage/product_thumbnails'), $imageName); // Di chuyển ảnh vào thư mục public
             $imageUrl = asset('storage/product_thumbnails/' . $imageName);
@@ -116,7 +117,7 @@ class ProductsController extends Controller
 
         // Upload and save product thumbnail
         if ($request->hasFile('product_thumbbail')) {
-            $image = $request->file('image');
+            $image = $request->file('product_thumbbail');
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('storage/images/brands'), $imageName); // Di chuyển ảnh vào thư mục public
             $imageUrl = asset('storage/images/brands/' . $imageName);
