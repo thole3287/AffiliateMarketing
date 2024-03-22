@@ -42,8 +42,6 @@ class ProductsController extends Controller
         ]);
 
         $data = $request->all();
-        // $data = $request->except('product_images');
-
 
         // Upload and save product thumbnail
         if ($request->hasFile('product_thumbbail')) {
@@ -60,16 +58,16 @@ class ProductsController extends Controller
         // Create the product with images
         $product = Product::create($data);
 
-        // if ($request->hasFile('product_images')) {
-        //     foreach ($request->file('product_images') as $image) {
-        //         $imagePath = $image->store('product_images', 'public');
-        //         dd($imagePath);
-        //         ProductImagesModel::create([
-        //             'product_image' => $imagePath,
-        //             'image_prodict_id' => $product->id,
-        //         ]);
-        //     }
-        // }
+        if ($request->hasFile('product_images')) {
+            foreach ($request->file('product_images') as $image) {
+                $imagePath = $image->store('product_images', 'public');
+                // dd($imagePath);
+                ProductImagesModel::create([
+                    'product_image' => $imagePath,
+                    'image_prodict_id' => $product->id,
+                ]);
+            }
+        }
 
         return response()->json(['message' => 'New product added successfully.', 'data' => $product], Response::HTTP_CREATED);
     }

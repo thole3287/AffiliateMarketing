@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Brands\BrandController;
 use App\Http\Controllers\Categories\CategoryController;
 use App\Http\Controllers\Products\ProductsController;
+use App\Http\Controllers\Products\ProductVariationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +42,13 @@ Route::group([
 Route::resource('categories', CategoryController::class);
 Route::resource('brands', BrandController::class);
 Route::resource('products', ProductsController::class);
+
+Route::get('products/{product}/variations', [ProductVariationController::class, 'index']);
+Route::post('products/{product}/variations', [ProductVariationController::class, 'store']);
+Route::get('products/{product}/variations/{variation}', [ProductVariationController::class, 'show']);
+Route::put('products/{product}/variations/{variation}', [ProductVariationController::class, 'update']);
+Route::delete('products/{product}/variations/{variation}', [ProductVariationController::class, 'destroy']);
+
 
 // Route::put('/categories/{id}', [CategoryController::class, 'update']);
 // Route::apiResource('categories', CategoryController::class);

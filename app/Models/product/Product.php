@@ -34,4 +34,9 @@ class Product extends Model
         return $this->hasOne(ProductOffersModel::class, 'offer_product_id');
     }
 
+    public function variations()
+    {
+        return $this->hasMany(ProductVariation::class);
+    }
+
 }
