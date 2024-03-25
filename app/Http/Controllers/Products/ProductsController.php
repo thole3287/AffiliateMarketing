@@ -15,7 +15,7 @@ class ProductsController extends Controller
      */
     public function index()
     {
-        $products = Product::with(['brand', 'category'])->get();
+        $products = Product::with(['brand', 'category', 'variations'])->get();
         return response()->json(['data' => $products], Response::HTTP_OK);
     }
 
@@ -78,7 +78,7 @@ class ProductsController extends Controller
      */
     public function show($id)
     {
-        $product = Product::with(['brand', 'category'])->find($id);
+        $product = Product::with(['brand', 'category', 'variations'])->find($id);
 
         if (!$product) {
             return response()->json(['error' => 'Product not found'], Response::HTTP_NOT_FOUND);
