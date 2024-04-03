@@ -56,10 +56,7 @@ class ProductsController extends Controller
         $data = $request->except(['image_detail', 'variations', 'image_detail_url']);
         // Upload and save product thumbnail
         if ($request->hasFile('product_thumbbail')) {
-            $image = $request->file('product_thumbbail');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('storage/product_thumbnails'), $imageName); // Di chuyển ảnh vào thư mục public
-            $imageUrl = asset('storage/product_thumbnails/' . $imageName);
+            $imageUrl = $this->uploadService->updateSingleImage($request, 'product_thumbbail', null, 'product_thumbnails');
             $data['product_thumbbail'] = $imageUrl;
         } elseif ($request->filled('product_thumbbail_url')) {
             // Handle case when thumbnail is provided as URL
@@ -69,7 +66,7 @@ class ProductsController extends Controller
         // Create the product with images
         $product = Product::create($data);
 
-        $image_detail = $this->uploadService->uploadMultipleImages($request, 'product_images');
+        $image_detail = $this->uploadService->uploadMultipleImages($request, 'image_detail', 'image_detail_url', 'product_images');
 
         if($image_detail){
             $saved_images = [];
@@ -128,63 +125,11 @@ class ProductsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    // public function update(Request $request, $id)
-    // {
-    //     $product = Product::findOrFail($id);
-
-    //     $request->validate([
-    //         'product_name' => 'required|string',
-    //         'product_code' => 'required|string|unique:products,product_code,' . $product->id,
-    //         'product_price' => 'required|numeric',
-    //         'category_id' => 'required|exists:categories,id',
-    //         'brand_id' => 'required|exists:brands,id',
-    //         'product_thumbbail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Example validation for product thumbnail
-    //         // 'product_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048', 'url'], // Allow either file upload or URL
-    //         'product_tags' => 'nullable',
-    //         'product_slug' => 'required',
-    //         'product_colors' => 'nullable',
-    //         'product_quantity' => 'required|numeric',
-    //         'product_short_description' => 'nullable',
-    //         'product_long_description' => 'nullable',
-    //     ]);
-
-    //     $data = $request->all();
-
-    //     // Upload and save product thumbnail
-    //     if ($request->hasFile('product_thumbbail')) {
-    //         $image = $request->file('product_thumbbail');
-    //         $imageName = time() . '.' . $image->getClientOriginalExtension();
-    //         $image->move(public_path('storage/product_thumbnails'), $imageName); // Di chuyển ảnh vào thư mục public
-    //         $imageUrl = asset('storage/product_thumbnails/' . $imageName);
-    //         $data['product_thumbbail'] = $imageUrl;
-    //     } elseif ($request->filled('product_thumbbail_url')) {
-    //         // Handle case when thumbnail is provided as URL
-    //         $data['product_thumbbail'] = $request->input('product_thumbbail_url');
-    //     }
-
-    //     // Update product details
-    //     $product->update($data);
-
-    //     // if ($request->hasFile('product_images')) {
-    //     //     foreach ($request->file('product_images') as $image) {
-    //     //         $imagePath = $image->store('product_images', 'public');
-    //     //         dd($imagePath);
-    //     //         ProductImagesModel::create([
-    //     //             'product_image' => $imagePath,
-    //     //             'image_prodict_id' => $product->id,
-    //     //         ]);
-    //     //     }
-    //     // }
-
-    //     return response()->json(['message' => 'Product update successfully', 'data' => $product], Response::HTTP_OK);
-    // }
-
-    public function update(Request $request, $id)
+    public function update(Request $request, Product $product)
     {
-        $product = Product::findOrFail($id);
         $request->validate([
             'product_name' => 'required|string',
-            'product_code' => 'string|unique:products',
+            'product_code' => 'string|unique:products,product_code,' . $product->id,
             'product_price' => 'required|numeric',
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'required|exists:brands,id',
@@ -200,73 +145,124 @@ class ProductsController extends Controller
             'variations.*.color' => 'nullable|string',
             'variations.*.price' => 'nullable|numeric',
             'variations.*.quantity' => 'nullable|integer',
-
         ]);
 
         $data = $request->except(['image_detail', 'variations', 'image_detail_url']);
+
         // Upload and save product thumbnail
         if ($request->hasFile('product_thumbbail')) {
-            $image = $request->file('product_thumbbail');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('storage/product_thumbnails'), $imageName); // Di chuyển ảnh vào thư mục public
-            $imageUrl = asset('storage/product_thumbnails/' . $imageName);
+            $imageUrl = $this->uploadService->updateSingleImage($request, 'product_thumbbail', null, 'product_thumbnails');
             $data['product_thumbbail'] = $imageUrl;
         } elseif ($request->filled('product_thumbbail_url')) {
             // Handle case when thumbnail is provided as URL
             $data['product_thumbbail'] = $request->input('product_thumbbail_url');
         }
 
-        // Create the product with images
+        // Update product data
         $product->update($data);
 
-        $image_detail = $this->uploadService->uploadMultipleImages($request, 'product_images');
-
-        // if($image_detail){
-        //     $saved_images = [];
-        //     foreach ($image_detail as $image_path) {
-        //         $product_image = ProductImagesModel::updateOrCreate(
-        //             ['product_id' => $product->id, 'id' => $request->input('id_product_image')], // Điều kiện tìm kiếm để cập nhật hoặc tạo mới
-        //             ['image_path' => $image_path['image_path']] // Dữ liệu cần cập nhật hoặc tạo mới
-        //         );
-        //         $saved_images[] = $product_image->image_path;
-        //     }
-
-        // }
-        if ($image_detail) {
-            $saved_images = [];
-            foreach ($image_detail as $key => $image_path) {
-                $product_image = ProductImagesModel::updateOrCreate(
-                    ['product_id' => $product->id, 'id' => $request->input('id_product_image')[$key]], // Điều kiện tìm kiếm để cập nhật hoặc tạo mới
-                    ['image_path' => $image_path['image_path']] // Dữ liệu cần cập nhật hoặc tạo mới
-                );
-                $saved_images[] = $product_image->image_path;
+        // Update product images
+        $saved_images = [];
+        if ($request->has('product_images')) {
+            $image_detail = $this->uploadService->uploadMultipleImages($request, 'image_detail', 'image_detail_url', 'product_images');
+            if ($image_detail) {
+                foreach ($image_detail as $image_path) {
+                    $product_image = new ProductImagesModel();
+                    $product_image->product_id = $product->id;
+                    $product_image->image_path = $image_path;
+                    $product_image->save();
+                    $saved_images[] = $product_image->image_path;
+                }
             }
         }
 
+        $updatedImages = [];
 
+        // Update product images
+        if ($request->has('product_images')) {
+            foreach ($request->product_images as $image) {
+                // Đảm bảo dữ liệu hình ảnh không trống và có trường id
+                if (!empty($image['id'])) {
+                    $productImage = ProductImagesModel::find($image['id']);
+                    if ($productImage) {
+                        if (isset($image['image_path'])) {
+                            $productImage->update(['image_path' => $image['image_path']]);
+                        }
+                        $updatedImages[] = $productImage;
+                    }
+                } else {
+                    // Nếu không có 'id', tạo mới hình ảnh sản phẩm
+                    $newProductImage = ProductImagesModel::create([
+                        'product_id' => $product->id,
+                        'image_path' => $image['image_path'] ?? null,
+                    ]);
+                    $updatedImages[] = $newProductImage;
+                }
+            }
+        }
 
-        $variationsData = []; // Mảng để lưu trữ thông tin biến thể
+        // Update product variations
+        // $variationsData = []; // Mảng để lưu trữ thông tin biến thể
+        // if ($request->has('variations')) {
+        //     $product->variations()->delete(); // Xóa các biến thể cũ trước khi thêm mới
+        //     foreach ($request->variations as $variation) {
+        //         // Đảm bảo dữ liệu biến thể không trống trước khi lưu
+        //         if (!empty($variation)) {
+        //             // Sử dụng mô hình ProductVariation để lưu trữ thông tin vào bảng khác
+        //             $variationModel = ProductVariation::create([
+        //                 'product_id' => $product->id, // Hoặc bất kỳ khóa ngoại nào kết nối với sản phẩm
+        //                 'size' => $variation['size'] ?? null,
+        //                 'color' => $variation['color'] ?? null,
+        //                 'price' => $variation['price'] ?? null,
+        //                 'quantity' => $variation['quantity'] ?? null,
+        //             ]);
+        //             $variationsData[] = $variationModel;
+        //         }
+        //     }
+        // }
+        $updatedVariations = [];
+
         if ($request->has('variations')) {
             foreach ($request->variations as $variation) {
-                if (isset($variation['id'])) {
-                    // Cập nhật biến thể hiện có
-                    $product->variations()->where('id', $variation['id'])->update($variation);
-                } else {
-                    // Thêm biến thể mới
-                    $product->variations()->create($variation);
+                // Đảm bảo dữ liệu biến thể không trống trước khi cập nhật
+                if (!empty($variation['id'])) {
+                    // Tìm biến thể theo ID
+                    // dd($variation['id']);
+                    $productVariation = ProductVariation::find($variation['id']);
+                    // dd($productVariation, $variation['size']);
+                    // Cập nhật các trường dữ liệu chỉ khi chúng được gửi từ form
+                    $updateData = [];
+                    if (isset($variation['size'])) {
+                        $updateData['size'] = $variation['size'];
+                    }
+                    if (isset($variation['color'])) {
+                        $updateData['color'] = $variation['color'];
+                    }
+                    if (isset($variation['price'])) {
+                        $updateData['price'] = $variation['price'];
+                    }
+                    if (isset($variation['quantity'])) {
+                        $updateData['quantity'] = $variation['quantity'];
+                    }
+
+                    // Cập nhật biến thể
+                    $productVariation->update($updateData);
+                    $updatedVariations[] = $productVariation;
+
                 }
             }
         }
 
         return response()->json([
-            'message' => 'New product added successfully.',
+            'message' => 'Product updated successfully.',
             'data' => [
                 'product' => $product,
-                'images' => $saved_images,
-                'variations' => $variationsData,
+                'images' => $updatedImages,
+                'variations' => $updatedVariations,
             ]
-        ], Response::HTTP_CREATED);
+        ], Response::HTTP_OK);
     }
+
 
     /**
      * Remove the specified resource from storage.

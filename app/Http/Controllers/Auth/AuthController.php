@@ -103,11 +103,9 @@ class AuthController extends Controller
      */
     public function login(Request $request){
     	$validator = Validator::make($request->all(), [
-            'zalo_id' => 'required|string',
+            'phone' => 'required|string',
             'password' => 'required|string|min:6',
         ]);
-
-        // dd($validator);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -116,12 +114,52 @@ class AuthController extends Controller
         //     return response()->json(['error' => 'Unauthorized'], 401);
         // }
 
-        if (! $token = auth()->attempt(['zalo_id' => $request->input('zalo_id', $request->zalo_id), 'password' => $request->password])) {
+        if (! $token = auth()->attempt(['phone' => $request->input('phone', $request->zalo_id), 'password' => $request->password])) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
 
         return $this->createNewToken($token);
+    }
+
+    public function loginOrRegister(Request $request)
+    {
+        $credentials = $request->only('phone', 'password');
+
+        // Attempt to login
+        try {
+            if ($token = JWTAuth::attempt($credentials)) {
+                return response()->json(['message' => 'Login successful', 'token' => $token]);
+            }
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'could_not_create_token'], 500);
+        }
+
+        // Check if Zalo_ID exists
+        if ($credentials['password']) {
+            $user = User::where('zalo_id', $credentials['password'])->first();
+
+            if (!$user) {
+                // If Zalo_ID exists, create password using Zalo_ID
+                $credentials['password'];
+            }
+        }
+
+        // Proceed with registration
+        $userData = [
+            'phone' => $credentials['phone'],
+            'password' => bcrypt($credentials['password']),
+            'zalo_id' => $credentials['password'],
+            'name' => "User ".rand(),
+            'email' => rand()."@gmail.com",
+            'username' => "user".rand()
+        ];
+
+        $user = User::create($userData);
+
+        $token = JWTAuth::fromUser($user);
+
+        return response()->json(['message' => 'Registration successful', 'token' => $token]);
     }
 
     public function loginWeb(Request $request)
