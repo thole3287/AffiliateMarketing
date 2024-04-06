@@ -27,27 +27,37 @@ Route::group([
     'middleware' => 'api',
     'prefix' => 'auth'
 ], function ($router) {
-    Route::post('/login-or-register', [AuthController::class, 'loginOrRegister']);
+    Route::post('users/login-or-register', [AuthController::class, 'loginOrRegister']);
     Route::post('/admin/login', [AuthController::class, 'loginWeb']);
-    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/admin/register', [AuthController::class, 'register']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::put('/change-password', [AuthController::class, 'changePassword']); //update password user with old password
+    Route::put('/admin/change-password', [AuthController::class, 'changePassword']); //update password user with old password
     Route::put('/users/{id}', [AuthController::class, 'update']);//update info user
     Route::get('/user-profile', [AuthController::class, 'userProfile']);
-
     // Route::post('send-password-reset-link', [PasswordResetRequestController::class, 'sendEmail']);
     // Route::post('/reset-password', [ChangePasswordController::class, 'passwordResetProcess'])->name('password.update');
 });
-Route::resource('categories', CategoryController::class);
-Route::resource('brands', BrandController::class);
-Route::resource('products', ProductsController::class);
 
-Route::get('products/{product}/variations', [ProductVariationController::class, 'index']);
-Route::post('products/{product}/variations', [ProductVariationController::class, 'store']);
-Route::get('products/{product}/variations/{variation}', [ProductVariationController::class, 'show']);
-Route::put('products/{product}/variations/{variation}', [ProductVariationController::class, 'update']);
-Route::delete('products/{product}/variations/{variation}', [ProductVariationController::class, 'destroy']);
+
+Route::resource('categories', CategoryController::class)->only(['show', 'index']);
+Route::resource('brands', BrandController::class)->only(['show', 'index']);
+Route::resource('products', ProductsController::class)->only(['show', 'index']);
+Route::group(['middleware' => ['jwt.auth.admin']], function () {
+    //category
+    Route::resource('categories', CategoryController::class);
+    //brand
+    Route::resource('brands', BrandController::class);
+    //product
+    Route::resource('products', ProductsController::class);
+    //api variations
+    Route::get('products/{product}/variations', [ProductVariationController::class, 'index']);
+    Route::post('products/{product}/variations', [ProductVariationController::class, 'store']);
+    Route::get('products/{product}/variations/{variation}', [ProductVariationController::class, 'show']);
+    Route::put('products/{product}/variations/{variation}', [ProductVariationController::class, 'update']);
+    Route::delete('products/{product}/variations/{variation}', [ProductVariationController::class, 'destroy']);
+});
+
 
 
 // Route::put('/categories/{id}', [CategoryController::class, 'update']);

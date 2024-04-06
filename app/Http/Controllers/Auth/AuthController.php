@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Http\Response;
+
 
 
 class AuthController extends Controller
@@ -21,55 +23,39 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'required|numeric',
             'photo' => 'nullable|string',
             'address' => 'nullable|string',
-            'birthday' => 'nullable|date',
-            'role' => 'string',
+            // 'birthday' => 'nullable|date',
+            'username' => 'required|string|unique:users',
+            // 'role' => 'string',
             // 'collaborator' => 'boolean',
             // 'points' => 'integer',
             // 'membership_level' => 'string',
             'zalo_id' => 'required|unique:users',
-            // 'password' => 'required|string|min:6',
-
-            // 'password' => 'required|string|confirmed|min:6',
-        ], [
-            'name.required' => 'Name is required!',
-            'name.string' => 'Name must be a string!',
-            'name.between' => 'Name must be between 2 and 100 characters!',
-            'zalo_id.required' => 'Zalo ID is required!',
-            'username.required' => 'Username is required!',
-            'email.required' => 'Email is required!',
-            'email.string' => 'Email must be a string!',
-            'email.email' => 'Email must be in the correct format!',
-            'email.max' => 'Email can be at most 100 characters long!',
-            'email.unique' => 'This email is already registered!',
-            'phone.string' => 'Phone must be a string!',
-            'phone.max' => 'Phone can be at most 20 characters long!',
-            'photo.string' => 'Avatar must be a string!',
-            // 'password.required' => 'Password is required!',
-            // 'password.string' => 'Password must be a string!',
-            // 'password.confirmed' => 'Password confirmation does not match!',
-            // 'password.min' => 'Password must be at least 6 characters long!',
-            ]);
+            'password' => 'required|string|min:6',
+        ]);
 
         if ($validator->fails()) {
             return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 422);
         }
 
-        $user = User::create(array_merge(
-            $validator->validated(),
-            [
-                'password' => bcrypt($request->zalo_id),
-                'username' => $request->zalo_id,
-                'zalo_id' => $request->zalo_id,
-            ]
-        ));
-        // dd( $user);
+        $user = User::create([
+            'name' => $request->name ?? null,
+            'email' => $request->email,
+            'phone' => $request->phone  ?? null,
+            'photo' => $request->photo ?? null,
+            'address' => $request->address ?? null,
+            // 'birthday' => $request->birthday ?? null,
+            'username' => $request->username,
+            'password' => bcrypt($request->password),
+            'zalo_id' => $request->zalo_id  ?? null,
+        ]);
+
         return response()->json([
             'message' => 'User successfully registered',
             'user' => $user
-        ], 201);
+        ], Response::HTTP_CREATED);
     }
     public function changePassword(Request $request)
     {
@@ -81,7 +67,7 @@ class AuthController extends Controller
 
         // Get the user
         $user = $request->user();
-
+        // dd( $user);
         // Verify the current password
         if (!Hash::check($request->input('old_password'), $user->password)) {
             return response()->json(['error' => 'Old password does not match.'], 400);
@@ -101,38 +87,29 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(Request $request){
-    	$validator = Validator::make($request->all(), [
-            'phone' => 'required|string',
-            'password' => 'required|string|min:6',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-        // if (! $token = auth()->attempt($validator->validated())) {
-        //     return response()->json(['error' => 'Unauthorized'], 401);
-        // }
-
-        if (! $token = auth()->attempt(['phone' => $request->input('phone', $request->zalo_id), 'password' => $request->password])) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-
-        return $this->createNewToken($token);
-    }
 
     public function loginOrRegister(Request $request)
     {
+        // Validate request data
+        $validator = Validator::make($request->all(), [
+            'phone' => 'required|numeric',
+            'password' => 'required|string|min:6'
+        ]);
+
+        // If validation fails, return error response
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
         $credentials = $request->only('phone', 'password');
 
         // Attempt to login
         try {
             if ($token = JWTAuth::attempt($credentials)) {
-                return response()->json(['message' => 'Login successful', 'token' => $token]);
+                return response()->json(['message' => 'Login successful', 'token' => $token], 200);
             }
         } catch (JWTException $e) {
-            return response()->json(['error' => 'could_not_create_token'], 500);
+            return response()->json(['error' => 'Could not create token'], 500);
         }
 
         // Check if Zalo_ID exists
@@ -150,28 +127,51 @@ class AuthController extends Controller
             'phone' => $credentials['phone'],
             'password' => bcrypt($credentials['password']),
             'zalo_id' => $credentials['password'],
-            'name' => "User ".rand(),
-            'email' => rand()."@gmail.com",
-            'username' => "user".rand()
+            'name' => $request->name ?? null,
+            'photo' =>  $request->photo ?? null,
+            'username' =>  $request->username ?? null,
+            'email' => $request->email ?? null,
+            'address'  => $request->address ?? null,
+            // 'gender'   => $request->gender ?? null,
         ];
 
         $user = User::create($userData);
 
         $token = JWTAuth::fromUser($user);
 
-        return response()->json(['message' => 'Registration successful', 'token' => $token]);
+        return response()->json(['message' => 'Registration successful', 'token' => $token], 200);
     }
 
+
+    // public function loginWeb(Request $request)
+    // {
+    //     $credentials = $request->only('username', 'password');
+
+    //     // Thử đăng nhập bằng username
+    //     try {
+    //         if (!$token = JWTAuth::attempt($credentials)) {
+    //             $credentials = $request->only('email', 'password');
+
+    //             if (!$token = JWTAuth::attempt($credentials)) {
+    //                 return response()->json(['error' => 'Invalid credentials'], 401);
+    //             }
+    //         }
+    //     } catch (JWTException $e) {
+    //         return response()->json(['error' => 'Could not create token'], 500);
+    //     }
+
+    //     return response()->json(compact('token'));
+    // }
     public function loginWeb(Request $request)
     {
         $credentials = $request->only('username', 'password');
 
         // Thử đăng nhập bằng username
         try {
-            if (! $token = JWTAuth::attempt($credentials)) {
+            if (!$token = JWTAuth::attempt($credentials)) {
                 $credentials = $request->only('email', 'password');
 
-                if (! $token = JWTAuth::attempt($credentials)) {
+                if (!$token = JWTAuth::attempt($credentials)) {
                     return response()->json(['error' => 'Invalid credentials'], 401);
                 }
             }
@@ -179,7 +179,15 @@ class AuthController extends Controller
             return response()->json(['error' => 'Could not create token'], 500);
         }
 
-        return response()->json(compact('token'));
+        // Sau khi đăng nhập, lấy thông tin người dùng
+        $user = Auth::user();
+
+        // Kiểm tra nếu người dùng không phải là admin
+        if ($user->role !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        return $this->createNewToken($token, 'Login Admin/SuperAdmin Successfully');
     }
 
     public function update(Request $request, $id)
@@ -189,30 +197,34 @@ class AuthController extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
-            'avatar' => 'nullable|string',
+            'photo' => 'nullable|string',
             'address' => 'nullable|string',
-            'birthday' => 'nullable|date',
-            'collaborator' => 'boolean',
-            'points' => 'integer',
-            'membership_level' => 'string|in:basic,premium',
+            // 'birthday' => 'nullable|date',
+            // 'collaborator' => 'boolean',
+            // 'points' => 'integer',
+            // 'membership_level' => 'string|in:basic,premium',
         ]);
         if ($validator->fails()) {
             return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 422);
         }
-        $user->name = $request->input('name');
-        $user->phone = $request->input('phone');
-        $user->avatar = $request->input('avatar');
-        $user->address = $request->input('address');
-        $user->birthday = $request->input('birthday');
-        $user->collaborator = $request->input('collaborator');
-        $user->points = $request->input('points');
-        $user->membership_level = $request->input('membership_level');
+        $user->name = $request->input('name')  ?? $user->name;
+        $user->phone = $request->input('phone') ??  $user->phone;
+        $user->avatar = $request->input('photo') ??  $user->photo;
+        $user->address = $request->input('address') ??  $user->address;
+        // $user->birthday = $request->input('birthday')??  $user->birthday;
+        // $user->collaborator = $request->input('collaborator') ?? null;
+        // $user->points = $request->input('points')?? null;
+        // $user->membership_level = $request->input('membership_level')?? null;
         $user->save();
 
-        return response()->json(['user' => $user]);
+        return response()->json([
+            'status' => true,
+            'message' => 'Update your profile successfuly',
+            'user' => $user
+        ]);
     }
     /**
      * Register a User.
@@ -225,7 +237,8 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function logout() {
+    public function logout()
+    {
         auth()->logout();
         return response()->json(['message' => 'User successfully signed out']);
     }
@@ -234,15 +247,17 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function refresh() {
-        return $this->createNewToken(auth()->refresh());
+    public function refresh()
+    {
+        return $this->createNewToken(auth()->refresh(), 'refresh token successfuly');
     }
     /**
      * Get the authenticated User.
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function userProfile() {
+    public function userProfile()
+    {
         return response()->json(auth()->user());
     }
     /**
@@ -252,13 +267,14 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function createNewToken($token){
+    protected function createNewToken($token, $message)
+    {
         return response()->json([
-            'access_token' => $token,
+            'message' => $message,
+            'token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
             // 'user' => auth()->user()
         ]);
     }
-
 }
