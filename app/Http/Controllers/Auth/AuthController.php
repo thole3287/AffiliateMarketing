@@ -32,7 +32,7 @@ class AuthController extends Controller
             // 'collaborator' => 'boolean',
             // 'points' => 'integer',
             // 'membership_level' => 'string',
-            'zalo_id' => 'required|unique:users',
+            'zalo_id' => 'nullable|unique:users',
             'password' => 'required|string|min:6',
         ]);
 
