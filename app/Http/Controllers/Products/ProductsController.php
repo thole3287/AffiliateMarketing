@@ -96,7 +96,6 @@ class ProductsController extends Controller
                 }
             }
         }
-
         return response()->json([
             'message' => 'New product added successfully.',
             'data' => [

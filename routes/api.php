@@ -3,8 +3,10 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Brands\BrandController;
 use App\Http\Controllers\Categories\CategoryController;
+use App\Http\Controllers\Orders\OrderController;
 use App\Http\Controllers\Products\ProductsController;
 use App\Http\Controllers\Products\ProductVariationController;
+use App\Http\Controllers\UploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -38,6 +40,13 @@ Route::group([
     // Route::post('send-password-reset-link', [PasswordResetRequestController::class, 'sendEmail']);
     // Route::post('/reset-password', [ChangePasswordController::class, 'passwordResetProcess'])->name('password.update');
 });
+
+Route::post('order-items', [OrderController::class, 'placeOrder']);
+Route::get('order-items', [OrderController::class, 'getOrders']);
+Route::get('order-history', [OrderController::class, 'getOrderHistory']);
+
+Route::post('upload-file', [UploadController::class, 'uploadFile']);
+
 
 
 Route::resource('categories', CategoryController::class)->only(['show', 'index']);
