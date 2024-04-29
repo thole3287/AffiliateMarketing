@@ -208,11 +208,16 @@ use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Http\Services\UploadService;
 
 
 class CategoryController extends Controller
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    protected $uploadService;
+    public function __construct(UploadService $uploadService){
+        $this->uploadService = $uploadService;
+    }
     public function index()
     {
         $categories = Category::with('children')->whereNull('parent_id')->get();
@@ -235,31 +240,25 @@ class CategoryController extends Controller
     {
         // dd($request->input('name'));
         $request->validate([
-            'name' => 'required|unique:categories',
+            'name' => 'required',
             'parent_id' => 'nullable|exists:categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048', // Kiểm tra loại và kích thước file ảnh
             'image_url' => 'nullable|url', // Kiểm tra định dạng URL
         ]);
 
-        // Kiểm tra xem người dùng đã cung cấp file ảnh hay URL
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('public/images/categories', $imageName);
-            $imageUrl = asset('storage/images/categories/' . $imageName);
-        } elseif ($request->filled('image_url')) {
-            $imageUrl = $request->input('image_url');
-        } else {
-            $imageUrl = null;
+        $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'categories', false);
+        if(is_string($imageUrl))
+        {
+            $category = Category::create([
+                'name' => $request->input('name'),
+                'parent_id' => $request->input('parent_id'),
+                'image' => $imageUrl,
+            ]);
+            return response()->json(['data' => $category], 201);
         }
-
-        $category = Category::create([
-            'name' => $request->input('name'),
-            'parent_id' => $request->input('parent_id'),
-            'image' => $imageUrl,
-        ]);
-
-        return response()->json(['category' => $category], 201);
+        if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+            return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+        }
     }
 
     // Update a category by ID
@@ -267,7 +266,7 @@ class CategoryController extends Controller
     {
         // dd($request->all());
         $request->validate([
-            'name' => 'required|unique:categories,name,',
+            'name' => 'required',
             'parent_id' => 'nullable|exists:categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'image_url' => 'nullable|url',
@@ -276,25 +275,21 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
 
         // Kiểm tra xem người dùng đã cung cấp file ảnh hay URL
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('public/images/category_image', $imageName);
-            $imageUrl = asset('storage/images/category_image/' . $imageName);
-        } elseif ($request->filled('image_url')) {
-            $imageUrl = $request->input('image_url');
-        } else {
-            $imageUrl = null;
+        $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'categories', false);
+        if(is_string($imageUrl))
+        {
+            $category->update([
+                'name' => $request->input('name'),
+                'parent_id' => $request->input('parent_id'),
+                'image' => $imageUrl,
+            ]);
+
+            return response()->json(['category' => $category], 200);
+
         }
-
-        // Cập nhật thông tin của danh mục
-        $category->update([
-            'name' => $request->input('name'),
-            'parent_id' => $request->input('parent_id'),
-            'image' => $imageUrl,
-        ]);
-
-        return response()->json(['category' => $category], 200);
+        if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+            return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+        }
     }
 
     public function destroy($id)
@@ -311,7 +306,7 @@ class CategoryController extends Controller
         }
 
         if ($category->image) {
-            $imagePath = public_path('storage/images/category_image/') . basename($category->image);
+            $imagePath = public_path('public/categories/') . basename($category->image);
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }

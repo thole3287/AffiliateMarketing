@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Brands\BrandController;
 use App\Http\Controllers\Categories\CategoryController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\Orders\OrderController;
 use App\Http\Controllers\Products\ProductsController;
 use App\Http\Controllers\Products\ProductVariationController;
@@ -46,17 +47,18 @@ Route::get('order-items', [OrderController::class, 'getOrders']);
 Route::get('order-history', [OrderController::class, 'getOrderHistory']);
 
 Route::post('upload-file', [UploadController::class, 'uploadFile']);
+Route::resource('categories', CategoryController::class);
+
+Route::resource('brands', BrandController::class);
+Route::apiResource('coupons', CouponController::class);
 
 
-
-Route::resource('categories', CategoryController::class)->only(['show', 'index']);
-Route::resource('brands', BrandController::class)->only(['show', 'index']);
+// Route::resource('categories', CategoryController::class)->only(['show', 'index']);
+// Route::resource('brands', BrandController::class)->only(['show', 'index']);
 Route::resource('products', ProductsController::class)->only(['show', 'index']);
 Route::group(['middleware' => ['jwt.auth.admin']], function () {
     //category
-    Route::resource('categories', CategoryController::class);
     //brand
-    Route::resource('brands', BrandController::class);
     //product
     Route::resource('products', ProductsController::class);
     //api variations

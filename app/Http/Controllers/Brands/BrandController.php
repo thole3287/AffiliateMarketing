@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Brands;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Brand;
+use App\Http\Services\UploadService;
+
 
 
 class BrandController extends Controller
@@ -12,6 +14,10 @@ class BrandController extends Controller
     /**
      * Display a listing of the resource.
      */
+    protected $uploadService;
+    public function __construct(UploadService $uploadService){
+        $this->uploadService = $uploadService;
+    }
     public function index()
     {
         $brands = Brand::all();
@@ -30,25 +36,22 @@ class BrandController extends Controller
             'image_url' => 'nullable|url', // Kiểm tra định dạng URL
         ]);
 
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('storage/images/brands'), $imageName); // Di chuyển ảnh vào thư mục public
-            $imageUrl = asset('storage/images/brands/' . $imageName);
-        } elseif ($request->filled('image_url')) {
-            $imageUrl = $request->input('image_url');
-        } else {
-            $imageUrl = null;
+        $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'brands', false);
+        if(is_string($imageUrl))
+        {
+            $brand = Brand::create([
+                'name' => $request->input('name'),
+                'slug' => $request->input('slug'),
+                'image' => $imageUrl,
+            ]);
+            return response()->json(['data' => $brand], 201);
+
+        }
+        if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+            return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
         }
 
 
-        $brand = Brand::create([
-            'name' => $request->input('name'),
-            'slug' => $request->input('slug'),
-            'image' => $imageUrl,
-        ]);
-
-        return response()->json(['data' => $brand], 201);
     }
 
     /**
@@ -83,23 +86,22 @@ class BrandController extends Controller
             return response()->json(['message' => 'Brand not found'], 404);
         }
 
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $image->getClientOriginalExtension();            $image->move(public_path('storage/images/brands'), $imageName); // Di chuyển ảnh vào thư mục public
-            $imageUrl = asset('storage/images/brands/' . $imageName);
-        } elseif ($request->filled('image_url')) {
-            $imageUrl = $request->input('image_url');
-        } else {
-            $imageUrl = null;
+        $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'brands', false);
+        if(is_string($imageUrl))
+        {
+            $brand->update([
+                'name' => $request->input('name'),
+                'slug' => $request->input('slug'),
+                'image' => $imageUrl,
+            ]);
+
+            return response()->json(['data' => $brand]);
+
         }
 
-        $brand->update([
-            'name' => $request->input('name'),
-            'slug' => $request->input('slug'),
-            'image' => $imageUrl,
-        ]);
-
-        return response()->json(['data' => $brand]);
+        if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+            return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+        }
     }
 
     /**
@@ -112,7 +114,7 @@ class BrandController extends Controller
         if (!$brand) {
             return response()->json(['message' => 'Brand not found'], 404);
         }
-        
+
         if ($brand->image) {
             $imagePath = public_path('storage/images/brands/') . basename($brand->image);
             if (file_exists($imagePath)) {

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProductOffer extends Model
 {
     use HasFactory;
-
+    protected $table = 'product_offer';
     public function product() {
         return $this->belongsTo(Product::class, 'offer_product_id');
     }

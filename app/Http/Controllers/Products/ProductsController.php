@@ -55,12 +55,13 @@ class ProductsController extends Controller
 
         $data = $request->except(['image_detail', 'variations', 'image_detail_url']);
         // Upload and save product thumbnail
-        if ($request->hasFile('product_thumbbail')) {
-            $imageUrl = $this->uploadService->updateSingleImage($request, 'product_thumbbail', null, 'product_thumbnails');
+        $imageUrl = $this->uploadService->updateSingleImage($request, 'product_thumbbail', 'product_thumbbail_url', 'product_thumbnails', false);
+        if(is_string( $imageUrl))
+        {
             $data['product_thumbbail'] = $imageUrl;
-        } elseif ($request->filled('product_thumbbail_url')) {
-            // Handle case when thumbnail is provided as URL
-            $data['product_thumbbail'] = $request->input('product_thumbbail_url');
+        }
+        if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+            return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
         }
 
         // Create the product with images
@@ -148,13 +149,13 @@ class ProductsController extends Controller
 
         $data = $request->except(['image_detail', 'variations', 'image_detail_url']);
 
-        // Upload and save product thumbnail
-        if ($request->hasFile('product_thumbbail')) {
-            $imageUrl = $this->uploadService->updateSingleImage($request, 'product_thumbbail', null, 'product_thumbnails');
+        $imageUrl = $this->uploadService->updateSingleImage($request, 'product_thumbbail', 'product_thumbbail_url', 'product_thumbnails', false);
+        if(is_string( $imageUrl))
+        {
             $data['product_thumbbail'] = $imageUrl;
-        } elseif ($request->filled('product_thumbbail_url')) {
-            // Handle case when thumbnail is provided as URL
-            $data['product_thumbbail'] = $request->input('product_thumbbail_url');
+        }
+        if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+            return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
         }
 
         // Update product data

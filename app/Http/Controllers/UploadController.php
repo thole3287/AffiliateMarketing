@@ -14,15 +14,22 @@ class UploadController extends Controller
     }
 
     public function uploadFile(Request $request) {
-        $imageUrl = $this->uploadService->updateSingleImage($request, 'image_file', null, 'Images');
-        // dd( $imageUrl);
-        return response()->json([
-            'status' => true,
-            'message' => 'Upload file success!',
-            'data' => [
-                'url' => $imageUrl
-            ]
-        ], 200);
+        $imageUrl = $this->uploadService->updateSingleImage($request, 'image_file', null, 'Images', false);
+        if(is_string($imageUrl))
+        {
+            return response()->json([
+                'status' => true,
+                'message' => 'Upload file success!',
+                'data' => [
+                    'url' => $imageUrl
+                ]
+            ], 200);
+
+        }
+        if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+            return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+        }
+
     }
 
 }

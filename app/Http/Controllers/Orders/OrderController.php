@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Orders;
 
 use App\Http\Controllers\Controller;
+use App\Models\AffiliateLink;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItems;
 use App\Models\product\Product;
 use App\Models\product\ProductVariation;
+use App\Models\ProductOffer;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -62,43 +66,67 @@ class OrderController extends Controller
             'payment_method' => 'required|string',
             'payment_status' => 'required|string|in:pending,paid,failed',
         ]);
+        $totalAmount = $request->total_amount;
 
+        // Check if coupon code is provided and valid
+        $coupon = Coupon::where('coupon_code', $request->coupon_code)
+                        ->where('coupon_status', 1)
+                        ->where('expiration_date', '>', now())
+                        ->first();
+
+        if ($coupon) {
+            $totalAmount -= $coupon->discount_amount;
+            // You might want to handle negative totalAmount here if discount exceeds the total
+            $totalAmount = max(0, $totalAmount);
+        }
         $order = Order::create([
             'user_id' => $request->user_id,
             'shipping_address' => $request->shipping_address,
             'total_amount' => $request->total_amount,
             'payment_method' => $request->payment_method,
             'payment_status' => $request->payment_status,
+            'coupon_code' => $request->coupon_code ?? null,
             'order_date' => now(),
             'note' =>  $request->note
         ]);
         $orderData = [];
         foreach ($request->products as $product) {
-            // dd($product['product_id'], $product['variation_id']);
             $product1 = Product::findOrFail($product['product_id']);
-
-            // $variation =ProductVariation::where('product_id', $product['id'])->get();
             $variation = $product1->variations()->find((int)$product['variation_id']);
-            // dd($order->id, $product1->id, $variation->id, $product['quantity'], $product1->product_price);
-            // dd($product1->product_price / $product['quantity']);
-            $data = [
-                'order_id' => $order->id,
-                'product_id' => $product1->id,
-                'variation_id' => $variation?->id,
-                'quantity' => $product['quantity'],
-                'product_price' => $product1->product_price / $product['quantity'],
-            ];
+
+            $productPrice = $product1->product_price;
+
+            // Check if product has any offer
+            $productOffer = ProductOffer::where('offer_product_id', $product1->id)->first();
+
+            // If product has offer, adjust product price accordingly
+            if ($productOffer) {
+                if ($productOffer->hot_deal) {
+                    $productPrice -= $productPrice * ($productOffer->hot_deal / 100);
+                }
+                // Add more conditions for other types of offers if needed
+            }
+
             $orderItem = new OrderItems();
             $orderItem->order_id = $order->id;
             $orderItem->product_id =  $product1->id;
             $orderItem->variation_id = $variation?->id;
             $orderItem->quantity = $product['quantity'];
-            $orderItem->product_price = $product1->product_price;
-            // dd($product['variation_id'], $variation);
-            // OrderItems::create( $data);
-            // dd(12313);
+            // $orderItem->product_price = $product1->product_price;
+            $orderItem->product_price = $productPrice;
+            $orderItem->affiliate_link = $product['affiliate_link']; // ID của người dùng chia sẻ liên kết
+
+
+            $orderItem->save();
+            $orderData[] = $orderItem;
+            $affiliateLink = AffiliateLink::where('id', $product['affiliate_link'])->first();
+            if ($affiliateLink) {
+                $affiliateUser = User::find($affiliateLink->user_id);
+                $affiliateUser->balance += $product1->commission_amount;
+                $affiliateUser->save();
+            }
+
         }
-        // dd()
         return response()->json([
             'message' => 'Order placed successfully',
             'order' => $order,
@@ -143,58 +171,4 @@ class OrderController extends Controller
             ], Response::HTTP_NOT_FOUND);
         }
     }
-
-
-    // public function placeOrder(Request $request)
-    // {
-    //     $request->validate([
-    //         'user_id' => 'required|exists:users,id',
-    //         'products' => 'required|array',
-    //         'products.*.product_id' => 'required|exists:products,id',
-    //         'products.*.quantity' => 'required|integer|min:1',
-    //         'products.*.variation_id' => 'nullable|exists:product_variations,id',
-    //         'products.*.product_size' => 'nullable|string',
-    //         'products.*.product_color' => 'nullable|string',
-    //         'products.*.variation_size' => 'nullable|string',
-    //         'products.*.variation_color' => 'nullable|string',
-    //         'shipping_address' => 'required|string',
-    //         'total_amount' => 'required|numeric',
-    //         'payment_method' => 'required|string',
-    //         'payment_status' => 'required|string|in:pending,paid,failed',
-    //     ]);
-
-    //     $order = Order::create([
-    //         'user_id' => $request->user_id,
-    //         'shipping_address' => $request->shipping_address,
-    //         'order_total_amount' => $request->total_amount,
-    //         'payment_method' => $request->payment_method,
-    //         'payment_status' => $request->payment_status,
-    //         'ordered_at' => now(),
-    //     ]);
-
-    //     foreach ($request->products as $product) {
-    //         $productModel = Product::findOrFail($product['product_id']);
-    //         $variation = $productModel->variations()->find($product['variation_id']);
-
-    //         $orderItem = OrderItems::create([
-    //             'order_id' => $order->id,
-    //             'product_id' => $productModel->id,
-    //             'variation_id' => $variation?->id,
-    //             'product_size' => $product['product_size'] ?? null,
-    //             'product_color' => $product['product_color'] ?? null,
-    //             'variation_size' => $variation?->size ?? null,
-    //             'variation_color' => $variation?->color ?? null,
-    //             'quantity' => $product['quantity'],
-    //             'product_price' => $productModel->price,
-    //             'variation_price' => $variation?->price,
-    //         ]);
-    //     }
-
-    //     return response()->json([
-    //         'message' => 'Order placed successfully',
-    //         'order' => $order,
-    //         'order_detail' => $orderItem ?? []
-
-    //     ], Response::HTTP_CREATED);
-    // }
 }
