@@ -37,7 +37,7 @@ class BrandController extends Controller
         ]);
 
         $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'brands', true);
-        if(is_string($imageUrl) && !empty($imageUrl))
+        if(is_string($imageUrl) || is_null($imageUrl))
         {
             $brand = Brand::create([
                 'name' => $request->input('name'),
@@ -46,11 +46,11 @@ class BrandController extends Controller
             ]);
             return response()->json(['data' => $brand], 201);
 
+        }else{
+            if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+                return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+            }
         }
-        if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
-            return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
-        }
-
 
     }
 
@@ -87,7 +87,7 @@ class BrandController extends Controller
         }
 
         $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'brands', true);
-        if(is_string($imageUrl) && !empty($imageUrl))
+        if(is_string($imageUrl) || is_null($imageUrl))
         {
             $brand->update([
                 'name' => $request->input('name'),
@@ -97,11 +97,14 @@ class BrandController extends Controller
 
             return response()->json(['data' => $brand]);
 
+        }else
+        {
+            if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+                return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+            }
         }
 
-        if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
-            return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
-        }
+
     }
 
     /**

@@ -215,7 +215,8 @@ class CategoryController extends Controller
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     protected $uploadService;
-    public function __construct(UploadService $uploadService){
+    public function __construct(UploadService $uploadService)
+    {
         $this->uploadService = $uploadService;
     }
     public function index()
@@ -247,17 +248,17 @@ class CategoryController extends Controller
         ]);
 
         $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'categories', true);
-        if(is_string($imageUrl) && !empty($imageUrl))
-        {
+        if (is_string($imageUrl) || is_null($imageUrl)) {
             $category = Category::create([
                 'name' => $request->input('name'),
                 'parent_id' => $request->input('parent_id'),
                 'image' => $imageUrl,
             ]);
             return response()->json(['data' => $category], 201);
-        }
-        if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
-            return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+        } else {
+            if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+                return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+            }
         }
     }
 
@@ -276,8 +277,7 @@ class CategoryController extends Controller
 
         // Kiểm tra xem người dùng đã cung cấp file ảnh hay URL
         $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'categories', true);
-        if(is_string($imageUrl) && !empty($imageUrl))
-        {
+        if (is_string($imageUrl) || is_null($imageUrl)) {
             $category->update([
                 'name' => $request->input('name'),
                 'parent_id' => $request->input('parent_id'),
@@ -285,10 +285,10 @@ class CategoryController extends Controller
             ]);
 
             return response()->json(['category' => $category], 200);
-
-        }
-        if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
-            return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+        } else {
+            if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+                return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+            }
         }
     }
 
