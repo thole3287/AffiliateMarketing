@@ -9,6 +9,7 @@ class UploadService
 {
     public function updateSingleImage(Request $request, $inputNameFile, $inputNameUrl, $folderName, $checkSightengine)
     {
+        $imageUrl = null; // Khởi tạo $imageUrl với giá trị mặc định
         if ($request->hasFile($inputNameFile)) {
 
             if ($checkSightengine) {
@@ -30,7 +31,6 @@ class UploadService
                 curl_close($ch);
 
                 $output = json_decode($response, true);
-                // dd($output);
                 // Kiểm tra kết quả từ API
                 if ($output['status'] === 'success' && $output['nudity']['sexual_activity'] <= 0.5) {
                     // Nếu hình ảnh không chứa nội dung không phù hợp, lưu hình ảnh vào thư mục và cơ sở dữ liệu

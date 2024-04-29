@@ -55,7 +55,7 @@ class ProductsController extends Controller
 
         $data = $request->except(['image_detail', 'variations', 'image_detail_url']);
         // Upload and save product thumbnail
-        $imageUrl = $this->uploadService->updateSingleImage($request, 'product_thumbbail', 'product_thumbbail_url', 'product_thumbnails', false);
+        $imageUrl = $this->uploadService->updateSingleImage($request, 'product_thumbbail', 'product_thumbbail_url', 'product_thumbnails', true);
         if(is_string( $imageUrl))
         {
             $data['product_thumbbail'] = $imageUrl;
@@ -149,7 +149,7 @@ class ProductsController extends Controller
 
         $data = $request->except(['image_detail', 'variations', 'image_detail_url']);
 
-        $imageUrl = $this->uploadService->updateSingleImage($request, 'product_thumbbail', 'product_thumbbail_url', 'product_thumbnails', false);
+        $imageUrl = $this->uploadService->updateSingleImage($request, 'product_thumbbail', 'product_thumbbail_url', 'product_thumbnails', true);
         if(is_string( $imageUrl))
         {
             $data['product_thumbbail'] = $imageUrl;

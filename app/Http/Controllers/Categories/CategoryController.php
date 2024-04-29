@@ -246,8 +246,8 @@ class CategoryController extends Controller
             'image_url' => 'nullable|url', // Kiểm tra định dạng URL
         ]);
 
-        $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'categories', false);
-        if(is_string($imageUrl))
+        $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'categories', true);
+        if(is_string($imageUrl) && !empty($imageUrl))
         {
             $category = Category::create([
                 'name' => $request->input('name'),
@@ -275,8 +275,8 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
 
         // Kiểm tra xem người dùng đã cung cấp file ảnh hay URL
-        $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'categories', false);
-        if(is_string($imageUrl))
+        $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'categories', true);
+        if(is_string($imageUrl) && !empty($imageUrl))
         {
             $category->update([
                 'name' => $request->input('name'),

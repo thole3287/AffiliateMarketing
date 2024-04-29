@@ -36,8 +36,8 @@ class BrandController extends Controller
             'image_url' => 'nullable|url', // Kiểm tra định dạng URL
         ]);
 
-        $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'brands', false);
-        if(is_string($imageUrl))
+        $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'brands', true);
+        if(is_string($imageUrl) && !empty($imageUrl))
         {
             $brand = Brand::create([
                 'name' => $request->input('name'),
@@ -86,8 +86,8 @@ class BrandController extends Controller
             return response()->json(['message' => 'Brand not found'], 404);
         }
 
-        $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'brands', false);
-        if(is_string($imageUrl))
+        $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'brands', true);
+        if(is_string($imageUrl) && !empty($imageUrl))
         {
             $brand->update([
                 'name' => $request->input('name'),
@@ -116,7 +116,7 @@ class BrandController extends Controller
         }
 
         if ($brand->image) {
-            $imagePath = public_path('storage/images/brands/') . basename($brand->image);
+            $imagePath = public_path('public/brands/') . basename($brand->image);
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
