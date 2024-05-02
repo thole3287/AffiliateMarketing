@@ -18,7 +18,8 @@ class ProductsController extends Controller
      */
     protected $uploadService;
 
-    public function __construct(UploadService $uploadService){
+    public function __construct(UploadService $uploadService)
+    {
         $this->uploadService = $uploadService;
     }
     public function index()
@@ -55,28 +56,33 @@ class ProductsController extends Controller
 
         $data = $request->except(['image_detail', 'variations', 'image_detail_url']);
         // Upload and save product thumbnail
-        $imageUrl = $this->uploadService->updateSingleImage($request, 'product_thumbbail', 'product_thumbbail_url', 'product_thumbnails', true);
-        if(is_string( $imageUrl))
-        {
+        $imageUrl = $this->uploadService->updateSingleImage($request, 'product_thumbbail', 'product_thumbbail_url', 'product_thumbnails', false);
+        if (is_string($imageUrl) || is_null($imageUrl)) {
             $data['product_thumbbail'] = $imageUrl;
+        } else {
+            if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+                return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+            }
         }
-        if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
-            return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
-        }
+
 
         // Create the product with images
         $product = Product::create($data);
 
-        $image_detail = $this->uploadService->uploadMultipleImages($request, 'image_detail', 'image_detail_url', 'product_images');
-
-        if($image_detail){
+        $image_detail = $this->uploadService->uploadMultipleImages($request, 'image_detail', 'image_detail_url', 'product_images', false);
+        // dd( $image_detail);
+        if ($image_detail && is_string($imageUrl) || is_null($imageUrl)) {
             $saved_images = [];
-            foreach ( $image_detail as $image_path) {
+            foreach ($image_detail as $image_path) {
                 $product_image = new ProductImagesModel();
                 $product_image->product_id = $product->id;
                 $product_image->image_path = $image_path;
                 $product_image->save();
                 $saved_images[] = $product_image->image_path;
+            }
+        } else {
+            if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+                return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
             }
         }
 
@@ -149,9 +155,8 @@ class ProductsController extends Controller
 
         $data = $request->except(['image_detail', 'variations', 'image_detail_url']);
 
-        $imageUrl = $this->uploadService->updateSingleImage($request, 'product_thumbbail', 'product_thumbbail_url', 'product_thumbnails', true);
-        if(is_string( $imageUrl))
-        {
+        $imageUrl = $this->uploadService->updateSingleImage($request, 'product_thumbbail', 'product_thumbbail_url', 'product_thumbnails', false);
+        if (is_string($imageUrl)) {
             $data['product_thumbbail'] = $imageUrl;
         }
         if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
@@ -164,7 +169,7 @@ class ProductsController extends Controller
         // Update product images
         $saved_images = [];
         if ($request->has('product_images')) {
-            $image_detail = $this->uploadService->uploadMultipleImages($request, 'image_detail', 'image_detail_url', 'product_images');
+            $image_detail = $this->uploadService->uploadMultipleImages($request, 'image_detail', 'image_detail_url', 'product_images', false);
             if ($image_detail) {
                 foreach ($image_detail as $image_path) {
                     $product_image = new ProductImagesModel();
@@ -248,7 +253,6 @@ class ProductsController extends Controller
                     // Cập nhật biến thể
                     $productVariation->update($updateData);
                     $updatedVariations[] = $productVariation;
-
                 }
             }
         }
@@ -284,10 +288,8 @@ class ProductsController extends Controller
         $product->variations()->delete();
         $product->images()->delete();
         if ($product_image->image_path) {
-            foreach ($product_image->image_path as $image)
-            {
-                if(!filter_var($image, FILTER_VALIDATE_URL))
-                {
+            foreach ($product_image->image_path as $image) {
+                if (!filter_var($image, FILTER_VALIDATE_URL)) {
                     $imagePath = str_replace(asset(''), '', $product_image->image_path); // Lấy đường dẫn tương đối
                     Storage::delete($imagePath); // Xóa hình ảnh sử dụng facade Storage
                 }
