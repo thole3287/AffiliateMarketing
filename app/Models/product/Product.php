@@ -16,11 +16,7 @@ class Product extends Model
     use HasFactory;
     protected $table = 'products';
     protected $guarded = [];
-
-    public function setProductPriceAttribute($value)
-    {
-        $this->attributes['product_price'] = (float) $value;
-    }
+    protected $casts = ['product_price' => 'float'];
 
     public function category()
     {
