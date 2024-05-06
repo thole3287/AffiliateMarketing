@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Products;
 
+use App\Elasticsearch\BaseElastic;
 use App\Http\Controllers\Controller;
 use App\Http\Services\UploadService;
 use App\Models\product\Product;
@@ -16,12 +17,68 @@ class ProductsController extends Controller
     /**
      * Display a listing of the resource.
      */
+
     protected $uploadService;
 
     public function __construct(UploadService $uploadService)
     {
         $this->uploadService = $uploadService;
     }
+
+    public function search(Request $request)
+    {
+        $elasticModel = new BaseElastic();
+        $params = [
+            'index' => 'products',
+            'type' => '_search',
+            'body'  => [
+                'query' => [
+                    'bool' => [
+                        'must' => [],
+                    ],
+                ],
+            ],
+        ];
+
+        // Thêm các điều kiện tìm kiếm nếu có
+        if ($request->has('brand')) {
+            $params['body']['query']['bool']['must'][]['match']['brand_id'] = $request->input('brand');
+        }
+
+        if ($request->has('product_price')) {
+            $price = $request->input('product_price');
+            if (isset($price['min']) && isset($price['max'])) {
+                $params['body']['query']['bool']['must'][]['range']['product_price']['gte'] = $price['min'];
+                $params['body']['query']['bool']['must'][]['range']['product_price']['lte'] = $price['max'];
+            } else {
+                // Nếu chỉ có giá tối đa được chỉ định, tìm các sản phẩm có giá chính xác bằng giá đó
+                $params['body']['query']['bool']['must'][]['match']['product_price'] = $price;
+            }
+        }
+        if ($request->has('product_name')) {
+            $params['body']['query']['bool']['must'][]['match']['product_name'] = $request->input('product_name');
+        }
+        if ($request->has('category')) {
+            $params['body']['query']['bool']['must'][]['match']['category_id'] = $request->input('category');
+        }
+
+        if ($request->has('product_status')) {
+            $params['body']['query']['bool']['must'][]['match']['product_status'] = $request->input('product_status');
+        }
+
+        // Khởi tạo Elasticsearch client
+        $response = $elasticModel->getClientBuilder()->index($params);
+
+        if (empty($response['hits']['hits'])) {
+            return response()->json(['message' => 'Không tìm thấy dữ liệu tương ứng.'], Response::HTTP_NOT_FOUND);
+        }
+
+        // Xử lý kết quả
+        $products = $response['hits']['hits'];
+
+        return response()->json($products);
+    }
+
     public function index()
     {
         $products = Product::with(['brand', 'category', 'variations'])->where('product_status', 'active')->get();

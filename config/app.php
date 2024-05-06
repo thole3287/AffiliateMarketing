@@ -169,7 +169,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
-
+        Elasticquent\ElasticquentServiceProvider::class,
     ])->toArray(),
 
     /*
@@ -186,7 +186,8 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         'Jwt' => Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
-        'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,        
+        'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+        'Es' => Elasticquent\ElasticquentElasticsearchFacade::class,
     ])->toArray(),
 
 ];

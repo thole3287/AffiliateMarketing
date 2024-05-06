@@ -52,15 +52,18 @@ Route::resource('categories', CategoryController::class);
 Route::resource('brands', BrandController::class);
 Route::apiResource('coupons', CouponController::class);
 
+Route::get('/search-products', [ProductsController::class, 'search']);
+
 
 // Route::resource('categories', CategoryController::class)->only(['show', 'index']);
 // Route::resource('brands', BrandController::class)->only(['show', 'index']);
-Route::resource('products', ProductsController::class)->only(['show', 'index']);
+// Route::resource('products', ProductsController::class)->only(['show', 'index']);
+Route::resource('products', ProductsController::class);
+
 Route::group(['middleware' => ['jwt.auth.admin']], function () {
     //category
     //brand
     //product
-    Route::resource('products', ProductsController::class);
     //api variations
     Route::get('products/{product}/variations', [ProductVariationController::class, 'index']);
     Route::post('products/{product}/variations', [ProductVariationController::class, 'store']);
