@@ -18,10 +18,12 @@ class Product extends Model
     protected $guarded = [];
     protected $casts = [
         'product_price' => 'float',
+        'product_price_import' => 'float',
+        'commission_percentage' => 'float',
         'category_id' => 'int',
         'brand_id' => 'int',
         'vendor_id' => 'int',
-        'product_quantity' => 'int'
+        'product_quantity' => 'int',
     ];
 
     public function category()
