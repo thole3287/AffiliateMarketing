@@ -19,8 +19,8 @@ return new class extends Migration
 
         // Thêm trigger để cập nhật sync_es thành 'no' khi các trường khác thay đổi (ngoại trừ sync_es)
         DB::unprepared('
-            CREATE TRIGGER update_source_when_each_field_data_updated
-            BEFORE UPDATE ON sources
+            CREATE TRIGGER trigger_sync_es_product_update
+            BEFORE UPDATE ON products
             FOR EACH ROW
             BEGIN
                 IF (NEW.sync_es = \'yes\' AND OLD.sync_es = \'yes\') THEN
