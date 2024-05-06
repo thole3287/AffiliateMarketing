@@ -11,6 +11,13 @@ class ProductVariation extends Model
     protected $table = "product_variations";
     protected $fillable = ['product_id', 'size', 'color', 'price', 'quantity'];
 
+    protected $casts = [
+        'price' => 'float',
+        'quantity' => 'int',
+        'product_id' => 'int',
+    ];
+
+
     public function product()
     {
         return $this->belongsTo(Product::class);
