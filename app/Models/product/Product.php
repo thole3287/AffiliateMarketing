@@ -16,7 +16,13 @@ class Product extends Model
     use HasFactory;
     protected $table = 'products';
     protected $guarded = [];
-    protected $casts = ['product_price' => 'float'];
+    protected $casts = [
+        'product_price' => 'float',
+        'category_id' => 'int',
+        'brand_id' => 'int',
+        'vendor_id' => 'int',
+        'product_quantity' => 'int'
+    ];
 
     public function category()
     {
