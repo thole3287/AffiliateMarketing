@@ -49,7 +49,9 @@ class UploadService
                 $image->move(public_path($folderName), $imageName); // Di chuyển ảnh vào thư mục public
                 $imageUrl = 'public/' . $folderName . '/' . $imageName; // Lấy đường dẫn URL của ảnh
             }
-        } elseif ($request->filled($inputNameUrl)) {
+        }
+
+        if ($request->filled($inputNameUrl)) {
             if ($checkSightengine) {
                 $imageUrl = $request->input($inputNameUrl);
                 $params = array(
@@ -128,36 +130,35 @@ class UploadService
         }
 
         if ($request->filled($inputNameUrl)) {
+            // dd($request->input($inputNameUrl));
             foreach ($request->input($inputNameUrl) as $image_url) {
-                if (filter_var($image_url, FILTER_VALIDATE_URL)) {
-                    if ($checkSightengine) {
-                        // Kiểm tra hình ảnh từ URL bằng Sightengine
-                        $params = array(
-                            'url' =>  $image_url,
-                            'models' => 'nudity-2.0,wad',
-                            'api_user' => '613442916',
-                            'api_secret' => 'WB7KoC3TpJdDFJXbj3RNijhDBx7V4tT2',
-                        );
+                if ($checkSightengine) {
+                    // Kiểm tra hình ảnh từ URL bằng Sightengine
+                    $params = array(
+                        'url' =>  $image_url,
+                        'models' => 'nudity-2.0,wad',
+                        'api_user' => '613442916',
+                        'api_secret' => 'WB7KoC3TpJdDFJXbj3RNijhDBx7V4tT2',
+                    );
 
-                        $ch = curl_init('https://api.sightengine.com/1.0/check.json?' . http_build_query($params));
-                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                        $response = curl_exec($ch);
-                        curl_close($ch);
+                    $ch = curl_init('https://api.sightengine.com/1.0/check.json?' . http_build_query($params));
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    $response = curl_exec($ch);
+                    curl_close($ch);
 
-                        $output = json_decode($response, true);
-                        if ($output['status'] === 'success' && $output['nudity']['sexual_activity'] <= 0.5) {
-                            $images[] = $image_url;
-                        } else {
-                            // Hình ảnh không phù hợp, không lưu và gửi thông báo cho người dùng
-                            return response()->json([
-                                'status' => false,
-                                'message' => 'Hình ảnh không phù hợp. Vui lòng thử lại với hình ảnh khác.'
-                            ], 400);
-                        }
-                    } else {
-                        // Không kiểm tra hình ảnh, thêm URL vào mảng
+                    $output = json_decode($response, true);
+                    if ($output['status'] === 'success' && $output['nudity']['sexual_activity'] <= 0.5) {
                         $images[] = $image_url;
+                    } else {
+                        // Hình ảnh không phù hợp, không lưu và gửi thông báo cho người dùng
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Hình ảnh không phù hợp. Vui lòng thử lại với hình ảnh khác.'
+                        ], 400);
                     }
+                } else {
+                    // Không kiểm tra hình ảnh, thêm URL vào mảng
+                    $images[] = $image_url;
                 }
             }
         }

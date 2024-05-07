@@ -82,7 +82,7 @@ class ProductsController extends Controller
 
     public function index()
     {
-        $products = Product::with(['brand', 'category', 'variations'])->where('product_status', 'active')->get();
+        $products = Product::with(['brand', 'category', 'images', 'variations', ])->where('product_status', 'active')->get();
         return response()->json(['data' => ['product' =>  $products]], Response::HTTP_OK);
     }
 
@@ -125,10 +125,13 @@ class ProductsController extends Controller
             }
         }
 
-        $product = Product::with(['brand', 'category'])->create($data);
-        $product = Product::with('brand', 'category')->find($product->id);
+        $product = Product::create($data);
         $image_detail = $this->uploadService->uploadMultipleImages($request, 'image_detail', 'image_detail_url', 'product_images', false);
-        if ($image_detail && is_string($imageUrl) || is_null($imageUrl)) {
+        // $filtered_array = array_filter($image_detail, function($value) {
+        //     return $value !== null;
+        // });
+        // dd( $image_detail);
+        if (!empty($image_detail)) {
             $saved_images = [];
             foreach ($image_detail as $image_path) {
                 $product_image = new ProductImagesModel();
@@ -137,11 +140,13 @@ class ProductsController extends Controller
                 $product_image->save();
                 $saved_images[] = $product_image->image_path;
             }
-        } else {
-            if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
-                return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
-            }
         }
+        //  else {
+        //     if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+        //         return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+        //     }
+        // }
+        $product = Product::with('brand', 'category', 'images')->find($product->id);
 
         $variationsData = []; // Mảng để lưu trữ thông tin biến thể
         if ($request->has('variations')) {
@@ -164,7 +169,6 @@ class ProductsController extends Controller
             'message' => 'New product added successfully.',
             'data' => [
                 'product' => $product,
-                'images' => $saved_images,
                 'variations' => $variationsData,
             ]
         ], Response::HTTP_CREATED);
@@ -176,7 +180,7 @@ class ProductsController extends Controller
      */
     public function show($id)
     {
-        $product = Product::with(['brand', 'category', 'variations'])->where('product_status', 'active')->find($id);
+        $product = Product::with(['brand', 'category', 'images', 'variations'])->where('product_status', 'active')->find($id);
 
         if (!$product) {
             return response()->json(['error' => 'Product not found'], Response::HTTP_NOT_FOUND);
@@ -212,7 +216,7 @@ class ProductsController extends Controller
             'variations.*.quantity' => 'nullable|integer',
         ]);
 
-        $data = $request->except(['image_detail', 'variations', 'image_detail_url']);
+        $data = $request->except(['image_detail', 'variations', 'image_detail_url' ]);
 
         $imageUrl = $this->uploadService->updateSingleImage($request, 'product_thumbbail', 'product_thumbbail_url', 'product_thumbnails', false);
         if (is_string($imageUrl)) {
@@ -221,7 +225,6 @@ class ProductsController extends Controller
         if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
             return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
         }
-
         // Update product data
         $product->update($data);
 
