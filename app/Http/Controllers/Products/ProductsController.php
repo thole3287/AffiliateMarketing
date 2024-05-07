@@ -141,11 +141,11 @@ class ProductsController extends Controller
                 $saved_images[] = $product_image->image_path;
             }
         }
-         else {
-            if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
-                return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
-            }
-        }
+        //  else {
+        //     if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+        //         return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+        //     }
+        // }
         $product = Product::with('brand', 'category', 'images')->find($product->id);
 
         $variationsData = []; // Mảng để lưu trữ thông tin biến thể
