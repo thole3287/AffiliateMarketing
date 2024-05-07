@@ -10,6 +10,7 @@ use App\Models\product\ProductImagesModel;
 use App\Models\product\ProductVariation;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class ProductsController extends Controller
@@ -82,7 +83,7 @@ class ProductsController extends Controller
     public function index()
     {
         $products = Product::with(['brand', 'category', 'variations'])->where('product_status', 'active')->get();
-        return response()->json(['data' => $products], Response::HTTP_OK);
+        return response()->json(['data' => ['product' =>  $products]], Response::HTTP_OK);
     }
 
     /**
@@ -124,12 +125,9 @@ class ProductsController extends Controller
             }
         }
 
-
-        // Create the product with images
-        $product = Product::create($data);
-
+        $product = Product::with(['brand', 'category'])->create($data);
+        $product = Product::with('brand', 'category')->find($product->id);
         $image_detail = $this->uploadService->uploadMultipleImages($request, 'image_detail', 'image_detail_url', 'product_images', false);
-        // dd( $image_detail);
         if ($image_detail && is_string($imageUrl) || is_null($imageUrl)) {
             $saved_images = [];
             foreach ($image_detail as $image_path) {
