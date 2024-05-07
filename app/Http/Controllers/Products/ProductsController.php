@@ -99,8 +99,8 @@ class ProductsController extends Controller
             'commission_percentage' => 'nullable|numeric',
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'required|exists:brands,id',
-            'product_thumbbail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Example validation for product thumbnail
-            'product_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048', 'url'], // Allow either file upload or URL
+            // 'product_thumbbail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Example validation for product thumbnail
+            // 'product_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048', 'url'], // Allow either file upload or URL
             'product_tags' => 'nullable',
             'product_slug' => 'required',
             'product_colors' => 'nullable',
@@ -141,11 +141,11 @@ class ProductsController extends Controller
                 $saved_images[] = $product_image->image_path;
             }
         }
-        //  else {
-        //     if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
-        //         return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
-        //     }
-        // }
+         else {
+            if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+                return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+            }
+        }
         $product = Product::with('brand', 'category', 'images')->find($product->id);
 
         $variationsData = []; // Mảng để lưu trữ thông tin biến thể
