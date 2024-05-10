@@ -40,10 +40,22 @@ class SyncElasticsearchDataProducts extends Command
                 'id' => $product->id,
                 'body' => $product->toArray()
 		    ];
-		    $elasticModel->getClientBuilder()->index($params);
-            // $response = $client->update($params);
-            // dd( $response );
-            // $elasticModel->getClientBuilder()->update($params);
+
+            //  $params = [
+            //     'index' => 'products',
+            //     'type' => '_search',
+            //     'body'  => [
+            //         'query' => [
+            //             'terms' => [
+            //                 '_id' => [1,2,3]
+            //             ]
+            //         ],
+            //         'size'     => 10000,
+            //     ]
+            // ];
+
+            // dd($params);
+            $elasticModel->getClientBuilder()->index($params);
             // Mark the product as synced
             $product->sync_es = 'yes';
             $product->save();
