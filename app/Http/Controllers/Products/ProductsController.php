@@ -494,7 +494,9 @@ class ProductsController extends Controller
         // Xóa hình ảnh sản phẩm
         if ($product->product_thumbbail) {
             $imagePath = str_replace(asset(''), '', $product->product_thumbbail); // Lấy đường dẫn tương đối
-            File::delete($imagePath);
+            if (File::exists($imagePath)) {
+                File::delete($imagePath);
+            }
         }
 
         // Xóa tất cả biến thể của sản phẩm
@@ -505,7 +507,9 @@ class ProductsController extends Controller
             foreach ($product_image as $image) {
                 if (!filter_var($image, FILTER_VALIDATE_URL)) {
                     $imagePath = str_replace(asset(''), '', $image->image_path); // Lấy đường dẫn tương đối
-                    File::delete($imagePath);
+                    if (File::exists($imagePath)) {
+                        File::delete($imagePath);
+                    }
                 }
             }
         }
