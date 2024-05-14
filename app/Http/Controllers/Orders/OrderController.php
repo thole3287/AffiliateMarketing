@@ -10,6 +10,7 @@ use App\Models\OrderItems;
 use App\Models\product\Product;
 use App\Models\product\ProductVariation;
 use App\Models\ProductOffer;
+use App\Models\Referral;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -70,9 +71,9 @@ class OrderController extends Controller
 
         // Check if coupon code is provided and valid
         $coupon = Coupon::where('coupon_code', $request->coupon_code)
-                        ->where('coupon_status', 1)
-                        ->where('expiration_date', '>', now())
-                        ->first();
+            ->where('coupon_status', 1)
+            ->where('expiration_date', '>', now())
+            ->first();
 
         if ($coupon) {
             $totalAmount -= $coupon->discount_amount;
@@ -114,18 +115,25 @@ class OrderController extends Controller
             $orderItem->quantity = $product['quantity'];
             // $orderItem->product_price = $product1->product_price;
             $orderItem->product_price = $productPrice;
-            $orderItem->affiliate_link = $product['affiliate_link']; // ID của người dùng chia sẻ liên kết
-
 
             $orderItem->save();
             $orderData[] = $orderItem;
-            $affiliateLink = AffiliateLink::where('id', $product['affiliate_link'])->first();
-            if ($affiliateLink) {
-                $affiliateUser = User::find($affiliateLink->user_id);
-                $affiliateUser->balance += $product1->commission_amount;
-                $affiliateUser->save();
-            }
 
+            if ($request->filled('referral_user_id')) {
+                $referral = new Referral([
+                    'user_id' => $request->referral_user_id,
+                    'product_id' => $product1->id,
+                    'order_id' => $order->id,
+                    'commission_percentage' => $product1->commission_percentage,
+                    'commission_amount' => $productPrice * ($product1->commission_percentage / 100) * $product['quantity'],
+                ]);
+                $referral->save();
+
+                // Cập nhật total_commission cho người dùng
+                $user = User::find($request->referral_user_id);
+                $user->total_commission = ($user->total_commission ?? 0) + $referral->commission_amount;
+                $user->save();
+            }
         }
         return response()->json([
             'message' => 'Order placed successfully',

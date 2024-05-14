@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
-    use HasFactory;
 
     protected $fillable = [
         'user_id',
@@ -19,6 +18,10 @@ class Order extends Model
         'payment_method',
         'payment_status',
         'note'
+    ];
+    protected $casts = [
+        'user_id' => 'int',
+        'total_amount' => 'float'
     ];
 
     public function user()
