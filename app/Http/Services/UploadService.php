@@ -34,7 +34,7 @@ class UploadService
                 // Kiểm tra kết quả từ API
                 if ($output['status'] === 'success' && $output['nudity']['sexual_activity'] <= 0.5) {
                     // Nếu hình ảnh không chứa nội dung không phù hợp, lưu hình ảnh vào thư mục và cơ sở dữ liệu
-                    $image->storeAs('/public/' . $folderName . '/', $imageName);
+                    $image->storeAs('/public/storage/' . $folderName . '/', $imageName);
                     $imageUrl = asset('/storage/' . $folderName . '/' . $imageName);
                 } else {
                     // Nếu hình ảnh chứa nội dung không phù hợp, không lưu và gửi thông báo cho người dùng
@@ -46,7 +46,7 @@ class UploadService
             } else {
                 $image = $request->file($inputNameFile);
                 $imageName = time() . '_' . $image->getClientOriginalName();
-                $image->storeAs('/public/' . $folderName . '/', $imageName);
+                $image->storeAs('/public/storage/' . $folderName . '/', $imageName);
                 $imageUrl = asset('/storage/' . $folderName . '/' . $imageName);
             }
         }
@@ -110,7 +110,7 @@ class UploadService
                     // Kiểm tra kết quả từ API
                     if ($output['status'] === 'success' && $output['nudity']['sexual_activity'] <= 0.5) {
                         $imageName = time() . '_' . $image->getClientOriginalName();
-                        $image->storeAs('/public/' . $folderName . '/', $imageName);
+                        $image->storeAs('/public/storage/' . $folderName . '/', $imageName);
                         $images[] = asset('/storage/' . $folderName . '/' . $imageName);
                     } else {
                         // Hình ảnh không phù hợp, không lưu và gửi thông báo cho người dùng
@@ -124,7 +124,7 @@ class UploadService
                     $imageName = time() . '_' . $image->getClientOriginalName();
                     // $image->storeAs('public/' . $folderName, $imageName);
                     // $images[] = 'public/' . $folderName . '/' . $imageName;
-                    $image->storeAs('/public/' . $folderName . '/', $imageName);
+                    $image->storeAs('/public/storage/' . $folderName . '/', $imageName);
                     $images[] = asset('/storage/' . $folderName . '/' . $imageName);
                 }
             }
