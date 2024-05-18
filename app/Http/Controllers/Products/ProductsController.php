@@ -146,17 +146,16 @@ class ProductsController extends Controller
 
         ]);
 
-        $data = $request->except(['image_detail', 'variations', 'image_detail_url']);
+        $data = $request->except(['image_detail', 'variations', 'image_detail_url', 'product_thumbbail_url']);
         // Upload and save product thumbnail
         $imageUrl = $this->uploadService->updateSingleImage($request, 'product_thumbbail', 'product_thumbbail_url', 'product_thumbnails', false);
-        if (is_string($imageUrl) || is_null($imageUrl)) {
+        if (!empty($imageUrl)) {
             $data['product_thumbbail'] = $imageUrl;
         } else {
             if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
                 return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
             }
         }
-
         $product = Product::create($data);
         $image_detail = $this->uploadService->uploadMultipleImages($request, 'image_detail', 'image_detail_url', 'product_images', false);
         // $filtered_array = array_filter($image_detail, function($value) {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Orders;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendOrderEmail;
 use App\Models\AffiliateLink;
 use App\Models\Coupon;
 use App\Models\Order;
@@ -15,6 +16,8 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Mail\OrderPlaced;
+use Illuminate\Support\Facades\Mail;
 
 
 class OrderController extends Controller
@@ -90,6 +93,7 @@ class OrderController extends Controller
             'order_date' => now(),
             'note' =>  $request->note
         ]);
+        $order = Order::with('user')->find($order->id);
         $orderData = [];
         foreach ($request->products as $product) {
             $product1 = Product::findOrFail($product['product_id']);
@@ -117,7 +121,8 @@ class OrderController extends Controller
             $orderItem->product_price = $productPrice;
 
             $orderItem->save();
-            $orderData[] = $orderItem;
+            $orderData[] = OrderItems::with(['product', 'productVariation'])->find($orderItem->id);
+            // $orderData[] = $orderItem;
 
             if ($request->filled('referral_user_id')) {
                 $referral = new Referral([
@@ -135,6 +140,13 @@ class OrderController extends Controller
                 $user->save();
             }
         }
+        // dd($orderData);
+        // Send email
+        $user = User::find($request->user_id);
+        // dispatch(new SendOrderEmail($order, $orderData, $user->email));
+
+        Mail::to($user->email)->send(new OrderPlaced($order, $orderData));
+
         return response()->json([
             'message' => 'Order placed successfully',
             'order' => $order,
@@ -178,5 +190,47 @@ class OrderController extends Controller
                 'msg' => 'No orders were found for this user!!!'
             ], Response::HTTP_NOT_FOUND);
         }
+    }
+
+    /**
+     * Get top selling products
+     *
+     * @param int $limit
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getTopSellingProducts($limit = 10)
+    {
+        $topProducts = OrderItems::selectRaw('product_id, sum(quantity) as total_quantity')
+            ->groupBy('product_id')
+            ->orderByDesc('total_quantity')
+            ->limit($limit)
+            ->with('product')
+            ->get();
+
+        return response()->json([
+            'top_selling_products' => $topProducts,
+        ]);
+    }
+
+    /**
+     * Get related products for a given product
+     *
+     * @param int $productId
+     * @param int $limit
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRelatedProducts($productId, $limit = 10)
+    {
+        $product = Product::findOrFail($productId);
+        $categoryId = $product->category_id;
+
+        $relatedProducts = Product::where('category_id', $categoryId)
+            ->where('id', '!=', $productId)
+            ->limit($limit)
+            ->get();
+
+        return response()->json([
+            'related_products' => $relatedProducts,
+        ]);
     }
 }

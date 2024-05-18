@@ -50,6 +50,7 @@ class UploadService
                 $imageUrl = asset('/public/' . $folderName . '/' . $imageName);
             }
         }
+
         if ($request->filled($inputNameUrl)) {
             if ($checkSightengine) {
                 $imageUrl = $request->input($inputNameUrl);
@@ -80,7 +81,7 @@ class UploadService
                 $imageUrl = $request->input($inputNameUrl);
             }
         }
-
+        // dd($imageUrl);
         return $imageUrl; // Trả về đường dẫn URL của ảnh
     }
 

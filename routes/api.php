@@ -53,6 +53,8 @@ Route::resource('brands', BrandController::class);
 Route::apiResource('coupons', CouponController::class);
 
 Route::get('/search-products', [ProductsController::class, 'search']);
+Route::get('related-product/{product}', [OrderController::class, 'getRelatedProducts']);
+Route::get('order/best-seller/', [OrderController::class, 'getTopSellingProducts']);
 
 
 // Route::resource('categories', CategoryController::class)->only(['show', 'index']);
