@@ -127,7 +127,7 @@ class ProductsController extends Controller
             'product_price_import' => 'required|numeric',
             'commission_percentage' => 'nullable|numeric',
             'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'required|exists:brands,id',
+            // 'brand_id' => 'required|exists:brands,id',
             // 'product_thumbbail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Example validation for product thumbnail
             // 'product_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048', 'url'], // Allow either file upload or URL
             'product_tags' => 'nullable',
@@ -284,7 +284,7 @@ class ProductsController extends Controller
             'product_price_import' => 'required|numeric',
             'commission_percentage' => 'nullable|numeric',
             'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'required|exists:brands,id',
+            // 'brand_id' => 'required|exists:brands,id',
             'product_tags' => 'nullable',
             'product_slug' => 'required',
             'product_colors' => 'nullable',
