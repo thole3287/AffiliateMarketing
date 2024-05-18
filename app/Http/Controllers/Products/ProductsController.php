@@ -84,38 +84,21 @@ class ProductsController extends Controller
     public function index()
     {
         $products = Product::with(['brand', 'category', 'images', 'variations',])->get();
+        $transformedProducts = $products->map(function ($product) {
+            // Extract attributes from variations
+            $attributes = $product->variations->map(function ($variation) {
+                return $variation->attributes;
+            });
 
-        $uniqueAttributes = [];
-        // Lấy tất cả các thuộc tính từ cột attributes
-        $attributes = ProductVariation::whereNotNull('attributes')->pluck('attributes')->toArray();
+            // Convert attributes collection to array
+            $attributesArray = $attributes->toArray();
 
-        // Lặp qua từng đối tượng thuộc tính
-        foreach ($attributes as $attribute) {
-            // Lặp qua từng cặp key-value trong từng đối tượng thuộc tính
-            foreach ($attribute as $key => $value) {
-                // Kiểm tra xem key đã tồn tại trong mảng uniqueAttributes chưa
-                if (!array_key_exists($key, $uniqueAttributes)) {
-                    $uniqueAttributes[$key] = [];
-                }
-                // Nếu giá trị chưa tồn tại trong mảng uniqueAttributes thì thêm vào
-                if (!in_array($value, $uniqueAttributes[$key])) {
-                    $uniqueAttributes[$key][] = $value;
-                }
-            }
-        }
+            // Add the attributes array to the product
+            $product->attributes = $attributesArray;
 
-        // Sắp xếp các giá trị
-        foreach ($uniqueAttributes as &$values) {
-            sort($values);
-        }
-
-        // Thêm thuộc tính 'attributes' vào mỗi đối tượng Product
-        $products = $products->map(function ($product) use ($uniqueAttributes) {
-            $product->attributes = $uniqueAttributes;
             return $product;
         });
-        // $uniqueAttributes
-        return response()->json(['data' => ['product' =>  $products]], Response::HTTP_OK);
+        return response()->json(['data' => ['product' =>  $transformedProducts->toArray()]], Response::HTTP_OK);
     }
 
     /**
