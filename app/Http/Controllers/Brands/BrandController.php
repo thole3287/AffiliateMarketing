@@ -46,11 +46,12 @@ class BrandController extends Controller
             ]);
             return response()->json(['data' => $brand], 201);
 
-        }else{
-            if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
-                return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
-            }
         }
+        // else{
+        //     if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+        //         return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+        //     }
+        // }
 
     }
 
@@ -97,12 +98,13 @@ class BrandController extends Controller
 
             return response()->json(['data' => $brand]);
 
-        }else
-        {
-            if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
-                return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
-            }
         }
+        // else
+        // {
+        //     if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+        //         return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+        //     }
+        // }
 
 
     }

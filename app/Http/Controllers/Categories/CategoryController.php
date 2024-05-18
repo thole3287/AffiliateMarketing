@@ -255,11 +255,12 @@ class CategoryController extends Controller
                 'image' => $imageUrl,
             ]);
             return response()->json(['data' => $category], 201);
-        } else {
-            if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
-                return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
-            }
         }
+        // else {
+        //     if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+        //         return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+        //     }
+        // }
     }
 
     // Update a category by ID
@@ -285,11 +286,12 @@ class CategoryController extends Controller
             ]);
 
             return response()->json(['category' => $category], 200);
-        } else {
-            if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
-                return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
-            }
         }
+        // else {
+        //     if ($imageUrl->getStatusCode() === 400 && !$imageUrl->getData()->status) {
+        //         return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
+        //     }
+        // }
     }
 
     public function destroy($id)
