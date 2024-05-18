@@ -210,42 +210,37 @@ class ProductsController extends Controller
      */
     public function show($id)
     {
-        $product = Product::with(['brand', 'category', 'images', 'variations'])->where('product_status', 'active')->find($id);
+        $product = Product::with(['brand', 'category', 'images', 'variations'])->find($id);
 
         if (!$product) {
             return response()->json(['error' => 'Product not found'], Response::HTTP_NOT_FOUND);
         }
 
-        $uniqueAttributes = [];
+        $attributes = [];
 
-        // Lấy tất cả các thuộc tính từ cột attributes
-        $attributes = ProductVariation::whereNotNull('attributes')->pluck('attributes')->toArray();
-
-        // Lặp qua từng đối tượng thuộc tính
-        foreach ($attributes as $attribute) {
-            // Lặp qua từng cặp key-value trong từng đối tượng thuộc tính
-            foreach ($attribute as $key => $value) {
-                // Kiểm tra xem key đã tồn tại trong mảng uniqueAttributes chưa
-                if (!array_key_exists($key, $uniqueAttributes)) {
-                    $uniqueAttributes[$key] = [];
-                }
-                // Nếu giá trị chưa tồn tại trong mảng uniqueAttributes thì thêm vào
-                if (!in_array($value, $uniqueAttributes[$key])) {
-                    $uniqueAttributes[$key][] = $value;
+        // Ensure variations is an array or an object
+        if (!empty($product->variations) && (is_array($product->variations) || is_object($product->variations))) {
+            // Loop through each variation to collect attribute values
+            foreach ($product->variations as $variation) {
+                // Ensure attributes is an array or an object
+                if (!empty($variation->attributes) && (is_array($variation->attributes) || is_object($variation->attributes))) {
+                    foreach ($variation->attributes as $key => $value) {
+                        if (!isset($attributes[$key])) {
+                            $attributes[$key] = [];
+                        }
+                        if (!in_array($value, $attributes[$key])) {
+                            $attributes[$key][] = $value;
+                        }
+                    }
                 }
             }
         }
 
-        // Sắp xếp các giá trị
-        foreach ($uniqueAttributes as &$values) {
-            sort($values);
-        }
-
-        // Gán mảng thuộc tính unique vào thuộc tính 'attributes' của sản phẩm
-        $product->attributes = $uniqueAttributes;
+        // Add the attributes array to the product
+        $product->attributes = $attributes;
 
         // Trả về dữ liệu JSON
-        return response()->json(['data' => ['product' => $product]], Response::HTTP_OK);
+        return response()->json(['data' => ['product' =>  $product->toArray()]], Response::HTTP_OK);
     }
 
     /**
