@@ -174,7 +174,7 @@ class ProductsController extends Controller
         //         return response()->json(['error' => $imageUrl->getData()->message], $imageUrl->getStatusCode());
         //     }
         // }
-        $product = Product::with('brand', 'category', 'images')->find($product->id);
+
 
         $variationsData = []; // Mảng để lưu trữ thông tin biến thể
         if ($request->has('variations')) {
@@ -195,6 +195,30 @@ class ProductsController extends Controller
                 }
             }
         }
+        $product = Product::with('brand', 'category', 'images', 'variations')->find($product->id);
+        $attributes = [];
+
+        // Ensure variations is an array or an object
+        if (!empty($product->variations) && (is_array($product->variations) || is_object($product->variations))) {
+            // Loop through each variation to collect attribute values
+            foreach ($product->variations as $variation) {
+                // Ensure attributes is an array or an object
+                if (!empty($variation->attributes) && (is_array($variation->attributes) || is_object($variation->attributes))) {
+                    foreach ($variation->attributes as $key => $value) {
+                        if (!isset($attributes[$key])) {
+                            $attributes[$key] = [];
+                        }
+                        if (!in_array($value, $attributes[$key])) {
+                            $attributes[$key][] = $value;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Add the attributes array to the product
+        $product->attributes = $attributes;
+
         return response()->json([
             'message' => 'New product added successfully.',
             'data' => [
@@ -272,7 +296,7 @@ class ProductsController extends Controller
             'variations.*.quantity' => 'nullable|integer',
         ]);
 
-        $data = $request->except(['image_detail', 'variations', 'image_detail_url']);
+        $data = $request->except(['image_detail', 'variations', 'image_detail_url', 'product_thumbbail_url']);
         $imageUrl = $this->uploadService->updateSingleImage($request, 'product_thumbbail', 'product_thumbbail_url', 'product_thumbnails', false);
         // dd( $imageUrl);
         if (is_string($imageUrl) || is_null($imageUrl)) {
@@ -283,7 +307,6 @@ class ProductsController extends Controller
         // }
         // Cập nhật thông tin sản phẩm
         $product->update($data);
-        $product = Product::with('brand', 'category', 'images')->find($product->id);
         // Cập nhật hình ảnh chi tiết nếu có
         $image_detail = $this->uploadService->uploadMultipleImages($request, 'image_detail', 'image_detail_url', 'product_images', false);
         // dd( $image_detail);
@@ -319,6 +342,29 @@ class ProductsController extends Controller
                 }
             }
         }
+        $product = Product::with('brand', 'category', 'images' ,'variations')->find($product->id);
+        $attributes = [];
+
+        // Ensure variations is an array or an object
+        if (!empty($product->variations) && (is_array($product->variations) || is_object($product->variations))) {
+            // Loop through each variation to collect attribute values
+            foreach ($product->variations as $variation) {
+                // Ensure attributes is an array or an object
+                if (!empty($variation->attributes) && (is_array($variation->attributes) || is_object($variation->attributes))) {
+                    foreach ($variation->attributes as $key => $value) {
+                        if (!isset($attributes[$key])) {
+                            $attributes[$key] = [];
+                        }
+                        if (!in_array($value, $attributes[$key])) {
+                            $attributes[$key][] = $value;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Add the attributes array to the product
+        $product->attributes = $attributes;
 
         // Trả về thông tin sản phẩm sau khi cập nhật thành công
         return response()->json([
