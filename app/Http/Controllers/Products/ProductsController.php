@@ -83,21 +83,35 @@ class ProductsController extends Controller
 
     public function index()
     {
-        $products = Product::with(['brand', 'category', 'images', 'variations',])->get();
-        $transformedProducts = $products->map(function ($product) {
-            // Extract attributes from variations
-            $attributes = $product->variations->map(function ($variation) {
-                return $variation->attributes;
-            });
+        $products = Product::with(['brand', 'category', 'images', 'variations'])->get();
 
-            // Convert attributes collection to array
-            $attributesArray = $attributes->toArray();
+        $transformedProducts = $products->map(function ($product) {
+            $attributes = [];
+
+            // Ensure variations is an array
+            if (!empty($product->variations) && is_array($product->variations) || is_object($product->variations)) {
+                // Loop through each variation to collect attribute values
+                foreach ($product->variations as $variation) {
+                    // Ensure attributes is an array
+                    if (!empty($variation->attributes) && is_array($variation->attributes) || is_object($variation->attributes)) {
+                        foreach ($variation->attributes as $key => $value) {
+                            if (!isset($attributes[$key])) {
+                                $attributes[$key] = [];
+                            }
+                            if (!in_array($value, $attributes[$key])) {
+                                $attributes[$key][] = $value;
+                            }
+                        }
+                    }
+                }
+            }
 
             // Add the attributes array to the product
-            $product->attributes = $attributesArray;
+            $product->attributes = $attributes;
 
             return $product;
         });
+
         return response()->json(['data' => ['product' =>  $transformedProducts->toArray()]], Response::HTTP_OK);
     }
 
