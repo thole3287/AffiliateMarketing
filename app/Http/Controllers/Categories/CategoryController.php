@@ -244,13 +244,15 @@ class CategoryController extends Controller
             'name' => 'required',
             'parent_id' => 'nullable|exists:categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048', // Kiểm tra loại và kích thước file ảnh
-            'image_url' => 'nullable|url', // Kiểm tra định dạng URL
+            'image_url' => 'nullable', // Kiểm tra định dạng URL
         ]);
 
         $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'categories', false);
         if (is_string($imageUrl) || is_null($imageUrl)) {
             $category = Category::create([
                 'name' => $request->input('name'),
+                'slug' => $request->input('slug'),
+                'status' =>  $request->input('status'),
                 'parent_id' => $request->input('parent_id'),
                 'image' => $imageUrl,
             ]);
@@ -271,16 +273,18 @@ class CategoryController extends Controller
             'name' => 'required',
             'parent_id' => 'nullable|exists:categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-            'image_url' => 'nullable|url',
+            'image_url' => 'nullable',
         ]);
 
         $category = Category::findOrFail($id);
-
+        // dd($request->input('status'));
         // Kiểm tra xem người dùng đã cung cấp file ảnh hay URL
         $imageUrl = $this->uploadService->updateSingleImage($request, 'image', 'image_url', 'categories', false);
         if (is_string($imageUrl) || is_null($imageUrl)) {
             $category->update([
                 'name' => $request->input('name'),
+                'slug' => $request->input('slug'),
+                'status' =>  $request->input('status'),
                 'parent_id' => $request->input('parent_id'),
                 'image' => $imageUrl,
             ]);

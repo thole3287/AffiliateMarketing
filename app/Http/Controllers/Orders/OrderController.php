@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Orders;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendOrderCancelledEmailJob;
 use App\Jobs\SendOrderEmail;
+use App\Mail\OrderCancelled;
 use App\Models\AffiliateLink;
 use App\Models\Coupon;
 use App\Models\Order;
@@ -77,9 +79,11 @@ class OrderController extends Controller
             ->where('coupon_status', 1)
             ->where('expiration_date', '>', now())
             ->first();
-
+        $discount = 0;
         if ($coupon) {
-            $totalAmount -= $coupon->discount_amount;
+            $discount = $coupon->discount_amount;
+            $totalAmount -= $discount;
+
             // You might want to handle negative totalAmount here if discount exceeds the total
             $totalAmount = max(0, $totalAmount);
         }
@@ -95,6 +99,8 @@ class OrderController extends Controller
         ]);
         $order = Order::with('user')->find($order->id);
         $orderData = [];
+        $subtotal = 0;
+
         foreach ($request->products as $product) {
             $product1 = Product::findOrFail($product['product_id']);
             $variation = $product1->variations()->find((int)$product['variation_id']);
@@ -103,7 +109,6 @@ class OrderController extends Controller
 
             // Check if product has any offer
             $productOffer = ProductOffer::where('offer_product_id', $product1->id)->first();
-
             // If product has offer, adjust product price accordingly
             if ($productOffer) {
                 if ($productOffer->hot_deal) {
@@ -123,6 +128,7 @@ class OrderController extends Controller
             $orderItem->save();
             $orderData[] = OrderItems::with(['product', 'productVariation'])->find($orderItem->id);
             // $orderData[] = $orderItem;
+            $subtotal += $productPrice * $product['quantity'];
 
             if ($request->filled('referral_user_id')) {
                 $referral = new Referral([
@@ -150,8 +156,36 @@ class OrderController extends Controller
         return response()->json([
             'message' => 'Order placed successfully',
             'order' => $order,
-            'order_detail' =>  $orderData
+            'order_detail' =>  $orderData,
+            'subtotal' => $subtotal,
+            'discount' => $discount
         ], Response::HTTP_CREATED);
+    }
+
+    public function cancelOrder(Request $request, Order $order)
+    {
+        // Kiểm tra xem đơn hàng đã được thanh toán hay chưa
+        if ($order->payment_status === 'paid') {
+            // Xử lý logic hủy đơn hàng đã thanh toán (nếu cần)
+            return response()->json(['message' => 'Đơn hàng đã được thanh toán, không thể hủy.'], 400);
+        }
+        if($order->payment_status === 'shipping')
+        {
+            return response()->json(['message' => 'Đơn hàng đã được vận chuyển, không thể hủy.'], 400);
+        }
+
+        // Cập nhật trạng thái đơn hàng thành "cancelled"
+        $order->update(['payment_status' => 'cancelled']);
+
+        // Gửi email thông báo hủy đơn hàng
+        // $user = $order->user;
+        // $user = User::find($order->user_id);
+
+        // SendOrderCancelledEmailJob::dispatch($order, $user->email);
+
+        // Mail::to($user->email)->send(new OrderCancelled($order));
+
+        return response()->json(['message' => 'Đơn hàng đã được hủy thành công.']);
     }
 
     public function getOrderHistory(Request $request)

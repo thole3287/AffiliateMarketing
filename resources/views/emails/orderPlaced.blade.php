@@ -239,7 +239,7 @@
                 <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                  <tr>
                   <td class="pc-w620-spacing-0-0-28-0" align="center" valign="top" style="padding: 0px 0px 32px 0px;">
-                   <img src="{{asset('emails_img/image-17156197629350.png')}}" class="" width="164" height="32" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:164px; height: auto; max-width: 100%;" />
+                   <img src="{{$message->embed(asset('public/emails_img/image-17156197629350.png'))}}" class="" width="164" height="32" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:164px; height: auto; max-width: 100%;" />
                   </td>
                  </tr>
                 </table>
@@ -510,7 +510,7 @@
                 <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                  <tr>
                   <td valign="top">
-                   <img src="{{asset('emails_img/image-17156197629361.png')}}" class="" width="600" height="auto" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:100%; height: auto;" />
+                   <img src="{{asset('public/emails_img/image-17156197629361.png')}}" class="" width="600" height="auto" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:100%; height: auto;" />
                   </td>
                  </tr>
                 </table>
@@ -571,6 +571,7 @@
                     <tbody>
 
                 @foreach ($orderItems as $item)
+                {{-- @dd($item); --}}
                      <tr>
                       <td width="86" align="left" valign="middle" style="padding: 0px 0px 0px 0px;">
                        <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
@@ -672,7 +673,7 @@
                            <tr>
                             <td valign="top" class="pc-w620-align-right" align="right" style="padding: 0px 0px 0px 0px;">
                              <div class="pc-font-alt pc-w620-align-right pc-w620-fontSize-16 pc-w620-lineHeight-26" style="line-height: 28px; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 500; font-variant-ligatures: normal; color: #19110d; text-align: right; text-align-last: right;">
-                              <div><span>$500.10</span>
+                              <div><span>{{$subtotal}}</span>
                               </div>
                              </div>
                             </td>
@@ -863,7 +864,7 @@
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                                          <tr>
                                           <td align="left" valign="top">
-                                           <img src="image-17156197629724.png" class="" width="38" height="38" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:38px; height:38px;" />
+                                           <img src="{{$message->embed(asset('public/emails_img/image-17156197629724.png'))}}" class="" width="38" height="38" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:38px; height:38px;" />
                                           </td>
                                          </tr>
                                         </table>
@@ -952,7 +953,7 @@
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                                          <tr>
                                           <td align="left" valign="top">
-                                           <img src="images/image-17156197630725.png" class="" width="38" height="38" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:38px; height:38px;" />
+                                           <img src="{{$message->embed(asset('public/emails_img/image-17156197630725.png'))}}" class="" width="38" height="38" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:38px; height:38px;" />
                                           </td>
                                          </tr>
                                         </table>
@@ -1051,7 +1052,7 @@
                       <table class="pc-w620-width-fill" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: separate; border-spacing: 0; width: 100%;">
                        <tr>
                         <!--[if !gte mso 9]><!-- -->
-                        <td class="pc-w620-padding-30-20-20-20 pc-w620-halign-center pc-w620-valign-middle" align="center" valign="top" background="images/image-17156197631806.png" style="padding: 30px 30px 30px 30px; background-size: cover; background-position: 50% 0; background-repeat: no-repeat; background-color: #1a110c; border-radius: 40px 40px 40px 40px;">
+                        <td class="pc-w620-padding-30-20-20-20 pc-w620-halign-center pc-w620-valign-middle" align="center" valign="top" background="{{$message->embed(asset('public/emails_img/image-17156197631806.png'))}}" style="padding: 30px 30px 30px 30px; background-size: cover; background-position: 50% 0; background-repeat: no-repeat; background-color: #1a110c; border-radius: 40px 40px 40px 40px;">
                          <!--<![endif]-->
                          <!--[if gte mso 9]>
                 <td class="pc-w620-padding-30-20-20-20 pc-w620-halign-center pc-w620-valign-middle" align="center" valign="top" background="images/image-17156197631806.png" style="background-size: cover; background-position: 50% 0; background-repeat: no-repeat; background-color: #1a110c; border-radius: 40px 40px 40px 40px;">
@@ -1261,7 +1262,7 @@
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                                          <tr>
                                           <td class="pc-w620-halign-center" align="left" valign="top">
-                                           <img src="images/image-17156197632787.png" class="pc-w620-width-60 pc-w620-height-60 pc-w620-align-center" width="80" height="80" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:80px; height:80px; border-radius: 8px;" />
+                                           <img src="{{$message->embed(asset('public/emails_img/image-17156197632787.png'))}}" class="pc-w620-width-60 pc-w620-height-60 pc-w620-align-center" width="80" height="80" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:80px; height:80px; border-radius: 8px;" />
                                           </td>
                                          </tr>
                                         </table>
@@ -1306,7 +1307,7 @@
                                             <tr>
                                              <td valign="top" class="pc-w620-align-center" align="left">
                                               <div class="pc-font-alt pc-w620-align-center" style="line-height: 143%; letter-spacing: -0px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 15px; font-weight: normal; font-variant-ligatures: normal; color: #585858; text-align: left; text-align-last: left;">
-                                               <div><span>Feel free to reach out to us at </span><span style="font-weight: 600;font-style: normal;color: rgb(26, 17, 12);">partner@sweetshop.sweet</span><span> </span>
+                                               <div><span>Feel free to reach out to us at </span><span style="font-weight: 600;font-style: normal;color: rgb(26, 17, 12);">letruongthoo2k2.id.vn</span><span> </span>
                                                </div>
                                                <div><span>We open opportunities for all forms of business collaboration</span>
                                                </div>
@@ -1387,7 +1388,7 @@
                 <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                  <tr>
                   <td class="pc-w620-spacing-0-0-20-0" align="center" valign="top" style="padding: 0px 0px 20px 0px;">
-                   <img src="images/image-17156197632989.png" class="" width="164" height="32" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:164px; height: auto; max-width: 100%;" />
+                   <img src="{{$message->embed(asset('public/emails_img/image-17156197629350.png'))}}" class="" width="164" height="32" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:164px; height: auto; max-width: 100%;" />
                   </td>
                  </tr>
                 </table>
