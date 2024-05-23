@@ -56,6 +56,7 @@ Route::get('/search-products', [ProductsController::class, 'search']);
 Route::get('related-product/{product}', [OrderController::class, 'getRelatedProducts']);
 Route::get('order/best-seller/', [OrderController::class, 'getTopSellingProducts']);
 Route::post('/orders/{order}/cancel', [OrderController::class, 'cancelOrder']);
+Route::post('products/import-excel', [ProductsController::class, 'import']);
 
 
 

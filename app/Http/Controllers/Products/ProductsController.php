@@ -13,6 +13,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ProductsImport;
 
 class ProductsController extends Controller
 {
@@ -377,9 +379,6 @@ class ProductsController extends Controller
         ], Response::HTTP_OK);
     }
 
-
-
-    // public function update(Request $request, Product $product)
     // {
     //     $request->validate([
     //         'product_name' => 'required|string',
@@ -555,5 +554,27 @@ class ProductsController extends Controller
         $product->delete();
 
         return response()->json(['message' => 'Product deleted successfully'], Response::HTTP_OK);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls',
+        ]);
+
+        try {
+            $import = new ProductsImport();
+            Excel::import($import, $request->file('file'));
+
+            return response()->json([
+                'message' => 'Products imported successfully.',
+                'data' => $import->getData(),
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error importing products.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
