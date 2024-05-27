@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
     ];
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('app:sync-elasticsearch-data-products')->everyFiveMinutes();
+        $schedule->command('app:sync-elasticsearch-data-products')->everyMinute();
         // $schedule->command('app:query-elastic-search')->everyFiveMinutes();
 
     }
