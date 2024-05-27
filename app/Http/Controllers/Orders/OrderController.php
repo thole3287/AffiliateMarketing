@@ -24,6 +24,14 @@ use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
+    public function index()
+    {
+        $orders = Order::with('user', 'orderItems.product', 'orderItems.productVariation')->get();
+
+        return response()->json([
+            'orders' => $orders
+        ]);
+    }
     public function getOrders(Request $request)
     {
         $request->validate([
@@ -73,7 +81,7 @@ class OrderController extends Controller
             'payment_status' => 'required|string|in:pending,paid,failed',
         ]);
         $totalAmount = $request->total_amount;
-
+        $originalTotalAmount = $totalAmount;
         // Check if coupon code is provided and valid
         $coupon = Coupon::where('coupon_code', $request->coupon_code)
             ->where('coupon_status', 1)
@@ -87,6 +95,8 @@ class OrderController extends Controller
             // You might want to handle negative totalAmount here if discount exceeds the total
             $totalAmount = max(0, $totalAmount);
         }
+         // Calculate discount percentage
+        $discountPercentage = ($originalTotalAmount > 0) ? ($discount / $originalTotalAmount) * 100 : 0;
         $order = Order::create([
             'user_id' => $request->user_id,
             'shipping_address' => $request->shipping_address,
@@ -116,7 +126,7 @@ class OrderController extends Controller
                 }
                 // Add more conditions for other types of offers if needed
             }
-
+            // dd($variation);
             $orderItem = new OrderItems();
             $orderItem->order_id = $order->id;
             $orderItem->product_id =  $product1->id;
@@ -146,19 +156,19 @@ class OrderController extends Controller
                 $user->save();
             }
         }
-        // dd($orderData);
+        // dd($subtotal,  $discount, $discountPercentage);
         // Send email
         $user = User::find($request->user_id);
         // dispatch(new SendOrderEmail($order, $orderData, $user->email));
 
-        Mail::to($user->email)->send(new OrderPlaced($order, $orderData));
+        Mail::to($user->email)->send(new OrderPlaced($order, $orderData, $discount, $subtotal, $discountPercentage));
 
         return response()->json([
             'message' => 'Order placed successfully',
             'order' => $order,
             'order_detail' =>  $orderData,
             'subtotal' => $subtotal,
-            'discount' => $discount
+            'discount' => $discount,
         ], Response::HTTP_CREATED);
     }
 

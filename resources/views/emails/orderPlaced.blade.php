@@ -571,7 +571,7 @@
                     <tbody>
 
                 @foreach ($orderItems as $item)
-                {{-- @dd($item); --}}
+                {{-- @dd($item->productVariation->attributes); --}}
                      <tr>
                       <td width="86" align="left" valign="middle" style="padding: 0px 0px 0px 0px;">
                        <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
@@ -606,7 +606,12 @@
                            <tr>
                             <td valign="top" class="pc-w620-align-left" align="left" style="padding: 0px 0px 0px 0px;">
                              <div class="pc-font-alt pc-w620-align-left" style="line-height: 24px; letter-spacing: -0px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: normal; font-variant-ligatures: normal; color: #2a1e19cc; text-align: left; text-align-last: left;">
-                              <div><span>Healty, gluten, free snack</span>
+                              <div>
+                                <span>
+                                    @foreach($item->productVariation->attributes as $key => $value)
+                                        {{ ucfirst($key) }}: {{ $value }}@if(!$loop->last), @endif
+                                    @endforeach
+                                </span>
                               </div>
                              </div>
                             </td>
@@ -655,7 +660,7 @@
                            <tr>
                             <td valign="top" class="pc-w620-padding-0-0-0-0 pc-w620-align-left" align="left">
                              <div class="pc-font-alt pc-w620-align-left pc-w620-fontSize-16 pc-w620-lineHeight-26" style="line-height: 28px; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: normal; font-variant-ligatures: normal; color: #1b110ccc; text-align: left; text-align-last: left;">
-                              <div><span>Subtotal</span>
+                                <div><span>Subtotal</span>
                               </div>
                              </div>
                             </td>
@@ -673,7 +678,7 @@
                            <tr>
                             <td valign="top" class="pc-w620-align-right" align="right" style="padding: 0px 0px 0px 0px;">
                              <div class="pc-font-alt pc-w620-align-right pc-w620-fontSize-16 pc-w620-lineHeight-26" style="line-height: 28px; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 500; font-variant-ligatures: normal; color: #19110d; text-align: right; text-align-last: right;">
-                              <div><span>{{$subtotal}}</span>
+                              <div><span>{{ number_format($subtotal, 2)}}</span>
                               </div>
                              </div>
                             </td>
@@ -684,25 +689,26 @@
                        </table>
                       </td>
                      </tr>
+                     {{-- @if ($discountPercentage <=0 ) --}}
                      <tr>
-                      <td class="pc-w620-width-200" width="406" align="left" valign="middle" style="padding: 8px 0px 8px 0px;">
-                       <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                        <tr>
-                         <td class="pc-w620-align-left" align="left" valign="top">
-                          <table border="0" cellpadding="0" cellspacing="0" role="presentation" class="pc-w620-width-100pc pc-w620-align-left" width="100%" align="left" style="border-collapse: separate; border-spacing: 0; margin-right: auto; margin-left: auto;">
-                           <tr>
-                            <td valign="top" class="pc-w620-align-left" align="left">
-                             <div class="pc-font-alt pc-w620-align-left pc-w620-fontSize-16 pc-w620-lineHeight-26" style="line-height: 28px; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: normal; font-variant-ligatures: normal; color: #1b110ccc; text-align: left; text-align-last: left;">
-                              <div><span>20% OFF</span>
+                     <td class="pc-w620-width-200" width="406" align="left" valign="middle" style="padding: 8px 0px 8px 0px;">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+                         <tr>
+                          <td class="pc-w620-align-left" align="left" valign="top">
+                           <table border="0" cellpadding="0" cellspacing="0" role="presentation" class="pc-w620-width-100pc pc-w620-align-left" width="100%" align="left" style="border-collapse: separate; border-spacing: 0; margin-right: auto; margin-left: auto;">
+                            <tr>
+                             <td valign="top" class="pc-w620-align-left" align="left">
+                              <div class="pc-font-alt pc-w620-align-left pc-w620-fontSize-16 pc-w620-lineHeight-26" style="line-height: 28px; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: normal; font-variant-ligatures: normal; color: #1b110ccc; text-align: left; text-align-last: left;">
+                               <div><span>{{ $discountPercentage }} % OFF</span>
+                               </div>
                               </div>
-                             </div>
-                            </td>
-                           </tr>
-                          </table>
-                         </td>
-                        </tr>
-                       </table>
-                      </td>
+                             </td>
+                            </tr>
+                           </table>
+                          </td>
+                         </tr>
+                        </table>
+                       </td>
                       <td align="right" valign="middle" style="padding: 0px 0px 0px 0px;">
                        <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                         <tr>
@@ -711,7 +717,7 @@
                            <tr>
                             <td valign="top" class="pc-w620-align-right" align="right" style="padding: 0px 0px 0px 0px;">
                              <div class="pc-font-alt pc-w620-align-right pc-w620-fontSize-16 pc-w620-lineHeight-26" style="line-height: 28px; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 500; font-variant-ligatures: normal; color: #00af48; text-align: right; text-align-last: right;">
-                              <div><span>-$100.02</span>
+                              <div><span>{{$discount}}</span>
                               </div>
                              </div>
                             </td>
@@ -721,8 +727,11 @@
                         </tr>
                        </table>
                       </td>
-                     </tr>
-                     <tr>
+                    </tr>
+
+                      {{-- @endif --}}
+
+                     {{-- <tr>
                       <td class="pc-w620-width-200" width="406" align="left" valign="middle" style="padding: 8px 0px 8px 0px; border-bottom: 1px solid #e5e5e5;">
                        <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                         <tr>
@@ -759,7 +768,7 @@
                         </tr>
                        </table>
                       </td>
-                     </tr>
+                     </tr> --}}
                      <tr>
                       <td class="pc-w620-width-200" width="406" align="left" valign="middle" style="padding: 8px 0px 8px 0px;">
                        <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
@@ -1514,9 +1523,9 @@
                     <tr>
                      <td valign="top" align="center">
                       <div class="pc-font-alt" style="line-height: 143%; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 14px; font-weight: normal; font-variant-ligatures: normal; color: #ffffffcc; text-align: center; text-align-last: center;">
-                       <div><span>Sweet  Snack HQ , 123 Bique Street Unit 10 </span>
+                       <div><span>Sweet  Snack HQ, 123 To Ky Street, 12 Ward, HCM City </span>
                        </div>
-                       <div><span>Boston, MA 02110</span>
+                       <div><span>H&T Store</span>
                        </div>
                       </div>
                      </td>

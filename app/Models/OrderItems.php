@@ -36,6 +36,6 @@ class OrderItems extends Model
 
     public function productVariation(): BelongsTo
     {
-        return $this->belongsTo(ProductVariation::class, 'variation_id');
+        return $this->belongsTo(ProductVariation::class, 'variation_id', 'id');
     }
 }
