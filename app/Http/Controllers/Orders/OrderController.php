@@ -69,7 +69,7 @@ class OrderController extends Controller
     public function placeOrder(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
+            // 'user_id' => 'required|exists:users,id',
             'products' => 'required|array',
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1',
@@ -98,14 +98,14 @@ class OrderController extends Controller
          // Calculate discount percentage
         $discountPercentage = ($originalTotalAmount > 0) ? ($discount / $originalTotalAmount) * 100 : 0;
         $order = Order::create([
-            'user_id' => $request->user_id,
+            'user_id' => $request->user_id ?? null,
             'shipping_address' => $request->shipping_address,
             'total_amount' => $request->total_amount,
             'payment_method' => $request->payment_method,
             'payment_status' => $request->payment_status,
             'coupon_code' => $request->coupon_code ?? null,
             'order_date' => now(),
-            'note' =>  $request->note
+            'note' =>  $request->note ?? null
         ]);
         $order = Order::with('user')->find($order->id);
         $orderData = [];
@@ -179,6 +179,7 @@ class OrderController extends Controller
             // Xử lý logic hủy đơn hàng đã thanh toán (nếu cần)
             return response()->json(['message' => 'Đơn hàng đã được thanh toán, không thể hủy.'], 400);
         }
+
         if($order->payment_status === 'shipping')
         {
             return response()->json(['message' => 'Đơn hàng đã được vận chuyển, không thể hủy.'], 400);
