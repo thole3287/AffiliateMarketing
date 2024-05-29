@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('variation_id')->nullable();
             $table->integer('quantity');
             $table->decimal('product_price', 10, 2)->nullable();
+            $table->string('affiliate_link')->nullable();
             $table->timestamps();
 
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
