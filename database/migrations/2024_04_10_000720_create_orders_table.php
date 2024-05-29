@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('shipping_address');
             $table->decimal('total_amount', 10, 2);
             $table->date('order_date');
             $table->string('payment_method');
             $table->string('payment_status')->default('pending');
+            $table->enum('order_status', ['ordered', 'confirmed', 'cancelled', 'shipping','completed'])->default('ordered')->after('coupon_code');
             $table->string('note')->nullable();
             $table->timestamps();
 
