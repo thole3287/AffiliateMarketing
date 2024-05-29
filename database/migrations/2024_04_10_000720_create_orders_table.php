@@ -19,7 +19,8 @@ return new class extends Migration
             $table->date('order_date');
             $table->string('payment_method');
             $table->string('payment_status')->default('pending');
-            $table->enum('order_status', ['ordered', 'confirmed', 'cancelled', 'shipping','completed'])->default('ordered')->after('coupon_code');
+            $table->string('coupon_code')->nullable();
+            $table->enum('order_status', ['ordered', 'confirmed', 'cancelled', 'shipping','completed'])->default('ordered');
             $table->string('note')->nullable();
             $table->timestamps();
 
