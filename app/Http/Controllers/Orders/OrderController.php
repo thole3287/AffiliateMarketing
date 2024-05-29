@@ -160,8 +160,10 @@ class OrderController extends Controller
         // Send email
         $user = User::find($request->user_id);
         // dispatch(new SendOrderEmail($order, $orderData, $user->email));
-
-        Mail::to($user->email)->send(new OrderPlaced($order, $orderData, $discount, $subtotal, $discountPercentage));
+        if(!empty($user->email))
+        {
+            Mail::to($user->email)->send(new OrderPlaced($order, $orderData, $discount, $subtotal, $discountPercentage));
+        }
 
         return response()->json([
             'message' => 'Order placed successfully',
