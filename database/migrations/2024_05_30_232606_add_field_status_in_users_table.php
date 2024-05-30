@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->decimal('total_commission', 10, 2)->default(0)->after('membership_leve'); // Số dư
+            $table->decimal('total_commission', 10, 2)->default(0)->after('membership_level'); // Số dư
             $table->enum('status', ['active', 'inactive'])->default('active')->after('role');
         });
     }
