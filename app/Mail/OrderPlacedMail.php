@@ -15,6 +15,9 @@ class OrderPlacedMail extends Mailable
 
     public $order;
     public $orderItems;
+    public $discount;
+    public $subtotal;
+    public $discountPercentage;
 
     /**
      * Create a new message instance.
@@ -23,10 +26,13 @@ class OrderPlacedMail extends Mailable
      * @param  string  $imagePath
      * @return void
      */
-    public function __construct($order, $orderItems)
+    public function __construct($order, $orderItems, $discount, $subtotal, $discountPercentage)
     {
         $this->order = $order;
         $this->orderItems = $orderItems;
+        $this->discount = $discount;
+        $this->subtotal = $subtotal;
+        $this->discountPercentage = $discountPercentage;
     }
 
     /**
@@ -53,6 +59,9 @@ class OrderPlacedMail extends Mailable
             with: [
                 'order' => $this->order,
                 'orderItems' =>  $this->orderItems,
+                'discount' => $this->discount,
+                'subtotal' => $this->subtotal,
+                'discountPercentage' => $this->discountPercentage,
             ],
         );
     }

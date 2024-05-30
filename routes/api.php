@@ -58,6 +58,7 @@ Route::get('order/best-seller/', [OrderController::class, 'getTopSellingProducts
 Route::post('/orders/{order}/cancel', [OrderController::class, 'cancelOrder']);
 Route::post('products/import-excel', [ProductsController::class, 'import']);
 Route::get('/orders', [OrderController::class, 'index']);
+Route::put('/orders/{orderId}/status', [OrderController::class, 'updateOrderStatus']);
 
 
 

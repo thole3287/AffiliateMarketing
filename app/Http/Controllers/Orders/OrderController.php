@@ -77,8 +77,9 @@ class OrderController extends Controller
             'shipping_address' => 'required|string',
             'total_amount' => 'required|numeric',
             'ordered_at' =>  'nullable|date',
-            'payment_method' => 'required|string',
-            'payment_status' => 'required|string|in:pending,paid,failed',
+            'payment_method' => 'nullable|string',
+            'payment_status' => 'nullable|string|in:paid,unpaid',
+            'order_status' => 'nullable|string|in:ordered,confirmed,cancelled,shipping,completed',
         ]);
         $totalAmount = $request->total_amount;
         $originalTotalAmount = $totalAmount;
@@ -95,7 +96,7 @@ class OrderController extends Controller
             // You might want to handle negative totalAmount here if discount exceeds the total
             $totalAmount = max(0, $totalAmount);
         }
-         // Calculate discount percentage
+        // Calculate discount percentage
         $discountPercentage = ($originalTotalAmount > 0) ? ($discount / $originalTotalAmount) * 100 : 0;
         $order = Order::create([
             'user_id' => $request->user_id ?? null,
@@ -105,6 +106,7 @@ class OrderController extends Controller
             'payment_status' => $request->payment_status,
             'coupon_code' => $request->coupon_code ?? null,
             'order_date' => now(),
+            'order_status' => $request->order_status,
             'note' =>  $request->note ?? null
         ]);
         $order = Order::with('user')->find($order->id);
@@ -159,9 +161,8 @@ class OrderController extends Controller
         // dd($subtotal,  $discount, $discountPercentage);
         // Send email
         $user = User::find($request->user_id);
-        // dispatch(new SendOrderEmail($order, $orderData, $user->email));
-        if(!empty($user->email))
-        {
+        if (!empty($user->email)) {
+            // dispatch(new SendOrderEmail($order, $orderData,  $discount, $subtotal, $discountPercentage, $user->email));
             Mail::to($user->email)->send(new OrderPlaced($order, $orderData, $discount, $subtotal, $discountPercentage));
         }
 
@@ -174,6 +175,28 @@ class OrderController extends Controller
         ], Response::HTTP_CREATED);
     }
 
+    public function updateOrderStatus(Request $request, $orderId)
+    {
+        // Validate the incoming request
+        $request->validate([
+            'payment_status' => 'nullable|string|in:paid,unpaid',
+            'order_status' => 'nullable|string|in:ordered,confirmed,cancelled,shipping,completed',
+        ]);
+
+        // Find the order by ID
+        $order = Order::findOrFail($orderId);
+
+        // Update the order status and payment status
+        $order->payment_status = $request->input('payment_status');
+        $order->order_status = $request->input('order_status');
+        $order->save();
+
+        // Return a success response
+        return response()->json([
+            'message' => 'Order status updated successfully',
+            'order' => $order,
+        ], Response::HTTP_OK);
+    }
     public function cancelOrder(Request $request, Order $order)
     {
         // Kiểm tra xem đơn hàng đã được thanh toán hay chưa
@@ -182,8 +205,7 @@ class OrderController extends Controller
             return response()->json(['message' => 'Đơn hàng đã được thanh toán, không thể hủy.'], 400);
         }
 
-        if($order->payment_status === 'shipping')
-        {
+        if ($order->payment_status === 'shipping') {
             return response()->json(['message' => 'Đơn hàng đã được vận chuyển, không thể hủy.'], 400);
         }
 
