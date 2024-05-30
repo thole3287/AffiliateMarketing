@@ -17,6 +17,17 @@ use Illuminate\Http\Response;
 class AuthController extends Controller
 {
 
+    public function listUsersWithRoleUser(Request $request)
+    {
+        // Fetch users with the role 'user'
+        $users = User::where('role', 'user')->get();
+
+        // Return a JSON response
+        return response()->json([
+            'message' => 'List of users with role user',
+            'users' => $users,
+        ], Response::HTTP_OK);
+    }
 
     public function register(Request $request)
     {
