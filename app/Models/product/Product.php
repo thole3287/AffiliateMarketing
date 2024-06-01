@@ -11,8 +11,6 @@ use Elasticquent\ElasticquentTrait;
 
 class Product extends Model
 {
-    use ElasticquentTrait;
-
     use HasFactory;
     protected $table = 'products';
     protected $guarded = [];
