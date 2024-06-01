@@ -201,6 +201,53 @@ class AuthController extends Controller
         return $this->createNewToken($token, 'Login Admin/SuperAdmin Successfully');
     }
 
+    public function updateProfile(Request $request, $id)
+    {
+        // Kiểm tra xem người dùng hiện tại có quyền cập nhật thông tin người dùng khác không
+        // Ví dụ: Chỉ admin mới có quyền cập nhật thông tin người dùng khác
+        // if (Auth::user()->role != 'admin') {
+        //     return response()->json(['error' => 'Unauthorized'], 403);
+        // }
+
+        $user = User::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'nullable|string|max:255',
+            'email' => 'nullable|string|email|max:255|unique:users,email,' . $user->id,
+            'zalo_id' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:255',
+            'photo' => 'nullable|string|max:255',
+            'address' => 'nullable|string',
+            'birthday' => 'nullable|date',
+            'collaborator' => 'nullable|boolean',
+            'points' => 'nullable|integer',
+            'membership_level' => 'nullable|string|max:255',
+            'total_commission' => 'nullable|numeric',
+            'affiliate_code' => 'nullable|string|max:255',
+            'status' => 'required|in:active,inactive',
+            'current_password' => 'nullable|required_with:password',
+            'password' => 'nullable|confirmed|min:8',
+        ]);
+
+        $data = $request->only([
+            'name', 'username', 'email', 'zalo_id', 'phone', 'photo', 'address',
+            'birthday', 'collaborator', 'points', 'membership_level',
+            'total_commission', 'balance', 'affiliate_code', 'status'
+        ]);
+
+        if ($request->filled('password')) {
+            if (!Hash::check($request->input('current_password'), $user->password)) {
+                return response()->json(['error' => 'Current password is incorrect'], 400);
+            }
+            $data['password'] = Hash::make($request->input('password'));
+        }
+
+        $user->update($data);
+
+        return response()->json(['message' => 'Profile updated successfully', 'user' => $user], 200);
+    }
+
     public function update(Request $request, $id)
     {
         $user = User::find($id);

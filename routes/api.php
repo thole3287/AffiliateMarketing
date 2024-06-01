@@ -37,7 +37,7 @@ Route::group([
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::put('/admin/change-password', [AuthController::class, 'changePassword']); //update password user with old password
-    Route::put('/users/{id}', [AuthController::class, 'update']);//update info user
+    Route::put('/users/{id}', [AuthController::class, 'updateProfile']);//update info user
     Route::get('/user-profile', [AuthController::class, 'userProfile']);
     // Route::post('send-password-reset-link', [PasswordResetRequestController::class, 'sendEmail']);
     // Route::post('/reset-password', [ChangePasswordController::class, 'passwordResetProcess'])->name('password.update');
