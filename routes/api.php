@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Affilinates\AffilinateController;
+use App\Http\Controllers\Affilinates\TicketReplyController;
+use App\Http\Controllers\Affilinates\WithdrawalTicketController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Brands\BrandController;
 use App\Http\Controllers\Categories\CategoryController;
@@ -62,6 +65,17 @@ Route::get('/orders', [OrderController::class, 'index']);
 Route::put('/orders/{orderId}/status', [OrderController::class, 'updateOrderStatus']);
 
 
+Route::get('/referrals', [AffilinateController::class, 'index']);
+Route::get('/referrals/{id}', [AffilinateController::class, 'show']);
+Route::put('/referrals/{id}/status', [AffilinateController::class, 'updateStatus']);
+
+Route::post('/withdrawal-tickets', [WithdrawalTicketController::class, 'store']);
+Route::get('/withdrawal-tickets', [WithdrawalTicketController::class, 'index']);
+Route::put('/withdrawal-tickets/{id}/status', [WithdrawalTicketController::class, 'updateStatus']);
+
+
+Route::post('/withdrawal-tickets/{id}/replies', [TicketReplyController::class, 'store']);
+Route::get('/withdrawal-tickets/{id}/replies', [TicketReplyController::class, 'index']);
 
 // Route::resource('categories', CategoryController::class)->only(['show', 'index']);
 // Route::resource('brands', BrandController::class)->only(['show', 'index']);

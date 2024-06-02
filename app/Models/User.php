@@ -45,6 +45,7 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'total_commission' => 'float'
     ];
 
     public function getJWTIdentifier() {
@@ -57,7 +58,7 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getJWTCustomClaims() {
         return [];
-    }    
+    }
 
     public function vendorShop() {
         return $this->hasOne(VendorShop::class);
