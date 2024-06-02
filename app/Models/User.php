@@ -45,7 +45,8 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'total_commission' => 'float'
+        'total_commission' => 'float',
+        'points' => 'int'
     ];
 
     public function getJWTIdentifier() {

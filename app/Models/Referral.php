@@ -22,7 +22,10 @@ class Referral extends Model
 
     protected $casts = [
         'commission_percentage' => 'float',
-        'commission_amount' => 'float'
+        'commission_amount' => 'float',
+        'user_id' => 'int',
+        'product_id' => 'int',
+        'order_id' => 'int',
     ];
 
      // Mối quan hệ với model User (người giới thiệu)
