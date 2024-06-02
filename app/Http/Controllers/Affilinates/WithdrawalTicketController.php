@@ -34,7 +34,19 @@ class WithdrawalTicketController extends Controller
     public function index()
     {
         $tickets = WithdrawalTicket::with(['user', 'replies'])->get();
-        return response()->json($tickets);
+
+        $totalTickets = WithdrawalTicket::count();
+        $totalCancelled = WithdrawalTicket::where('status', 'cancelled')->count();
+        $totalPending = WithdrawalTicket::where('status', 'pending')->count();
+        $totalCompleted = WithdrawalTicket::where('status', 'completed')->count();
+
+        return response()->json([
+            'totalTickets' => $totalTickets,
+            'totalCancelled' => $totalCancelled,
+            'totalPending' => $totalPending,
+            'totalCompleted' => $totalCompleted,
+            'tickets' => $tickets,
+        ]);
     }
 
     // Phương thức cập nhật trạng thái của ticket
