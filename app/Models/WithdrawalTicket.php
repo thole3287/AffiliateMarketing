@@ -18,6 +18,8 @@ class WithdrawalTicket extends Model
     ];
     protected $casts = [
         'amount' => 'float',
+        'user_id' => 'int',
+
     ];
 
     public function user()
