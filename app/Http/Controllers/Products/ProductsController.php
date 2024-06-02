@@ -45,8 +45,20 @@ class ProductsController extends Controller
         ];
 
         // Thêm các điều kiện tìm kiếm nếu có
-        if ($request->has('brand')) {
-            $params['body']['query']['bool']['must'][]['match']['brand_id'] = $request->input('brand');
+        if ($request->has('brand_name')) {
+            // Thêm một điều kiện bool must với tất cả các điều kiện nested đã tạo
+            $params['body']['query']['bool']['must'][] = [
+                'nested' => [
+                    'path' => 'brands',
+                    'query' => [
+                        'bool' => [
+                            'must' => [
+                                ['match' => ['brands.name' => $request->input('brand_name')]]
+                            ]
+                        ]
+                    ]
+                ]
+            ];
         }
 
         if ($request->has('product_price')) {
@@ -59,16 +71,55 @@ class ProductsController extends Controller
                 $params['body']['query']['bool']['must'][]['match']['product_price'] = $price;
             }
         }
+
         if ($request->has('product_name')) {
             $params['body']['query']['bool']['must'][]['match']['product_name'] = $request->input('product_name');
         }
-        if ($request->has('category')) {
-            $params['body']['query']['bool']['must'][]['match']['category_id'] = $request->input('category');
+
+        if ($request->has('category_name')) {
+            $params['body']['query']['bool']['must'][] = [
+                'nested' => [
+                    'path' => 'categories',
+                    'query' => [
+                        'bool' => [
+                            'must' => [
+                                ['match' => ['categories.name' => $request->input('category_name')]]
+                            ]
+                        ]
+                    ]
+                ]
+            ];
         }
 
         if ($request->has('product_status')) {
             $params['body']['query']['bool']['must'][]['match']['product_status'] = $request->input('product_status');
         }
+        // Lấy tất cả các thuộc tính được gửi trong request
+        $attributes = $request->except(['brand_name', 'product_price', 'product_name', 'category_name', 'product_status']);
+
+        // Tạo một mảng chứa điều kiện cho tất cả các thuộc tính
+        $nestedQueries = [];
+        foreach ($attributes as $attributeName => $attributeValue) {
+            $nestedQueries[] = [
+                'nested' => [
+                    'path' => 'variations',
+                    'query' => [
+                        'bool' => [
+                            'must' => [
+                                ['match' => ['variations.attributes.' . $attributeName => $attributeValue]]
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+        }
+
+        // Thêm một điều kiện bool must với tất cả các điều kiện nested đã tạo
+        $params['body']['query']['bool']['must'][] = [
+            'bool' => [
+                'must' => $nestedQueries
+            ]
+        ];
 
         // Khởi tạo Elasticsearch client
         $response = $elasticModel->getClientBuilder()->index($params);
@@ -345,7 +396,7 @@ class ProductsController extends Controller
                 }
             }
         }
-        $product = Product::with('brand', 'category', 'images' ,'variations')->find($product->id);
+        $product = Product::with('brand', 'category', 'images', 'variations')->find($product->id);
         $attributes = [];
 
         // Ensure variations is an array or an object
