@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('withdrawal_tickets', function (Blueprint $table) {
             $table->id();
-            $table->integer('bank_name');
+            $table->integer('user_id');
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Liên kết tới bảng users
             $table->decimal('amount', 15, 2); // Số tiền muốn rút
             $table->string('bank_name'); // Tên ngân hàng
