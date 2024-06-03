@@ -143,18 +143,32 @@ class OrderController extends Controller
             $subtotal += $productPrice * $product['quantity'];
 
             if ($request->filled('referral_user_id')) {
-                $referral = new Referral([
-                    'user_id' => $request->referral_user_id,
-                    'product_id' => $product1->id,
-                    'order_id' => $order->id,
-                    'commission_percentage' => $product1->commission_percentage,
-                    'commission_amount' => $productPrice * ($product1->commission_percentage / 100) * $product['quantity'],
-                ]);
-                $referral->save();
+                $referral = Referral::where('user_id', $request->referral_user_id)
+                    ->where('product_id', $product1->id)
+                    ->where('order_id', $order->id)
+                    ->first();
 
-                // Cập nhật total_commission cho người dùng
+                $commissionAmount = $productPrice * ($product1->commission_percentage / 100) * $product['quantity'];
+
+                if ($referral) {
+                    // Update existing referral
+                    $referral->commission_amount += $commissionAmount;
+                    $referral->save();
+                } else {
+                    // Create new referral
+                    $referral = new Referral([
+                        'user_id' => $request->referral_user_id,
+                        'product_id' => $product1->id,
+                        'order_id' => $order->id,
+                        'commission_percentage' => $product1->commission_percentage,
+                        'commission_amount' => $commissionAmount,
+                    ]);
+                    $referral->save();
+                }
+
+                // Update total_commission for the user
                 $user = User::find($request->referral_user_id);
-                $user->total_commission = ($user->total_commission ?? 0) + $referral->commission_amount;
+                $user->total_commission = ($user->total_commission ?? 0) + $commissionAmount;
                 $user->save();
             }
         }
