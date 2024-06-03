@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Brands\BrandController;
 use App\Http\Controllers\Categories\CategoryController;
 use App\Http\Controllers\CouponController;
+use App\Http\Controllers\Dashboard\ChartDashboardController;
 use App\Http\Controllers\Orders\OrderController;
 use App\Http\Controllers\Products\ProductsController;
 use App\Http\Controllers\Products\ProductVariationController;
@@ -76,6 +77,9 @@ Route::put('/withdrawal-tickets/{id}/status', [WithdrawalTicketController::class
 
 Route::post('/withdrawal-tickets/{id}/replies', [TicketReplyController::class, 'store']);
 Route::get('/withdrawal-tickets/{id}/replies', [TicketReplyController::class, 'index']);
+
+Route::get('/orders/weekly-totals', [ChartDashboardController::class, 'getTotalOrdersByMonth']);
+
 
 // Route::resource('categories', CategoryController::class)->only(['show', 'index']);
 // Route::resource('brands', BrandController::class)->only(['show', 'index']);
