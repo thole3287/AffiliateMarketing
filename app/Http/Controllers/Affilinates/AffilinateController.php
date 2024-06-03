@@ -10,30 +10,42 @@ class AffilinateController extends Controller
 {
     public function index()
     {
-       // Lấy tất cả referrals và load các quan hệ
-       $referrals = Referral::with(['user', 'product', 'order'])->get();
-       $totalReferrals = $referrals->count();
+      // Lấy tất cả referrals và load các quan hệ
+      $referrals = Referral::with(['user', 'product', 'order'])->get();
 
-       // Tính tổng doanh thu từ cộng tác viên
-       $totalCommissionAmount = $referrals->sum('commission_amount');
+      // Nhóm referrals theo user
+      $groupedReferrals = $referrals->groupBy('user_id');
 
-       // Tính số đơn hàng đã thanh toán và chưa thanh toán
-       $paidOrdersCount = $referrals->filter(function ($referral) {
-           return $referral->order && $referral->order->payment_status == 'paid';
-       })->count();
+      // Khởi tạo mảng để lưu kết quả đã tổng hợp
+      $aggregatedData = [];
 
-       $unpaidOrdersCount = $referrals->filter(function ($referral) {
-           return $referral->order && $referral->order->payment_status != 'paid';
-       })->count();
+      foreach ($groupedReferrals as $userId => $userReferrals) {
+          $totalCommissionAmount = $userReferrals->sum('commission_amount');
+          $paidOrdersCount = $userReferrals->filter(function ($referral) {
+              return $referral->order && $referral->order->payment_status == 'paid';
+          })->count();
+          $unpaidOrdersCount = $userReferrals->filter(function ($referral) {
+              return $referral->order && $referral->order->payment_status != 'paid';
+          })->count();
 
-       // Trả về dữ liệu dưới dạng JSON
-       return response()->json([
-           'totalReferrals' => $totalReferrals,
-           'totalCommissionAmount' => $totalCommissionAmount,
-           'paidOrdersCount' => $paidOrdersCount,
-           'unpaidOrdersCount' => $unpaidOrdersCount,
-           'data' => $referrals,
-       ]);
+          $user = $userReferrals->first()->user; // Lấy thông tin user từ referral đầu tiên trong nhóm
+
+          $aggregatedData[] = [
+              'user' => $user,
+              'totalCommissionAmount' => $totalCommissionAmount,
+              'paidOrdersCount' => $paidOrdersCount,
+              'unpaidOrdersCount' => $unpaidOrdersCount,
+          ];
+      }
+
+      // Tổng số referrals
+      $totalReferrals = $referrals->count();
+
+      // Trả về dữ liệu dưới dạng JSON
+      return response()->json([
+          'totalReferrals' => $totalReferrals,
+          'aggregatedData' => $aggregatedData,
+      ]);
     }
 
     public function show($id)
