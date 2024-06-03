@@ -10,42 +10,53 @@ class AffilinateController extends Controller
 {
     public function index()
     {
-      // Lấy tất cả referrals và load các quan hệ
-      $referrals = Referral::with(['user', 'product', 'order'])->get();
+        // Lấy tất cả referrals và load các quan hệ
+        $referrals = Referral::with(['user', 'product', 'order'])->get();
 
-      // Nhóm referrals theo user
-      $groupedReferrals = $referrals->groupBy('user_id');
+        // Nhóm referrals theo user
+        $groupedReferrals = $referrals->groupBy('user_id');
 
-      // Khởi tạo mảng để lưu kết quả đã tổng hợp
-      $aggregatedData = [];
+        // Khởi tạo mảng để lưu kết quả đã tổng hợp
+        $aggregatedData = [];
 
-      foreach ($groupedReferrals as $userId => $userReferrals) {
-          $totalCommissionAmount = $userReferrals->sum('commission_amount');
-          $paidOrdersCount = $userReferrals->filter(function ($referral) {
-              return $referral->order && $referral->order->payment_status == 'paid';
-          })->count();
-          $unpaidOrdersCount = $userReferrals->filter(function ($referral) {
-              return $referral->order && $referral->order->payment_status != 'paid';
-          })->count();
+        foreach ($groupedReferrals as $userId => $userReferrals) {
+            $totalCommissionAmount = $userReferrals->sum('commission_amount');
+            $paidOrdersCount = $userReferrals->filter(function ($referral) {
+                return $referral->order && $referral->order->payment_status == 'paid';
+            })->count();
+            $unpaidOrdersCount = $userReferrals->filter(function ($referral) {
+                return $referral->order && $referral->order->payment_status != 'paid';
+            })->count();
 
-          $user = $userReferrals->first()->user; // Lấy thông tin user từ referral đầu tiên trong nhóm
+            $user = $userReferrals->first()->user; // Lấy thông tin user từ referral đầu tiên trong nhóm
 
-          $aggregatedData[] = [
-              'user' => $user,
-              'totalCommissionAmount' => $totalCommissionAmount,
-              'paidOrdersCount' => $paidOrdersCount,
-              'unpaidOrdersCount' => $unpaidOrdersCount,
-          ];
-      }
+            // Tổng hợp các products và orders
+            $products = $userReferrals->map(function ($referral) {
+                return $referral->product;
+            })->unique('id')->values();
 
-      // Tổng số referrals
-      $totalReferrals = $referrals->count();
+            $orders = $userReferrals->map(function ($referral) {
+                return $referral->order;
+            })->unique('id')->values();
 
-      // Trả về dữ liệu dưới dạng JSON
-      return response()->json([
-          'totalReferrals' => $totalReferrals,
-          'aggregatedData' => $aggregatedData,
-      ]);
+            $aggregatedData[] = [
+                'user' => $user,
+                'products' => $products,
+                'orders' => $orders,
+                'totalCommissionAmount' => $totalCommissionAmount,
+                'paidOrdersCount' => $paidOrdersCount,
+                'unpaidOrdersCount' => $unpaidOrdersCount,
+            ];
+        }
+
+        // Tổng số referrals
+        $totalReferrals = $referrals->count();
+
+        // Trả về dữ liệu dưới dạng JSON
+        return response()->json([
+            'totalReferrals' => $totalReferrals,
+            'aggregatedData' => $aggregatedData,
+        ]);
     }
 
     public function show($id)
