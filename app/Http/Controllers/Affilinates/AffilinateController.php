@@ -46,11 +46,11 @@ class AffilinateController extends Controller
 
            $aggregatedData[] = [
                'user' => $user,
+               'products' => $products,
+               'orders' => $orders,
                'totalCommissionAmount' => $totalCommissionAmount,
                'paidOrdersCount' => $paidOrdersCount,
                'unpaidOrdersCount' => $unpaidOrdersCount,
-               'products' => $products,
-               'orders' => $orders,
            ];
 
            // Cộng dồn số liệu vào các biến tổng
