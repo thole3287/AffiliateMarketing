@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Affilinates;
 
 use App\Http\Controllers\Controller;
 use App\Models\Referral;
+use App\Models\User;
 use App\Models\WithdrawalTicket;
 use Illuminate\Http\Request;
 
@@ -21,10 +22,11 @@ class WithdrawalTicketController extends Controller
 
         $ticket = WithdrawalTicket::create([
             'user_id' => $request->input('user_id'),
+            'total_commission' => User::where('id', $request->input('user_id'))->pluck('total_commission')->first(),
             'amount' => $request->input('amount'),
             'bank_name' => $request->input('bank_name'),
             'account_number' => $request->input('account_number'),
-            'note' => $request->input('note'),
+            'note' => $request->input('note') ?? null,
         ]);
 
         return response()->json(['message' => 'Ticket created successfully', 'ticket' => $ticket], 201);
