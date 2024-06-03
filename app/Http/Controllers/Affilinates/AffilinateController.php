@@ -49,8 +49,8 @@ class AffilinateController extends Controller
             ];
         }
 
-        // Tổng số referrals
-        $totalReferrals = $referrals->count();
+        // Tổng số referrals theo user_id
+        $totalReferrals = $groupedReferrals->count();
 
         // Trả về dữ liệu dưới dạng JSON
         return response()->json([
