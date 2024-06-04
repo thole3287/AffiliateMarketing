@@ -175,7 +175,7 @@ class ChartDashboardController extends Controller
         }
 
         foreach ($totalOrdersReferral as $order) {
-            $data[$order['month']] = $order['total']; // Gán số đơn hàng của tháng
+            $data[$order['month']] = (float)$order['total']; // Gán số đơn hàng của tháng
         }
 
         // Chuyển đổi mảng dữ liệu thành mảng chứa tổng số đơn hàng cho từng tháng
