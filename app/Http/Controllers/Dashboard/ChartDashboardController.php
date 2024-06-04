@@ -142,7 +142,7 @@ class ChartDashboardController extends Controller
             ->get();
 
         // Tạo một mảng để lưu trữ kết quả
-        $data = [['product', (string)$year1, (string)$year2]];
+        $dataTopProducts = [['product', (string)$year1, (string)$year2]];
 
         // Lặp qua kết quả và thêm vào mảng kết quả
         foreach ($topProducts as $product) {
@@ -151,7 +151,7 @@ class ChartDashboardController extends Controller
             $year2Total = $product->year2_total;
 
             // Thêm vào mảng
-            $data[] = [$productName, (float)$year1Total, (float)$year2Total];
+            $dataTopProducts[] = [$productName, (float)$year1Total, (float)$year2Total];
         }
 
         // Sử dụng câu truy vấn để tính tổng số đơn hàng Referral theo tháng
@@ -194,7 +194,7 @@ class ChartDashboardController extends Controller
                 'topSalesByBrand' =>  $topSalesByBrand,
             ],
             'topProductsChart' => [
-                'topProducts' => $data,
+                'topProducts' => $dataTopProducts,
             ],
             'totalOrdersReferralChart' => [
                 'totalOrdersReferrals' => $result,
