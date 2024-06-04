@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItems;
 use App\Models\product\Product;
+use App\Models\Referral;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
@@ -63,7 +64,7 @@ class ChartDashboardController extends Controller
 
         // Fill the totalOrders array with the actual values from the query
         foreach ($orders as $month => $count) {
-            $totalOrders[$month] = $count;
+            $totalOrders[$month] = (float)$count;
         }
 
 
@@ -152,6 +153,34 @@ class ChartDashboardController extends Controller
             // Thêm vào mảng
             $data[] = [$productName, (float)$year1Total, (float)$year2Total];
         }
+
+        // Sử dụng câu truy vấn để tính tổng số đơn hàng Referral theo tháng
+        $currentYear = Carbon::now()->year;
+
+        $totalOrdersReferral = Referral::select(
+            DB::raw('MONTH(created_at) as month'),
+            DB::raw('COUNT(*) as total')
+        )
+            ->whereYear('created_at', $currentYear)
+            ->groupBy(DB::raw('MONTH(created_at)'))
+            ->orderBy(DB::raw('MONTH(created_at)'))
+            ->get()
+            ->toArray(); // Chuyển đổi Collection thành mảng
+
+        $data = [];
+
+        // Điền vào mảng dữ liệu cho tất cả các tháng trong năm hiện tại
+        for ($i = 1; $i <= 12; $i++) {
+            $data[$i] = 0; // Khởi tạo số đơn hàng của mỗi tháng thành 0
+        }
+
+        foreach ($totalOrdersReferral as $order) {
+            $data[$order['month']] = $order['total']; // Gán số đơn hàng của tháng
+        }
+
+        // Chuyển đổi mảng dữ liệu thành mảng chứa tổng số đơn hàng cho từng tháng
+        $result = array_values($data);
+
         return response()->json([
             'totalOrderChart' => [
                 'totalOrderCount' =>  $totalOrderCount,
@@ -166,6 +195,9 @@ class ChartDashboardController extends Controller
             ],
             'topProductsChart' => [
                 'topProducts' => $data,
+            ],
+            'totalOrdersReferralChart' => [
+                'totalOrdersReferrals' => $result,
             ],
 
         ]);
