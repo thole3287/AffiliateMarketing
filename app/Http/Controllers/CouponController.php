@@ -13,7 +13,7 @@ class CouponController extends Controller
      */
     public function index()
     {
-        $coupons = Coupon::all();
+        $coupons = Coupon::orderBy('created_at', 'desc')->get();
         return response()->json($coupons);
 
         // if (!$coupons) {

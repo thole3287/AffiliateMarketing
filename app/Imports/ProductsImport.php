@@ -11,18 +11,16 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 class ProductsImport implements ToModel, WithHeadingRow
 {
     // use WithHeadingRow;
-    private $data = [];
-
     /**
      * @param array $row
      *
      * @return \Illuminate\Database\Eloquent\Model|null
      */
+    private $data = [];
+
     public function model(array $row)
     {
-        // Xử lý dữ liệu từ mỗi dòng trong file Excel
-        // Ví dụ: tạo hoặc cập nhật sản phẩm
-        // dd( explode(',', $row['image_gellary']));
+        // Update or create the product
         $product = Product::updateOrCreate(
             [
                 'product_code' => $row['product_code'],
@@ -34,42 +32,48 @@ class ProductsImport implements ToModel, WithHeadingRow
                 'commission_percentage' => $row['commission_percentage'],
                 'category_id' => $row['category_id'],
                 'brand_id' => $row['brand_id'],
-                'vendor_id' => $row['vendor_id'],
-                'product_status' => $row['product_status'],
                 'product_thumbbail' => $row['product_thumbbail'],
-                'product_tags' => $row['product_tags'],
                 'product_slug' => $row['product_slug'],
-                'product_colors' => $row['product_colors'],
                 'product_quantity' => $row['product_quantity'],
                 'product_short_description' => $row['product_short_description'],
                 'product_long_description' => $row['product_long_description'],
-
             ]
         );
-        foreach (explode(',', $row['image_gellary']) as $image) {
+
+        // Handle product images
+        for ($i = 1; $i <= 10; $i++) { // Assume a maximum of 10 images for example
+            $imageColumn = 'image_' . $i;
+
+            if (isset($row[$imageColumn]) && !empty($row[$imageColumn])) {
                 $product_image = new ProductImagesModel();
                 $product_image->product_id = $product->id;
-                $product_image->image_path = $image;
+                $product_image->image_path = $row[$imageColumn];
                 $product_image->save();
+            }
         }
-        // Xử lý biến thể sản phẩm (nếu có)
-        if (isset($row['variations'])) {
-            $variations = json_decode($row['variations'], true);
-            foreach ($variations as $variation) {
+
+        // Handle product variations
+        for ($i = 1; $i <= 10; $i++) { // Assume a maximum of 10 variations for example
+            $sizeColumn = 'variation_size_' . $i;
+            $colorColumn = 'variation_color_' . $i;
+            $priceColumn = 'variation_price_' . $i;
+            $quantityColumn = 'variation_quantity_' . $i;
+
+            if (isset($row[$sizeColumn]) && isset($row[$colorColumn]) && isset($row[$priceColumn]) && isset($row[$quantityColumn])) {
                 ProductVariation::updateOrCreate(
                     [
                         'product_id' => $product->id,
-                        'attributes' => $variation['attributes'],
+                        'attributes' => json_encode(['size' => $row[$sizeColumn], 'color' => $row[$colorColumn]]),
                     ],
                     [
-                        'price' => $variation['price'],
-                        'quantity' => $variation['quantity'],
+                        'price' => $row[$priceColumn],
+                        'quantity' => $row[$quantityColumn],
                     ]
                 );
             }
         }
 
-        $this->data[] = $product; // Lưu trữ sản phẩm đã import vào mảng data
+        $this->data[] = $product; // Store the imported product in the data array
 
         return $product;
     }
@@ -85,6 +89,7 @@ class ProductsImport implements ToModel, WithHeadingRow
 
         foreach ($this->data as $product) {
             $productData = $product->toArray();
+            $productData['images'] = $product->images->toArray();
             $productData['variations'] = $product->variations->toArray();
             $data[] = $productData;
         }
