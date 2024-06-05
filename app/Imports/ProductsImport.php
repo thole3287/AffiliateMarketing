@@ -63,9 +63,10 @@ class ProductsImport implements ToModel, WithHeadingRow
                 ProductVariation::updateOrCreate(
                     [
                         'product_id' => $product->id,
-                        'attributes' => json_encode(['size' => $row[$sizeColumn], 'color' => $row[$colorColumn]]),
+                        'attributes' => ['size' => $row[$sizeColumn], 'color' => $row[$colorColumn]],
                     ],
                     [
+                        'attributes' => ['size' => $row[$sizeColumn], 'color' => $row[$colorColumn]],
                         'price' => $row[$priceColumn],
                         'quantity' => $row[$quantityColumn],
                     ]
