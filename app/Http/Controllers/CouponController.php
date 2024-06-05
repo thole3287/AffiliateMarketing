@@ -30,6 +30,7 @@ class CouponController extends Controller
             'coupon_code' => 'required|unique:coupons,coupon_code',
             'discount_amount' => 'required|numeric',
             'expiration_date' => 'required|date',
+            'coupon_status' => 'nullable|string|in:active,inactive',
             // Add other validation rules as needed
         ]);
 
@@ -64,6 +65,8 @@ class CouponController extends Controller
             'coupon_code' => 'required|unique:coupons,coupon_code,' . $id,
             'discount_amount' => 'required|numeric',
             'expiration_date' => 'required|date',
+            'coupon_status' => 'nullable|string|in:active,inactive',
+
             // Add other validation rules as needed
         ]);
 
