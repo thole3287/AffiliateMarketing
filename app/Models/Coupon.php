@@ -10,4 +10,7 @@ class Coupon extends Model
     use HasFactory;
     protected $guarded = [];
 
+    protected $casts = [
+        'discount_amount' => 'float',
+    ];
 }
