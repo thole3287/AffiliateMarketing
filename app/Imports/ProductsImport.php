@@ -66,7 +66,6 @@ class ProductsImport implements ToModel, WithHeadingRow
                         'attributes' => ['size' => $row[$sizeColumn], 'color' => $row[$colorColumn]],
                     ],
                     [
-                        'attributes' => ['size' => $row[$sizeColumn], 'color' => $row[$colorColumn]],
                         'price' => $row[$priceColumn],
                         'quantity' => $row[$quantityColumn],
                     ]
