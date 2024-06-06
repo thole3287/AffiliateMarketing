@@ -42,7 +42,7 @@ class BrandController extends Controller
             $brand = Brand::create([
                 'name' => $request->input('name'),
                 'slug' => $request->input('slug'),
-                'status' =>  $request->input('status'),
+                'status' =>  $request->input('status') ?? 'active',
                 'image' => $imageUrl,
             ]);
             return response()->json(['data' => $brand], 201);
@@ -94,7 +94,7 @@ class BrandController extends Controller
             $brand->update([
                 'name' => $request->input('name'),
                 'slug' => $request->input('slug'),
-                'status' =>  $request->input('status'),
+                'status' =>  $request->input('status') ?? 'active',
                 'image' => $imageUrl,
             ]);
 

@@ -252,7 +252,7 @@ class CategoryController extends Controller
             $category = Category::create([
                 'name' => $request->input('name'),
                 'slug' => $request->input('slug'),
-                'status' =>  $request->input('status'),
+                'status' =>  $request->input('status') ?? 'active',
                 'parent_id' => $request->input('parent_id'),
                 'image' => $imageUrl,
             ]);
@@ -284,7 +284,7 @@ class CategoryController extends Controller
             $category->update([
                 'name' => $request->input('name'),
                 'slug' => $request->input('slug'),
-                'status' =>  $request->input('status'),
+                'status' =>  $request->input('status') ?? 'active',
                 'parent_id' => $request->input('parent_id'),
                 'image' => $imageUrl,
             ]);
