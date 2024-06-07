@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Products;
 
 use App\Elasticsearch\BaseElastic;
+use App\Exports\ProductsExport;
 use App\Http\Controllers\Controller;
 use App\Http\Services\UploadService;
 use App\Models\product\Product;
@@ -645,5 +646,13 @@ class ProductsController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function exportProducts(Request $request)
+    {
+        $perPage = $request->input('perpage', 10);
+        $page = $request->input('page', 1);
+
+        return Excel::download(new ProductsExport($perPage, $page), 'products.xlsx');
     }
 }
