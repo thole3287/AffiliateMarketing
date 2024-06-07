@@ -650,7 +650,7 @@ class ProductsController extends Controller
 
     public function exportProducts(Request $request)
     {
-        $perPage = $request->input('perpage', 10);
+        $perPage = $request->input('per_page', 10);
         $page = $request->input('page', 1);
 
         return Excel::download(new ProductsExport($perPage, $page), 'products.xlsx');
