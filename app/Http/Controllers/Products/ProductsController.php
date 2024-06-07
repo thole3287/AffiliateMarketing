@@ -134,19 +134,23 @@ class ProductsController extends Controller
         return response()->json($products);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with(['brand', 'category', 'images', 'variations'])->get();
+        // Lấy tham số page và per_page từ request (nếu không có thì mặc định là page 1 và 10 sản phẩm mỗi trang)
+        $perPage = $request->input('per_page', 10);
 
-        $transformedProducts = $products->map(function ($product) {
+        // Sử dụng paginate thay vì get để phân trang
+        $products = Product::with(['brand', 'category', 'images', 'variations'])->paginate($perPage);
+
+        $transformedProducts = $products->getCollection()->map(function ($product) {
             $attributes = [];
 
             // Ensure variations is an array
-            if (!empty($product->variations) && is_array($product->variations) || is_object($product->variations)) {
+            if (!empty($product->variations) && (is_array($product->variations) || is_object($product->variations))) {
                 // Loop through each variation to collect attribute values
                 foreach ($product->variations as $variation) {
                     // Ensure attributes is an array
-                    if (!empty($variation->attributes) && is_array($variation->attributes) || is_object($variation->attributes)) {
+                    if (!empty($variation->attributes) && (is_array($variation->attributes) || is_object($variation->attributes))) {
                         foreach ($variation->attributes as $key => $value) {
                             if (!isset($attributes[$key])) {
                                 $attributes[$key] = [];
@@ -165,8 +169,22 @@ class ProductsController extends Controller
             return $product;
         });
 
-        return response()->json(['data' => ['product' =>  $transformedProducts->toArray()]], Response::HTTP_OK);
+        // Tạo response với dữ liệu phân trang
+        return response()->json([
+            'data' => [
+                'products' => $transformedProducts->toArray(),
+                'pagination' => [
+                    'total_product' => $products->total(),
+                    'per_page' => $products->perPage(),
+                    'current_page' => $products->currentPage(),
+                    'last_page' => $products->lastPage(),
+                    'from' => $products->firstItem(),
+                    'to' => $products->lastItem()
+                ]
+            ]
+        ], Response::HTTP_OK);
     }
+
 
     /**
      * Store a newly created resource in storage.
