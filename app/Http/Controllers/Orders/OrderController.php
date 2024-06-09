@@ -183,7 +183,7 @@ class OrderController extends Controller
         return response()->json([
             'message' => 'Order placed successfully',
             'order' => $order,
-            'order_detail' =>  $orderData,
+            'order_items ' =>  $orderData,
             'subtotal' => $subtotal,
             'discount' => $discount,
         ], Response::HTTP_CREATED);
