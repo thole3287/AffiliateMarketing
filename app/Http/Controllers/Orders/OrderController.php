@@ -109,7 +109,7 @@ class OrderController extends Controller
             'order_status' => $request->order_status,
             'note' =>  $request->note ?? null
         ]);
-        $order = Order::with('user')->find($order->id);
+        $order = Order::with(['user', 'orderItems'])->find($order->id);
         $orderData = [];
         $subtotal = 0;
 
@@ -185,7 +185,7 @@ class OrderController extends Controller
             'order' => $order,
             'order_items ' =>  $orderData,
             'subtotal' => $subtotal,
-            'discount' => $discount,
+            'discount' => $totalAmount,
         ], Response::HTTP_CREATED);
     }
 
