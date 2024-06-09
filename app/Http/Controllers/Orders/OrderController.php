@@ -109,7 +109,6 @@ class OrderController extends Controller
             'order_status' => $request->order_status,
             'note' =>  $request->note ?? null
         ]);
-        $order = Order::with(['user', 'orderItems'])->find($order->id);
         $orderData = [];
         $subtotal = 0;
 
@@ -172,6 +171,8 @@ class OrderController extends Controller
                 $user->save();
             }
         }
+        $orderProduct = Order::with(['user', 'orderItems'])->find($order->id);
+
         // dd($subtotal,  $discount, $discountPercentage);
         // Send email
         // $user = User::find($request->user_id);
@@ -182,8 +183,8 @@ class OrderController extends Controller
 
         return response()->json([
             'message' => 'Order placed successfully',
-            'order' => $order,
-            'order_items ' =>  $orderData,
+            'order' => $orderProduct,
+            'order_detail ' =>  $orderData,
             'subtotal' => $subtotal,
             'discount' => $totalAmount,
         ], Response::HTTP_CREATED);
