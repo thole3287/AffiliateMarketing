@@ -80,31 +80,43 @@ class OrderController extends Controller
             'payment_method' => 'nullable|string',
             'payment_status' => 'nullable|string|in:paid,unpaid',
             'order_status' => 'nullable|string|in:ordered,confirmed,cancelled,shipping,completed',
+            'coupon_code' => 'nullable|string|exists:coupons,coupon_code', // Kiểm tra mã coupon có tồn tại
         ]);
+
         $totalAmount = $request->total_amount;
         $originalTotalAmount = $totalAmount;
-        // Check if coupon code is provided and valid
-        $coupon = Coupon::where('coupon_code', $request->coupon_code)
-            ->where('coupon_status', 1)
-            ->where('expiration_date', '>', now())
-            ->first();
+
         $discount = 0;
-        if ($coupon) {
+        $coupon = null;
+
+        if ($request->has('coupon_code')) {
+            $coupon = Coupon::where('coupon_code', $request->coupon_code)->first();
+
+            if (!$coupon) {
+                return response()->json(['message' => 'Coupon code does not exist.'], 400);
+            }
+
+            if ($coupon->coupon_status != 'active') {
+                return response()->json(['message' => 'Coupon code is inactive.'], 400);
+            }
+
+            if ($coupon->expiration_date <= now()) {
+                return response()->json(['message' => 'Coupon code has expired.'], 400);
+            }
+
             $discount = $coupon->discount_amount;
             $totalAmount -= $discount;
-
-            // You might want to handle negative totalAmount here if discount exceeds the total
             $totalAmount = max(0, $totalAmount);
         }
-        // Calculate discount percentage
-        $discountPercentage = ($originalTotalAmount > 0) ? ($discount / $originalTotalAmount) * 100 : 0;
+
+        $discountPercentage = ($originalTotalAmount > 0) ? ($discount / $originalTotalAmount) * 100;
         $order = Order::create([
             'user_id' => $request->user_id ?? null,
             'shipping_address' => $request->shipping_address,
-            'total_amount' => $request->total_amount,
+            'total_amount' => $totalAmount, // Lưu số tiền đã giảm
             'payment_method' => $request->payment_method,
             'payment_status' => $request->payment_status,
-            'coupon_code' => $request->coupon_code ?? null,
+            'coupon_code' => $coupon ? $coupon->coupon_code : null,
             'order_date' => now(),
             'order_status' => $request->order_status,
             'note' =>  $request->note ?? null
@@ -190,9 +202,13 @@ class OrderController extends Controller
         return response()->json([
             'message' => 'Order placed successfully',
             'order' => $orderProduct,
-            'order_detail ' =>  $orderData,
+            // 'order_detail ' =>  $orderData,
             'subtotal' => $subtotal,
-            'discount' => $totalAmount,
+            'discount' => $discount,
+            'total_amount' => $totalAmount,
+            'coupon_code' => $coupon ? $coupon->coupon_code : null,
+            'discount_percentage' => $discountPercentage,
+
         ], Response::HTTP_CREATED);
     }
 
