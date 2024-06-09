@@ -171,7 +171,13 @@ class OrderController extends Controller
                 $user->save();
             }
         }
-        $orderProduct = Order::with(['user', 'orderItems.productVariation'])->find($order->id);
+        $orderProduct = Order::with(
+            [
+                'user',
+                'orderItems.product',
+                'orderItems.productVariation'
+            ]
+        )->find($order->id);
 
         // dd($subtotal,  $discount, $discountPercentage);
         // Send email
