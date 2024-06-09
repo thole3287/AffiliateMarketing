@@ -17,11 +17,14 @@ class Order extends Model
         'total_amount',
         'payment_method',
         'payment_status',
-        'note'
+        'note',
+        'discount',
     ];
     protected $casts = [
         'user_id' => 'int',
-        'total_amount' => 'float'
+        'total_amount' => 'float',
+        'discount' => 'float'
+
     ];
 
     public function user()

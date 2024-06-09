@@ -110,6 +110,7 @@ class OrderController extends Controller
         }
 
         $discountPercentage = ($originalTotalAmount > 0) ? ($discount / $originalTotalAmount) * 100 : 0;
+        // dd($totalAmount);
         $order = Order::create([
             'user_id' => $request->user_id ?? null,
             'shipping_address' => $request->shipping_address,
@@ -119,7 +120,8 @@ class OrderController extends Controller
             'coupon_code' => $coupon ? $coupon->coupon_code : null,
             'order_date' => now(),
             'order_status' => $request->order_status,
-            'note' =>  $request->note ?? null
+            'note' =>  $request->note ?? null,
+            'discount' => $discount,
         ]);
         $orderData = [];
         $subtotal = 0;
@@ -202,7 +204,7 @@ class OrderController extends Controller
         return response()->json([
             'message' => 'Order placed successfully',
             'order' => $orderProduct,
-            // 'order_detail ' =>  $orderData,
+            // // 'order_detail ' =>  $orderData,
             'subtotal' => $subtotal,
             'discount' => $discount,
             'total_amount' => $totalAmount,
