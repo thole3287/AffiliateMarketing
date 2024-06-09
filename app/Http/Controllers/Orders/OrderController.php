@@ -206,7 +206,7 @@ class OrderController extends Controller
             'subtotal' => $subtotal,
             'discount' => $discount,
             'total_amount' => $totalAmount,
-            'coupon_code' => $coupon ? $coupon->coupon_code : null,
+            'coupon_code' => $coupon ?? null,
             'discount_percentage' => $discountPercentage,
 
         ], Response::HTTP_CREATED);
