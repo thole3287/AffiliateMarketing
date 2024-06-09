@@ -109,7 +109,7 @@ class OrderController extends Controller
             $totalAmount = max(0, $totalAmount);
         }
 
-        $discountPercentage = ($originalTotalAmount > 0) ? ($discount / $originalTotalAmount) * 100;
+        $discountPercentage = ($originalTotalAmount > 0) ? ($discount / $originalTotalAmount) * 100 : 0;
         $order = Order::create([
             'user_id' => $request->user_id ?? null,
             'shipping_address' => $request->shipping_address,
