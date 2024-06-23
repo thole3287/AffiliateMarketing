@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Imports;
 
 use App\Models\product\Product;
@@ -7,15 +6,10 @@ use App\Models\product\ProductImagesModel;
 use App\Models\product\ProductVariation;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Illuminate\Support\Str;
 
 class ProductsImport implements ToModel, WithHeadingRow
 {
-    // use WithHeadingRow;
-    /**
-     * @param array $row
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
     private $data = [];
 
     public function model(array $row)
@@ -40,34 +34,59 @@ class ProductsImport implements ToModel, WithHeadingRow
             ]
         );
 
-        // Handle product images
-        for ($i = 1; $i <= 10; $i++) { // Assume a maximum of 10 images for example
-            $imageColumn = 'image_' . $i;
-
-            if (isset($row[$imageColumn]) && !empty($row[$imageColumn])) {
+        // Handle product images dynamically
+        foreach ($row as $column => $value) {
+            if (Str::startsWith($column, 'image_') && !empty($value)) {
                 $product_image = new ProductImagesModel();
                 $product_image->product_id = $product->id;
-                $product_image->image_path = $row[$imageColumn];
+                $product_image->image_path = $value;
                 $product_image->save();
             }
         }
 
-        // Handle product variations
-        for ($i = 1; $i <= 10; $i++) { // Assume a maximum of 10 variations for example
-            $sizeColumn = 'variation_size_' . $i;
-            $colorColumn = 'variation_color_' . $i;
-            $priceColumn = 'variation_price_' . $i;
-            $quantityColumn = 'variation_quantity_' . $i;
+        // Handle product variations dynamically
+        $variationAttributes = [];
+        $variationData = [];
+        foreach ($row as $column => $value) {
+            if (Str::startsWith($column, 'variation_attribute_name_')) {
+                $index = Str::replaceFirst('variation_attribute_name_', '', $column);
+                $attributeName = $value;
+                $variationAttributes[$index] = $attributeName;
+            } elseif (Str::startsWith($column, 'variation_')) {
+                $variationKey = Str::replaceFirst('variation_', '', $column);
+                $variationData[$variationKey] = $value;
+            }
+        }
 
-            if (isset($row[$sizeColumn]) && isset($row[$colorColumn]) && isset($row[$priceColumn]) && isset($row[$quantityColumn])) {
+        // Split the variations into chunks by index
+        $groupedVariations = [];
+        foreach ($variationData as $key => $value) {
+            $parts = explode('_', $key);
+            if (count($parts) == 2) {
+                $index = $parts[1];
+                $field = $parts[0];
+                $groupedVariations[$index][$field] = $value;
+            }
+        }
+
+        foreach ($groupedVariations as $index => $variation) {
+            $attributes = [];
+            foreach ($variationAttributes as $attributeIndex => $attributeName) {
+                $attributeColumn = 'attribute_' . $attributeIndex;
+                if (isset($variation[$attributeColumn])) {
+                    $attributes[$attributeName] = $variation[$attributeColumn];
+                }
+            }
+
+            if (!empty($attributes) && isset($variation['price']) && isset($variation['quantity'])) {
                 ProductVariation::updateOrCreate(
                     [
                         'product_id' => $product->id,
-                        'attributes' => ['size' => $row[$sizeColumn], 'color' => $row[$colorColumn]],
+                        'attributes' => $attributes,
                     ],
                     [
-                        'price' => $row[$priceColumn],
-                        'quantity' => $row[$quantityColumn],
+                        'price' => $variation['price'],
+                        'quantity' => $variation['quantity'],
                     ]
                 );
             }
