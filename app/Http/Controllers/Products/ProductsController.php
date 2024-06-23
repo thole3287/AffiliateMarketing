@@ -153,6 +153,10 @@ class ProductsController extends Controller
             $query->where('brand_id', $request->input('brand_id'));
         }
 
+        if ($request->has('slug')) {
+            $query->where('product_slug', $request->input('slug'));
+        }
+
         // Phân trang kết quả
         $products = $query->paginate($perPage);
 
