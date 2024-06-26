@@ -240,7 +240,7 @@ class OrderController extends Controller
             'order' => $order,
         ], Response::HTTP_OK);
     }
-    public function updateOrderStatusCallback(Request $request, $orderId)
+    public function updateOrderStatusCallback(Request $request)
     {
         // Validate the incoming request
         $request->validate([
@@ -252,11 +252,11 @@ class OrderController extends Controller
             // 'merchantTransId' => 'required|string',
             // 'amount' => 'required|numeric',
             // 'description' => 'required|string',
-            // 'resultCode' => 'required|integer',
+            'resultCode' => 'required|integer',
             // 'message' => 'required|string',
             // 'extradata' => 'nullable|string',
         ]);
-
+        $orderId = $request->input('orderId');
         // Find the order by ID
         $order = Order::findOrFail($orderId);
 
