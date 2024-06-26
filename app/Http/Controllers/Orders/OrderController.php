@@ -19,6 +19,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Mail\OrderPlaced;
+use App\Models\UserCommission;
 use Illuminate\Support\Facades\Mail;
 
 
@@ -180,9 +181,12 @@ class OrderController extends Controller
                 }
 
                 // Update total_commission for the user
-                $user = User::find($request->referral_user_id);
-                $user->total_commission = ($user->total_commission ?? 0) + $commissionAmount;
-                $user->save();
+                // $user = User::find($request->referral_user_id);
+                // $user->total_commission = ($user->total_commission ?? 0) + $commissionAmount;
+                // $user->save();
+                $userCommission = UserCommission::firstOrNew(['user_id' => $request->referral_user_id]);
+                $userCommission->total_commission = ($userCommission->total_commission ?? 0) + $commissionAmount;
+                $userCommission->save();
             }
         }
         $orderProduct = Order::with(
@@ -195,11 +199,11 @@ class OrderController extends Controller
 
         // dd($subtotal,  $discount, $discountPercentage);
         // Send email
-        $user = User::find($request->user_id);
-        if (!empty($user->email)) {
-            // dispatch(new SendOrderEmail($order, $orderData,  $discount, $subtotal, $discountPercentage, $user->email));
-            Mail::to($user->email)->send(new OrderPlaced($order, $orderData, $discount, $subtotal, $discountPercentage));
-        }
+        // $user = User::find($request->user_id);
+        // if (!empty($user->email)) {
+        //     // dispatch(new SendOrderEmail($order, $orderData,  $discount, $subtotal, $discountPercentage, $user->email));
+        //     Mail::to($user->email)->send(new OrderPlaced($order, $orderData, $discount, $subtotal, $discountPercentage));
+        // }
 
         return response()->json([
             'message' => 'Order placed successfully',

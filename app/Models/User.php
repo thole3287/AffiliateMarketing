@@ -68,5 +68,9 @@ class User extends Authenticatable implements JWTSubject
     public function products() {
         return $this->hasMany(Product::class, 'vendor_id');
     }
+    public function commission()
+    {
+        return $this->hasOne(UserCommission::class);
+    }
 
 }

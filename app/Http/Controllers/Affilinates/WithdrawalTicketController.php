@@ -35,7 +35,7 @@ class WithdrawalTicketController extends Controller
     // Phương thức lấy danh sách tất cả các ticket rút tiền
     public function index()
     {
-        $tickets = WithdrawalTicket::with(['user', 'replies'])->get();
+        $tickets = WithdrawalTicket::with(['user', 'replies', 'userCommission'])->get();
 
         $totalTickets = WithdrawalTicket::count();
         $totalCancelled = WithdrawalTicket::where('status', 'cancelled')->count();

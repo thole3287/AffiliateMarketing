@@ -30,4 +30,8 @@ class WithdrawalTicket extends Model
     {
         return $this->hasMany(TicketReply::class, 'ticket_id');
     }
+    public function userCommission()
+    {
+        return $this->belongsTo(UserCommission::class, 'user_id', 'user_id');
+    }
 }
