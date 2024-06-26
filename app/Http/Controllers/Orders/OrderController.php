@@ -240,6 +240,45 @@ class OrderController extends Controller
             'order' => $order,
         ], Response::HTTP_OK);
     }
+    public function updateOrderStatusCallback(Request $request, $orderId)
+    {
+        // Validate the incoming request
+        $request->validate([
+            // 'appId' => 'required|string',
+            'orderId' => 'required|string',
+            // 'transId' => 'required|string',
+            // 'method' => 'required|string',
+            // 'transTime' => 'required|string',
+            // 'merchantTransId' => 'required|string',
+            // 'amount' => 'required|numeric',
+            // 'description' => 'required|string',
+            // 'resultCode' => 'required|integer',
+            // 'message' => 'required|string',
+            // 'extradata' => 'nullable|string',
+        ]);
+
+        // Find the order by ID
+        $order = Order::findOrFail($orderId);
+
+        // Update the order status based on resultCode
+        if ($request->input('resultCode') == 1) {
+            $order->payment_status = 'paid';
+            $order->order_status = 'confirmed';
+        } else {
+            $order->payment_status = 'unpaid';
+            $order->order_status = 'cancelled';
+        }
+
+        // Update the payment method
+        $order->payment_method = $request->input('method');
+        $order->save();
+
+        // Return a success response
+        return response()->json([
+            'message' => 'Order status updated successfully',
+            'order' => $order,
+        ], Response::HTTP_OK);
+    }
     public function cancelOrder(Request $request, Order $order)
     {
         // Kiểm tra xem đơn hàng đã được thanh toán hay chưa

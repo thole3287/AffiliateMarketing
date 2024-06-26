@@ -22,7 +22,7 @@ class WithdrawalTicketController extends Controller
 
         $ticket = WithdrawalTicket::create([
             'user_id' => $request->input('user_id'),
-            'total_commission' => User::where('id', $request->input('user_id'))->pluck('total_commission')->first(),
+            // 'total_commission' => User::where('id', $request->input('user_id'))->pluck('total_commission')->first(),
             'amount' => $request->input('amount'),
             'bank_name' => $request->input('bank_name'),
             'account_number' => $request->input('account_number'),

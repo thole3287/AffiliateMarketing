@@ -67,7 +67,7 @@ Route::get('products/export-products', [ProductsController::class, 'exportProduc
 
 Route::get('/orders', [OrderController::class, 'index']);
 Route::put('/orders/{orderId}/status', [OrderController::class, 'updateOrderStatus']);
-
+Route::post('/update-order-status/{orderId}', [OrderController::class, 'updateOrderStatusCallback']);
 
 Route::get('/referrals', [AffilinateController::class, 'index']);
 Route::get('/referrals/{id}', [AffilinateController::class, 'show']);
