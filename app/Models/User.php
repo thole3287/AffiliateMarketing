@@ -72,5 +72,8 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(UserCommission::class);
     }
-
+    public function referrals()
+    {
+        return $this->hasMany(Referral::class);
+    }
 }

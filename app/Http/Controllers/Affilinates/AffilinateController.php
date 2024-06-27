@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Affilinates;
 
 use App\Http\Controllers\Controller;
 use App\Models\Referral;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AffilinateController extends Controller
@@ -70,6 +71,42 @@ class AffilinateController extends Controller
            'unpaidOrdersCount' => $unpaidOrdersCountAllUsers,
            'aggregatedData' => $aggregatedData,
        ]);
+    }
+
+    public function getReferralDetails($userId)
+    {
+        $user = User::with('referrals.product', 'referrals.order')
+                    ->findOrFail($userId);
+
+        // Tính tổng số sản phẩm được giới thiệu
+        $totalProducts = $user->referrals->count();
+
+        // Tính tổng doanh thu từ các sản phẩm được giới thiệu
+        $totalRevenue = $user->referrals->sum('commission_amount');
+        // dd($totalRevenue);
+        // Tính tổng doanh thu từ các đơn hàng được giới thiệu
+        // $totalOrderRevenue = $user->referrals->sum('total_amount');
+        // dd( $totalOrderRevenue);
+        // Lấy danh sách chi tiết các sản phẩm và đơn hàng được giới thiệu
+        $referralDetails = $user->referrals->map(function($referral) {
+            // dd($referral);
+            return [
+                'product' => $referral->product->product_name,
+                'order_id' => $referral->order_id,
+                // 'commission_percentage' => $referral->commission_percentage,
+                'commission_amount' => $referral->commission_amount,
+                // 'order_total_amount' => $referral->total_amount,
+            ];
+        });
+
+        return response()->json([
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'total_products' => $totalProducts,
+            'total_commission' => $totalRevenue,
+            // 'total_order_revenue' => $totalOrderRevenue,
+            'referral_details' => $referralDetails,
+        ]);
     }
 
     public function show($id)

@@ -72,6 +72,7 @@ Route::post('/update-order-status', [OrderController::class, 'updateOrderStatusC
 Route::get('/referrals', [AffilinateController::class, 'index']);
 Route::get('/referrals/{id}', [AffilinateController::class, 'show']);
 Route::put('/referrals/{id}/status', [AffilinateController::class, 'updateStatus']);
+Route::get('/referral-details/{userId}', [AffilinateController::class, 'getReferralDetails']);
 
 Route::post('/withdrawal-tickets', [WithdrawalTicketController::class, 'store']);
 Route::get('/withdrawal-tickets', [WithdrawalTicketController::class, 'index']);
