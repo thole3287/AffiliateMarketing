@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Affilinates;
 use App\Http\Controllers\Controller;
 use App\Models\Referral;
 use App\Models\User;
+use App\Models\UserCommission;
 use Illuminate\Http\Request;
 
 class AffilinateController extends Controller
@@ -82,7 +83,7 @@ class AffilinateController extends Controller
         $totalProducts = $user->referrals->count();
 
         // Tính tổng doanh thu từ các sản phẩm được giới thiệu
-        $totalRevenue = $user->referrals->sum('commission_amount');
+        $userCommission = UserCommission::where('user_id', $userId)->first();
         // dd($totalRevenue);
         // Tính tổng doanh thu từ các đơn hàng được giới thiệu
         // $totalOrderRevenue = $user->referrals->sum('total_amount');
@@ -103,7 +104,7 @@ class AffilinateController extends Controller
             'user_id' => $user->id,
             'user_name' => $user->name,
             'total_products' => $totalProducts,
-            'total_commission' => $totalRevenue,
+            'total_commission' => $userCommission->total_commission,
             // 'total_order_revenue' => $totalOrderRevenue,
             'referral_details' => $referralDetails,
         ]);
