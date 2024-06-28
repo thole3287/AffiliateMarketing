@@ -158,7 +158,7 @@ class OrderController extends Controller
             $orderData[] = OrderItems::with(['product', 'productVariation'])->find($orderItem->id);
             $subtotal += $productPrice * $product['quantity'];
 
-            if ($request->filled('referral_user_id')) {
+            if ($request->filled('referral_user_id') && !empty($checkoutArray)) {
                 $isValidReferral = false;
                 foreach ($checkoutArray as $item) {
                     if ($item['referral_user_id'] == $request->referral_user_id && $item['product_id'] == $product1->id) {
