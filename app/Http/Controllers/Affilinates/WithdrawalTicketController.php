@@ -51,6 +51,18 @@ class WithdrawalTicketController extends Controller
         ]);
     }
 
+    public function getTicketsByUser($userId)
+    {
+        // Lấy tất cả các ticket theo userId
+        $tickets = WithdrawalTicket::where('user_id', $userId)->with(['user', 'replies', 'userCommission'])->get();
+
+        // Kiểm tra nếu không có ticket nào cho userId này
+        if ($tickets->isEmpty()) {
+            return response()->json(['message' => 'No tickets found for this user'], 404);
+        }
+
+        return response()->json(['tickets' => $tickets], 200);
+    }
     // Phương thức cập nhật trạng thái của ticket
     public function updateStatus(Request $request, $id)
     {

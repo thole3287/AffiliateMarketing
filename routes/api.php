@@ -77,6 +77,7 @@ Route::get('/referral-details/{userId}', [AffilinateController::class, 'getRefer
 Route::post('/withdrawal-tickets', [WithdrawalTicketController::class, 'store']);
 Route::get('/withdrawal-tickets', [WithdrawalTicketController::class, 'index']);
 Route::put('/withdrawal-tickets/{id}/status', [WithdrawalTicketController::class, 'updateStatus']);
+Route::get('/user/{userId}/tickets', [WithdrawalTicketController::class, 'getTicketsByUser']);
 
 
 Route::post('/withdrawal-tickets/{id}/replies', [TicketReplyController::class, 'store']);
