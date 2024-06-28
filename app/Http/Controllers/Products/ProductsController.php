@@ -507,6 +507,18 @@ class ProductsController extends Controller
         return response()->json(['message' => 'Product deleted successfully'], Response::HTTP_OK);
     }
 
+    public function updateAllCommissionPercentage(Request $request)
+    {
+        $request->validate([
+            'new_commission_percentage' => 'required|numeric|min:0',
+        ]);
+
+        $newCommissionPercentage = $request->input('new_commission_percentage');
+        $affectedRows = Product::where('commission_percentage', 0.00)->update(['commission_percentage' => $newCommissionPercentage]);
+
+        return response()->json(['message' => 'Commission percentages updated successfully', 'affectedRows' => $affectedRows], 200);
+    }
+
     public function import(Request $request)
     {
         $request->validate([

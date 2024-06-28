@@ -64,6 +64,7 @@ Route::post('/orders/{order}/cancel', [OrderController::class, 'cancelOrder']);
 
 Route::post('products/import-excel', [ProductsController::class, 'import']);
 Route::get('products/export-products', [ProductsController::class, 'exportProducts']);
+Route::post('/products/update-commission-percentage', [ProductsController::class, 'updateAllCommissionPercentage']);
 
 Route::get('/orders', [OrderController::class, 'index']);
 Route::put('/orders/{orderId}/status', [OrderController::class, 'updateOrderStatus']);
