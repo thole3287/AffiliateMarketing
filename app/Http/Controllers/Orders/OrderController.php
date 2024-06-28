@@ -70,7 +70,6 @@ class OrderController extends Controller
     public function placeOrder(Request $request)
     {
         $request->validate([
-            // 'user_id' => 'required|exists:users,id',
             'products' => 'required|array',
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.quantity' => 'required|integer|min:1',
@@ -81,7 +80,12 @@ class OrderController extends Controller
             'payment_method' => 'nullable|string',
             'payment_status' => 'nullable|string|in:paid,unpaid',
             'order_status' => 'nullable|string|in:ordered,confirmed,cancelled,shipping,completed',
-            'coupon_code' => 'nullable|string|exists:coupons,coupon_code', // Kiểm tra mã coupon có tồn tại
+            'coupon_code' => 'nullable|string|exists:coupons,coupon_code',
+            'checkoutArray' => 'required|array',
+            'checkoutArray.*.productid' => 'required|exists:products,id',
+            'checkoutArray.*.variantid' => 'nullable|exists:product_variations,id',
+            'checkoutArray.*.referral_user_id' => 'required|exists:users,id',
+            'checkoutArray.*.quantity' => 'required|integer|min:1',
         ]);
 
         $totalAmount = $request->total_amount;
@@ -111,11 +115,11 @@ class OrderController extends Controller
         }
 
         $discountPercentage = ($originalTotalAmount > 0) ? ($discount / $originalTotalAmount) * 100 : 0;
-        // dd($totalAmount);
+
         $order = Order::create([
             'user_id' => $request->user_id ?? null,
             'shipping_address' => $request->shipping_address,
-            'total_amount' => $totalAmount, // Lưu số tiền đã giảm
+            'total_amount' => $totalAmount,
             'payment_method' => $request->payment_method,
             'payment_status' => $request->payment_status,
             'coupon_code' => $coupon ? $coupon->coupon_code : null,
@@ -124,8 +128,11 @@ class OrderController extends Controller
             'note' =>  $request->note ?? null,
             'discount' => $discount,
         ]);
+
         $orderData = [];
         $subtotal = 0;
+
+        $checkoutArray = $request->checkoutArray;
 
         foreach ($request->products as $product) {
             $product1 = Product::findOrFail($product['product_id']);
@@ -133,88 +140,72 @@ class OrderController extends Controller
 
             $productPrice = $product1->product_price;
 
-            // Check if product has any offer
             $productOffer = ProductOffer::where('offer_product_id', $product1->id)->first();
-            // If product has offer, adjust product price accordingly
             if ($productOffer) {
                 if ($productOffer->hot_deal) {
                     $productPrice -= $productPrice * ($productOffer->hot_deal / 100);
                 }
-                // Add more conditions for other types of offers if needed
             }
-            // dd($variation);
+
             $orderItem = new OrderItems();
             $orderItem->order_id = $order->id;
             $orderItem->product_id =  $product1->id;
             $orderItem->variation_id = $variation?->id;
             $orderItem->quantity = $product['quantity'];
-            // $orderItem->product_price = $product1->product_price;
             $orderItem->product_price = $productPrice;
-
             $orderItem->save();
+
             $orderData[] = OrderItems::with(['product', 'productVariation'])->find($orderItem->id);
-            // $orderData[] = $orderItem;
             $subtotal += $productPrice * $product['quantity'];
 
             if ($request->filled('referral_user_id')) {
-                $referral = Referral::where('user_id', $request->referral_user_id)
-                    ->where('product_id', $product1->id)
-                    ->where('order_id', $order->id)
-                    ->first();
-
-                $commissionAmount = $productPrice * ($product1->commission_percentage / 100) * $product['quantity'];
-
-                if ($referral) {
-                    // Update existing referral
-                    $referral->commission_amount += $commissionAmount;
-                    $referral->save();
-                } else {
-                    // Create new referral
-                    $referral = new Referral([
-                        'user_id' => $request->referral_user_id,
-                        'product_id' => $product1->id,
-                        'order_id' => $order->id,
-                        'commission_percentage' => $product1->commission_percentage,
-                        'commission_amount' => $commissionAmount,
-                    ]);
-                    $referral->save();
+                $isValidReferral = false;
+                foreach ($checkoutArray as $item) {
+                    if ($item['referral_user_id'] == $request->referral_user_id && $item['product_id'] == $product1->id) {
+                        $isValidReferral = true;
+                        break;
+                    }
                 }
 
-                // Update total_commission for the user
-                // $user = User::find($request->referral_user_id);
-                // $user->total_commission = ($user->total_commission ?? 0) + $commissionAmount;
-                // $user->save();
-                $userCommission = UserCommission::firstOrNew(['user_id' => $request->referral_user_id]);
-                $userCommission->total_commission = ($userCommission->total_commission ?? 0) + $commissionAmount;
-                $userCommission->save();
+                if ($isValidReferral) {
+                    $referral = Referral::where('user_id', $request->referral_user_id)
+                        ->where('product_id', $product1->id)
+                        ->where('order_id', $order->id)
+                        ->first();
+
+                    $commissionAmount = $productPrice * ($product1->commission_percentage / 100) * $product['quantity'];
+
+                    if ($referral) {
+                        $referral->commission_amount += $commissionAmount;
+                        $referral->save();
+                    } else {
+                        $referral = new Referral([
+                            'user_id' => $request->referral_user_id,
+                            'product_id' => $product1->id,
+                            'order_id' => $order->id,
+                            'commission_percentage' => $product1->commission_percentage,
+                            'commission_amount' => $commissionAmount,
+                        ]);
+                        $referral->save();
+                    }
+
+                    $userCommission = UserCommission::firstOrNew(['user_id' => $request->referral_user_id]);
+                    $userCommission->total_commission = ($userCommission->total_commission ?? 0) + $commissionAmount;
+                    $userCommission->save();
+                }
             }
         }
-        $orderProduct = Order::with(
-            [
-                'user',
-                'orderItems.product',
-                'orderItems.productVariation'
-            ]
-        )->find($order->id);
 
-        // dd($subtotal,  $discount, $discountPercentage);
-        // Send email
-        // $user = User::find($request->user_id);
-        // if (!empty($user->email)) {
-        //     // dispatch(new SendOrderEmail($order, $orderData,  $discount, $subtotal, $discountPercentage, $user->email));
-        //     Mail::to($user->email)->send(new OrderPlaced($order, $orderData, $discount, $subtotal, $discountPercentage));
-        // }
+        $orderProduct = Order::with(['user', 'orderItems.product', 'orderItems.productVariation'])->find($order->id);
 
         return response()->json([
             'message' => 'Order placed successfully',
             'order' => $orderProduct,
-            // // 'order_detail ' =>  $orderData,
             'subtotal' => $subtotal,
             'discount' => $discount,
             'total_amount' => $totalAmount,
             'coupon_code' => $coupon ?? null,
             'discount_percentage' => $discountPercentage,
-
         ], Response::HTTP_CREATED);
     }
 
