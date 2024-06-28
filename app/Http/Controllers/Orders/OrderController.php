@@ -82,8 +82,8 @@ class OrderController extends Controller
             'order_status' => 'nullable|string|in:ordered,confirmed,cancelled,shipping,completed',
             'coupon_code' => 'nullable|string|exists:coupons,coupon_code',
             'checkoutArray' => 'required|array',
-            'checkoutArray.*.productid' => 'required|exists:products,id',
-            'checkoutArray.*.variantid' => 'nullable|exists:product_variations,id',
+            'checkoutArray.*.product_id' => 'required|exists:products,id',
+            'checkoutArray.*.variation_id' => 'nullable|exists:product_variations,id',
             'checkoutArray.*.referral_user_id' => 'required|exists:users,id',
             'checkoutArray.*.quantity' => 'required|integer|min:1',
         ]);
