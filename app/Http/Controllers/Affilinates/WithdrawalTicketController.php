@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Affilinates;
 use App\Http\Controllers\Controller;
 use App\Models\Referral;
 use App\Models\User;
+use App\Models\UserCommission;
 use App\Models\WithdrawalTicket;
 use Illuminate\Http\Request;
 
@@ -74,6 +75,20 @@ class WithdrawalTicketController extends Controller
 
         if (!$ticket) {
             return response()->json(['message' => 'Ticket not found'], 404);
+        }
+
+        if ($request->input('status') === 'completed') {
+            $userCommission = UserCommission::where('user_id', $ticket->user_id)->first();
+            if (!$userCommission) {
+                return response()->json(['message' => 'User commission record not found'], 404);
+            }
+
+            if ($userCommission->total_commission < $ticket->amount) {
+                return response()->json(['message' => 'Insufficient funds'], 400);
+            }
+
+            $userCommission->total_commission -= $ticket->amount;
+            $userCommission->save();
         }
 
         $ticket->status = $request->input('status');
