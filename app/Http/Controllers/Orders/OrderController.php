@@ -81,11 +81,11 @@ class OrderController extends Controller
             'payment_status' => 'nullable|string|in:paid,unpaid',
             'order_status' => 'nullable|string|in:ordered,confirmed,cancelled,shipping,completed',
             'coupon_code' => 'nullable|string|exists:coupons,coupon_code',
-            'checkoutArray' => 'required|array',
-            'checkoutArray.*.product_id' => 'required|exists:products,id',
+            'checkoutArray' => 'nullable|array',
+            'checkoutArray.*.product_id' => 'nullable|exists:products,id',
             'checkoutArray.*.variation_id' => 'nullable|exists:product_variations,id',
-            'checkoutArray.*.referral_user_id' => 'required|exists:users,id',
-            'checkoutArray.*.quantity' => 'required|integer|min:1',
+            'checkoutArray.*.referral_user_id' => 'nullable|exists:users,id',
+            'checkoutArray.*.quantity' => 'nullable|integer|min:1',
         ]);
 
         $totalAmount = $request->total_amount;
