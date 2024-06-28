@@ -58,7 +58,7 @@ class ProductsExport implements FromCollection, WithHeadings, WithMapping
         // Map product data to the appropriate columns
         $row = [
             $product->product_code, $product->product_name, $product->product_price, $product->product_price_import, $product->commission_percentage,
-            $product->category->name, $product->brand->name, $product->product_status, $product->product_thumbbail, $product->product_tags,
+            $product->category->name ?? null, $product->brand->name ?? null, $product->product_status, $product->product_thumbbail, $product->product_tags,
             $product->product_slug, $product->product_colors, $product->product_quantity, $product->product_short_description, $product->product_long_description
         ];
 
