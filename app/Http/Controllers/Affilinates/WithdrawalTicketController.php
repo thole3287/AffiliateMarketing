@@ -77,7 +77,7 @@ class WithdrawalTicketController extends Controller
             return response()->json(['message' => 'Ticket not found'], 404);
         }
 
-        if ($request->input('status') === 'completed') {
+        if ($request->input('status') === 'completed' && $ticket->status !== 'completed') {
             $userCommission = UserCommission::where('user_id', $ticket->user_id)->first();
             if (!$userCommission) {
                 return response()->json(['message' => 'User commission record not found'], 404);
