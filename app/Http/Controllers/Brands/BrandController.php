@@ -6,8 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Brand;
 use App\Http\Services\UploadService;
-
-
+use App\Models\product\Product;
 
 class BrandController extends Controller
 {
@@ -121,7 +120,10 @@ class BrandController extends Controller
         if (!$brand) {
             return response()->json(['message' => 'Brand not found'], 404);
         }
-
+        $productsCount = Product::where('brand_id', $id)->count();
+        if ($productsCount > 0) {
+            return response()->json(['message' => 'Brand cannot be deleted because it has associated products'], 400);
+        }
         if ($brand->image) {
             $imagePath = public_path('public/brands/') . basename($brand->image);
             if (file_exists($imagePath)) {

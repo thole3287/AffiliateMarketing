@@ -209,7 +209,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Http\Services\UploadService;
-
+use App\Models\product\Product;
 
 class CategoryController extends Controller
 {
@@ -309,6 +309,12 @@ class CategoryController extends Controller
         $hasChildren = Category::where('parent_id', $id)->exists();
         if ($hasChildren) {
             return response()->json(['message' => 'Cannot delete category with children'], 422);
+        }
+
+        // Check if there are any products associated with this category
+        $productsCount = Product::where('category_id', $id)->count();
+        if ($productsCount > 0) {
+            return response()->json(['message' => 'Cannot delete category with associated products'], 422);
         }
 
         if ($category->image) {
