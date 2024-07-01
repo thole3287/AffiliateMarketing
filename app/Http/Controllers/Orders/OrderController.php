@@ -127,12 +127,11 @@ class OrderController extends Controller
             'order_status' => $request->order_status,
             'note' =>  $request->note ?? null,
             'discount' => $discount,
+            'check_out_order' => $request->checkoutArray ?? [],
         ]);
 
         $orderData = [];
         $subtotal = 0;
-
-        $checkoutArray = $request->checkoutArray;
 
         foreach ($request->products as $product) {
             $product1 = Product::findOrFail($product['product_id']);
@@ -157,43 +156,6 @@ class OrderController extends Controller
 
             $orderData[] = OrderItems::with(['product', 'productVariation'])->find($orderItem->id);
             $subtotal += $productPrice * $product['quantity'];
-
-            if ($request->filled('referral_user_id') && !empty($checkoutArray)) {
-                $isValidReferral = false;
-                foreach ($checkoutArray as $item) {
-                    if ($item['referral_user_id'] == $request->referral_user_id && $item['product_id'] == $product1->id) {
-                        $isValidReferral = true;
-                        break;
-                    }
-                }
-
-                if ($isValidReferral) {
-                    $referral = Referral::where('user_id', $request->referral_user_id)
-                        ->where('product_id', $product1->id)
-                        ->where('order_id', $order->id)
-                        ->first();
-
-                    $commissionAmount = $productPrice * ($product1->commission_percentage / 100) * $product['quantity'];
-
-                    if ($referral) {
-                        $referral->commission_amount += $commissionAmount;
-                        $referral->save();
-                    } else {
-                        $referral = new Referral([
-                            'user_id' => $request->referral_user_id,
-                            'product_id' => $product1->id,
-                            'order_id' => $order->id,
-                            'commission_percentage' => $product1->commission_percentage,
-                            'commission_amount' => $commissionAmount,
-                        ]);
-                        $referral->save();
-                    }
-
-                    $userCommission = UserCommission::firstOrNew(['user_id' => $request->referral_user_id]);
-                    $userCommission->total_commission = ($userCommission->total_commission ?? 0) + $commissionAmount;
-                    $userCommission->save();
-                }
-            }
         }
 
         $orderProduct = Order::with(['user', 'orderItems.product', 'orderItems.productVariation'])->find($order->id);
@@ -211,21 +173,77 @@ class OrderController extends Controller
 
     public function updateOrderStatus(Request $request, $orderId)
     {
-        // Validate the incoming request
         $request->validate([
             'payment_status' => 'nullable|string|in:paid,unpaid',
             'order_status' => 'nullable|string|in:ordered,confirmed,cancelled,shipping,completed',
         ]);
 
-        // Find the order by ID
+        // Tìm đơn hàng bằng ID
         $order = Order::findOrFail($orderId);
 
-        // Update the order status and payment status
+        // Kiểm tra trạng thái thanh toán trước đó
+        $previousPaymentStatus = $order->payment_status;
+
+        // Cập nhật trạng thái đơn hàng và trạng thái thanh toán
         $order->payment_status = $request->input('payment_status');
         $order->order_status = $request->input('order_status');
-        $order->save();
 
-        // Return a success response
+        // Nếu trạng thái thanh toán là 'paid' lần đầu tiên và hoa hồng chưa được xử lý
+        if ($previousPaymentStatus !== 'paid' && $order->payment_status === 'paid' && !$order->commission_processed) {
+            // $checkoutArray = json_decode($order->check_out_order, true) ?? [];
+            $checkoutArray = $order->check_out_order ?? [];
+            // dd($checkoutArray);
+            foreach ($checkoutArray as $item) {
+                // dd($item);
+                $referralUserId = $item['referral_user_id'];
+                $productId = $item['product_id'];
+
+                $product = Product::findOrFail($productId);
+                // Kiểm tra trạng thái hoa hồng của sản phẩm
+                if ($product->product_commission_status === 'inactive') {
+                    continue; // Bỏ qua nếu trạng thái là 'inactive'
+                }
+
+                // Tính toán giá trị hoa hồng dựa trên trạng thái
+                if ($product->product_commission_status === 'active') {
+                    $commissionPercentage = $product->commission_percentage;
+                } elseif ($product->product_commission_status === 'special') {
+                    $commissionPercentage = $product->special_commission_percentage;
+                } else {
+                    continue; // Bỏ qua nếu trạng thái không hợp lệ
+                }
+
+                $commissionAmount = $product->product_price * ($commissionPercentage / 100) * $item['quantity'];
+
+                $referral = Referral::where('user_id', $referralUserId)
+                    ->where('product_id', $productId)
+                    ->where('order_id', $order->id)
+                    ->first();
+
+                if ($referral) {
+                    $referral->commission_amount += $commissionAmount;
+                    $referral->save();
+                } else {
+                    $referral = new Referral([
+                        'user_id' => $referralUserId,
+                        'product_id' => $productId,
+                        'order_id' => $order->id,
+                        'commission_percentage' => $commissionPercentage,
+                        'commission_amount' => $commissionAmount,
+                    ]);
+                    $referral->save();
+                }
+
+                $userCommission = UserCommission::firstOrNew(['user_id' => $referralUserId]);
+                $userCommission->total_commission = ($userCommission->total_commission ?? 0) + $commissionAmount;
+                $userCommission->save();
+            }
+
+            // Đánh dấu hoa hồng đã được xử lý
+            $order->commission_processed = true;
+        }
+        $order->save();
+        // Trả về phản hồi thành công
         return response()->json([
             'message' => 'Order status updated successfully',
             'order' => $order,

@@ -19,12 +19,14 @@ class Order extends Model
         'payment_status',
         'note',
         'discount',
+        'check_out_order',
+        'commission_processed'
     ];
     protected $casts = [
         'user_id' => 'int',
         'total_amount' => 'float',
-        'discount' => 'float'
-
+        'discount' => 'float',
+        'check_out_order' => 'array'
     ];
 
     public function user()
