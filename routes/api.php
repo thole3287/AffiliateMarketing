@@ -51,6 +51,7 @@ Route::post('order-items', [OrderController::class, 'placeOrder']);
 Route::get('order-items', [OrderController::class, 'getOrders']);
 Route::get('order-history', [OrderController::class, 'getOrderHistory']);
 Route::get('/orders/filter', [OrderController::class, 'filterOrders']);
+Route::put('/orders/{orderId}/note', [OrderController::class, 'updateNote']);
 
 
 Route::post('upload-file', [UploadController::class, 'uploadFile']);

@@ -52,6 +52,26 @@ class OrderController extends Controller
         return response()->json($responseData);
     }
 
+    public function updateNote(Request $request, $orderId)
+    {
+        $request->validate([
+            'note' => 'required|string',
+        ]);
+
+        // Tìm đơn hàng bằng ID
+        $order = Order::findOrFail($orderId);
+
+        // Cập nhật ghi chú và ID người thực hiện ghi chú
+        $order->note = $request->input('note');
+        $order->noted_by = $request->input('user_id'); // Lấy ID người dùng đã đăng nhập
+        $user_infor = User::where('id', $request->input('user_id'))->first();
+        // Trả về phản hồi thành công
+        return response()->json([
+            'message' => 'Order note updated successfully',
+            'order' => $order,
+            'userInfo' => $user_infor
+        ], Response::HTTP_OK);
+    }
 
     public function getOrders(Request $request)
     {
