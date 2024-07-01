@@ -50,6 +50,8 @@ Route::group([
 Route::post('order-items', [OrderController::class, 'placeOrder']);
 Route::get('order-items', [OrderController::class, 'getOrders']);
 Route::get('order-history', [OrderController::class, 'getOrderHistory']);
+Route::get('/orders/filter', [OrderController::class, 'filterOrders']);
+
 
 Route::post('upload-file', [UploadController::class, 'uploadFile']);
 Route::resource('categories', CategoryController::class);

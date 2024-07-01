@@ -191,6 +191,42 @@ class OrderController extends Controller
         ], Response::HTTP_CREATED);
     }
 
+    public function filterOrders(Request $request)
+    {
+        $request->validate([
+            'payment_status' => 'nullable|string|in:paid,unpaid',
+            'order_status' => 'nullable|string|in:ordered,confirmed,cancelled,shipping,completed',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
+
+        $query = Order::query();
+
+        // Áp dụng điều kiện filter nếu có
+        if ($request->has('payment_status')) {
+            $query->where('payment_status', $request->input('payment_status'));
+        }
+
+        if ($request->has('order_status')) {
+            $query->where('order_status', $request->input('order_status'));
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('order_date', '>=', $request->input('start_date'));
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('order_date', '<=', $request->input('end_date'));
+        }
+
+        // Lấy danh sách đơn hàng theo điều kiện
+        $orders = $query->with('user', 'orderItems.product', 'orderItems.productVariation')->get();
+
+        return response()->json([
+            'orders' => $orders
+        ]);
+    }
+
     public function updateOrderStatus(Request $request, $orderId)
     {
         $request->validate([
