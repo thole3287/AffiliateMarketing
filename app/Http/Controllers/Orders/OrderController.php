@@ -25,14 +25,34 @@ use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with('user', 'orderItems.product', 'orderItems.productVariation')->get();
+        $currentPage = $request->input('page', 1);
 
-        return response()->json([
-            'orders' => $orders
-        ]);
+        // Lấy số lượng mục trên mỗi trang từ yêu cầu, mặc định là 10
+        $perPage = $request->input('per_page', 10);
+
+        // Lấy danh sách đơn hàng và phân trang
+        $orders = Order::with('user', 'orderItems.product', 'orderItems.productVariation')
+            ->paginate($perPage);
+
+        // Tạo một mảng kết quả JSON bao gồm các thông tin phân trang và danh sách đơn hàng
+        $responseData = [
+            'orders' => $orders->items(),
+            'pagination' => [
+                'total_orders' => $orders->total(),
+                'per_page' => $orders->perPage(),
+                'current_page' => $orders->currentPage(),
+                'last_page' => $orders->lastPage(),
+                'from' => $orders->firstItem(),
+                'to' => $orders->lastItem()
+            ],
+        ];
+
+        return response()->json($responseData);
     }
+
+
     public function getOrders(Request $request)
     {
         $request->validate([
