@@ -228,12 +228,16 @@ class AuthController extends Controller
             'status' => 'required|in:active,inactive',
             'current_password' => 'nullable|required_with:password',
             'password' => 'nullable|confirmed|min:8',
+            'bank_account_name' => 'nullable|string|max:255', // Tên chủ tài khoản
+            'bank_account_number' => 'nullable|string|max:255', // Số tài khoản ngân hàng
+            'bank_name' => 'nullable|string|max:255', // Tên ngân hàng
         ]);
 
         $data = $request->only([
             'name', 'username', 'email', 'zalo_id', 'phone', 'photo', 'address',
             'birthday', 'collaborator', 'points', 'membership_level',
-            'total_commission', 'balance', 'affiliate_code', 'status'
+            'total_commission', 'balance', 'affiliate_code', 'status',
+            'bank_account_name', 'bank_account_number', 'bank_name'
         ]);
 
         if ($request->filled('password')) {
@@ -247,6 +251,7 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Profile updated successfully', 'user' => $user], 200);
     }
+
 
     public function update(Request $request, $id)
     {
