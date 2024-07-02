@@ -250,6 +250,8 @@ class OrderController extends Controller
     public function updateOrderStatus(Request $request, $orderId)
     {
         $request->validate([
+            'note' => 'nullable|string',
+            'user_id' => 'nullable|integer|exists:users,id',
             'payment_status' => 'nullable|string|in:paid,unpaid',
             'order_status' => 'nullable|string|in:ordered,confirmed,cancelled,shipping,completed',
         ]);
@@ -257,20 +259,28 @@ class OrderController extends Controller
         // Tìm đơn hàng bằng ID
         $order = Order::findOrFail($orderId);
 
+        // Cập nhật ghi chú nếu có
+        if ($request->has('note')) {
+            $order->note = $request->input('note');
+            $order->noted_by = $request->input('user_id');
+        }
+
         // Kiểm tra trạng thái thanh toán trước đó
         $previousPaymentStatus = $order->payment_status;
 
-        // Cập nhật trạng thái đơn hàng và trạng thái thanh toán
-        $order->payment_status = $request->input('payment_status');
-        $order->order_status = $request->input('order_status');
+        // Cập nhật trạng thái đơn hàng và trạng thái thanh toán nếu có
+        if ($request->has('payment_status')) {
+            $order->payment_status = $request->input('payment_status');
+        }
+
+        if ($request->has('order_status')) {
+            $order->order_status = $request->input('order_status');
+        }
 
         // Nếu trạng thái thanh toán là 'paid' lần đầu tiên và hoa hồng chưa được xử lý
         if ($previousPaymentStatus !== 'paid' && $order->payment_status === 'paid' && !$order->commission_processed) {
-            // $checkoutArray = json_decode($order->check_out_order, true) ?? [];
             $checkoutArray = $order->check_out_order ?? [];
-            // dd($checkoutArray);
             foreach ($checkoutArray as $item) {
-                // dd($item);
                 $referralUserId = $item['referral_user_id'];
                 $productId = $item['product_id'];
 
@@ -318,13 +328,19 @@ class OrderController extends Controller
             // Đánh dấu hoa hồng đã được xử lý
             $order->commission_processed = true;
         }
+
         $order->save();
+
         // Trả về phản hồi thành công
+        $userInfor = $request->has('user_id') ? User::find($request->input('user_id')) : null;
+
         return response()->json([
-            'message' => 'Order status updated successfully',
+            'message' => 'Order updated successfully',
             'order' => $order,
+            'userInfo' => $userInfor,
         ], Response::HTTP_OK);
     }
+
     public function updateOrderStatusCallback(Request $request)
     {
         // Validate the incoming request
