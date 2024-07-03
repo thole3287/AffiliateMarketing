@@ -16,13 +16,13 @@ class PaymentController extends Controller
 
         $data = $request->input('data');
         $mac = $request->input('mac');
-        $overallMac = $request->input('overallMac');
+        // $overallMac = $request->input('overallMac');
 
         $privateKey = env('VNPAY_HASH_SECRET');
         Log::info('VNPay Callback Data:', $request->all());
 
         // Kiểm tra tính hợp lệ của dữ liệu giao dịch
-        if ($this->isValidMac($data, $mac, $privateKey) && $this->isValidOverallMac($request->all(), $overallMac, $privateKey)) {
+        if ($this->isValidMac($data, $mac, $privateKey)) {
             // Cập nhật trạng thái đơn hàng
             // $order = Order::where('order_id', $data['orderId'])->first();
             // if ($order) {
