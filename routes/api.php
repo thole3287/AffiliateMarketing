@@ -9,6 +9,7 @@ use App\Http\Controllers\Categories\CategoryController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\Dashboard\ChartDashboardController;
 use App\Http\Controllers\Orders\OrderController;
+use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Products\ProductsController;
 use App\Http\Controllers\Products\ProductVariationController;
 use App\Http\Controllers\UploadController;
@@ -52,6 +53,9 @@ Route::get('order-items', [OrderController::class, 'getOrders']);
 Route::get('order-history', [OrderController::class, 'getOrderHistory']);
 Route::get('/orders/filter', [OrderController::class, 'filterOrders']);
 Route::put('/orders/{orderId}/note', [OrderController::class, 'updateNote']);
+
+
+Route::post('/vnpay-return', [PaymentController::class, 'vnpayReturn']);
 
 
 Route::post('upload-file', [UploadController::class, 'uploadFile']);

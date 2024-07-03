@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -10,46 +11,57 @@ class PaymentController extends Controller
 {
     public function vnpayReturn(Request $request)
     {
-        $vnpayData = $request->all();
+        // Log toàn bộ dữ liệu nhận được từ callback
+        Log::info('VNPay Callback Data:', $request->all());
 
-        // Kiểm tra tính hợp lệ của dữ liệu VNPay
-        if ($this->isValidVNPayResponse($vnpayData)) {
-            Log::info('Order updated successfully: ', ['data' => $vnpayData]);
-            // dd($vnpayData);
+        $data = $request->input('data');
+        $mac = $request->input('mac');
+        $overallMac = $request->input('overallMac');
+
+        $privateKey = env('VNPAY_HASH_SECRET');
+
+        // Kiểm tra tính hợp lệ của dữ liệu giao dịch
+        if ($this->isValidMac($data, $mac, $privateKey) && $this->isValidOverallMac($request->all(), $overallMac, $privateKey)) {
             // Cập nhật trạng thái đơn hàng
-            // $order = Order::where('order_id', $vnpayData['vnp_TxnRef'])->first();
+            // $order = Order::where('order_id', $data['orderId'])->first();
             // if ($order) {
             //     $order->status = 'paid';
             //     $order->save();
+            //     Log::info('Order updated successfully:', ['order_id' => $order->id]);
             // }
+            Log::info('VNPay Callback Data:', $request->all());
 
             return response()->json([
                 'success' => true,
-                // 'order' => $order,
+                'order' => 'successss',
             ]);
         }
 
+        Log::error('Invalid VNPay response:', $request->all());
         return response()->json([
             'success' => false,
             'message' => 'Invalid VNPay response',
         ], 400);
     }
 
-    private function isValidVNPayResponse($vnpayData)
+    private function isValidMac($data, $mac, $privateKey)
     {
-        $hashSecret = env('VNPAY_HASH_SECRET');
-        $vnpSecureHash = $vnpayData['vnp_SecureHash'];
-        unset($vnpayData['vnp_SecureHash']);
-        unset($vnpayData['vnp_SecureHashType']);
-        ksort($vnpayData);
-        $hashData = '';
-        foreach ($vnpayData as $key => $value) {
-            $hashData .= $key . '=' . $value . '&';
-        }
-        $hashData = rtrim($hashData, '&');
+        $dataForMac = "appId={$data['appId']}&amount={$data['amount']}&description={$data['description']}&orderId={$data['orderId']}&message={$data['message']}&resultCode={$data['resultCode']}&transId={$data['transId']}";
+        $reqMac = hash_hmac('sha256', $dataForMac, $privateKey);
+        return $reqMac === $mac;
+    }
 
-        $secureHash = hash('sha256', $hashSecret . $hashData);
+    private function isValidOverallMac($data, $overallMac, $privateKey)
+    {
+        unset($data['overallMac']);
+        $dataOverallMac = collect($data)
+            ->sortKeys()
+            ->map(function($value, $key) {
+                return "{$key}={$value}";
+            })
+            ->implode('&');
 
-        return $secureHash === $vnpSecureHash;
+        $reqOverallMac = hash_hmac('sha256', $dataOverallMac, $privateKey);
+        return $reqOverallMac === $overallMac;
     }
 }
