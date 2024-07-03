@@ -19,6 +19,7 @@ class PaymentController extends Controller
         $overallMac = $request->input('overallMac');
 
         $privateKey = env('VNPAY_HASH_SECRET');
+        Log::info('VNPay Callback Data:', $request->all());
 
         // Kiểm tra tính hợp lệ của dữ liệu giao dịch
         if ($this->isValidMac($data, $mac, $privateKey) && $this->isValidOverallMac($request->all(), $overallMac, $privateKey)) {
