@@ -244,7 +244,7 @@ class ChartDashboardController extends Controller
                 'topSalesByBrand' => $topSalesByBrandData,
             ],
             'topProductsChart' => [
-                'topProducts' => $topProductsData,
+                'topProducts' => $dataTopProducts,
             ],
             'totalOrdersReferralChart' => [
                 'totalOrdersReferrals' => $result,
