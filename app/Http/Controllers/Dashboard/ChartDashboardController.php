@@ -178,7 +178,7 @@ class ChartDashboardController extends Controller
         if (request()->has('top-products-chart')) {
             return Excel::download(new TopProductsExport($topProductsData), 'top_products.xlsx');
         }
-
+        // Lấy dữ liệu tổng số đơn hàng Referral theo tháng
         $currentYear = Carbon::now()->year;
 
         $totalOrdersReferral = Referral::select(
@@ -191,30 +191,33 @@ class ChartDashboardController extends Controller
             ->get()
             ->toArray();
 
-        $totalOrdersReferralData = [];
+        $data = [];
 
-        // Initialize the array with all 12 months set to 0 (as strings)
-        for ($month = 1; $month <= 12; $month++) {
-            $totalOrdersReferralData[$month] = [
-                'month' => $month,
-                'total_orders_referral' => 0,
-            ];
+        // Điền vào mảng dữ liệu cho tất cả các tháng trong năm hiện tại
+        for ($i = 1; $i <= 12; $i++) {
+            $data[$i] = 0; // Khởi tạo số đơn hàng của mỗi tháng thành 0
         }
 
-        // Update the array with actual data from the query
         foreach ($totalOrdersReferral as $order) {
-            $totalOrdersReferralData[$order['month']] = [
-                'month' => $order['month'],
-                'total_orders_referral' => $order['total'],
-            ];
+            $data[$order['month']] = (float)$order['total']; // Gán số đơn hàng của tháng
         }
 
-        // Ensure the array is indexed from 0 for Excel export
-        $totalOrdersReferralData = array_values($totalOrdersReferralData);
+        // Chuyển đổi mảng dữ liệu thành mảng chứa tổng số đơn hàng cho từng tháng
+        $result = array_values($data);
 
         if (request()->has('total-orders-referral-chart')) {
+            // Chuẩn bị dữ liệu cho Excel xuất với tháng là chuỗi
+            $totalOrdersReferralData = [];
+            foreach ($data as $month => $total) {
+                $totalOrdersReferralData[] = [
+                    'month' => strval($month),
+                    'total_orders_referral' => strval($total),
+                ];
+            }
+
             return Excel::download(new TotalOrdersReferralExport($totalOrdersReferralData), 'total_orders_referral.xlsx');
         }
+
         return response()->json([
             'totalOrderChart' => [
                 'totalOrderCount' => $totalOrderCount,
@@ -231,7 +234,7 @@ class ChartDashboardController extends Controller
                 'topProducts' => $topProductsData,
             ],
             'totalOrdersReferralChart' => [
-                'totalOrdersReferrals' => $totalOrdersReferralData,
+                'totalOrdersReferrals' => $result,
             ],
         ]);
     }
