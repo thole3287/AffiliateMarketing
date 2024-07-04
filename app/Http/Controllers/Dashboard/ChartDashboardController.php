@@ -170,8 +170,8 @@ class ChartDashboardController extends Controller
         foreach ($topProducts as $product) {
             $topProductsData[] = [
                 'product' => $product->product_name,
-                'year1_total' => (float) $product->year1_total,
-                'year2_total' => (float) $product->year2_total,
+                '2023' => (float) $product->year1_total,
+                '2024' => (float) $product->year2_total,
             ];
         }
 
