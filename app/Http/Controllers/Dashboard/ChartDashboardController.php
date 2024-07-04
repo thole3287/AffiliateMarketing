@@ -153,7 +153,6 @@ class ChartDashboardController extends Controller
             return Excel::download(new TopSalesByBrandExport($topSalesByBrandData), 'top_sales_by_brand.xlsx');
         }
 
-        // top selling products
         $year1 = 2023;
         $year2 = 2024;
 
@@ -170,13 +169,13 @@ class ChartDashboardController extends Controller
         foreach ($topProducts as $product) {
             $topProductsData[] = [
                 'product' => $product->product_name,
-                '2023' => (float) $product->year1_total,
-                '2024' => (float) $product->year2_total,
+                strval($year1) => (float) $product->year1_total,
+                strval($year2) => (float) $product->year2_total,
             ];
         }
 
         if (request()->has('top-products-chart')) {
-            return Excel::download(new TopProductsExport($topProductsData), 'top_products.xlsx');
+            return Excel::download(new TopProductsExport($topProductsData, $year1, $year2), 'top_products.xlsx');
         }
         // Lấy dữ liệu tổng số đơn hàng Referral theo tháng
         $currentYear = Carbon::now()->year;
