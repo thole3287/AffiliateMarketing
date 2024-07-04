@@ -157,24 +157,38 @@ class ChartDashboardController extends Controller
         $year2 = 2024;
 
         $topProducts = OrderItems::selectRaw('products.product_name as product_name,
-                                          SUM(CASE WHEN YEAR(orders.order_date) = ? THEN order_items.quantity ELSE 0 END) as year1_total,
-                                          SUM(CASE WHEN YEAR(orders.order_date) = ? THEN order_items.quantity ELSE 0 END) as year2_total', [$year1, $year2])
+                                      SUM(CASE WHEN YEAR(orders.order_date) = ? THEN order_items.quantity ELSE 0 END) as year1_total,
+                                      SUM(CASE WHEN YEAR(orders.order_date) = ? THEN order_items.quantity ELSE 0 END) as year2_total', [$year1, $year2])
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->join('products', 'order_items.product_id', '=', 'products.id')
             ->groupBy('products.product_name')
             ->orderBy('products.product_name')
             ->get();
 
-        $topProductsData = [];
+        // Tạo một mảng để lưu trữ kết quả
+        $dataTopProducts = [['product', (string)$year1, (string)$year2]];
+
+        // Lặp qua kết quả và thêm vào mảng kết quả
         foreach ($topProducts as $product) {
-            $topProductsData[] = [
-                'product' => $product->product_name,
-                strval($year1) => (float) $product->year1_total,
-                strval($year2) => (float) $product->year2_total,
-            ];
+            $productName = $product->product_name;
+            $year1Total = $product->year1_total;
+            $year2Total = $product->year2_total;
+
+            // Thêm vào mảng
+            $dataTopProducts[] = [$productName, (float)$year1Total, (float)$year2Total];
         }
 
         if (request()->has('top-products-chart')) {
+            // Chuẩn bị dữ liệu cho Excel xuất với các cột động
+            $topProductsData = [];
+            foreach ($topProducts as $product) {
+                $topProductsData[] = [
+                    'product' => $product->product_name,
+                    strval($year1) => (float) $product->year1_total,
+                    strval($year2) => (float) $product->year2_total,
+                ];
+            }
+
             return Excel::download(new TopProductsExport($topProductsData, $year1, $year2), 'top_products.xlsx');
         }
         // Lấy dữ liệu tổng số đơn hàng Referral theo tháng
