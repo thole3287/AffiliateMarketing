@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Exports\TopProductsExport;
+use App\Exports\TopSalesByBrandExport;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItems;
@@ -11,6 +13,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Response;
+use App\Exports\TotalOrdersExport;
+use App\Exports\TotalOrdersReferralExport;
+use App\Exports\WeeklySalesExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ChartDashboardController extends Controller
 {
@@ -67,13 +73,20 @@ class ChartDashboardController extends Controller
             $totalOrders[$month] = (float)$count;
         }
 
+        $totalOrdersData = [];
+        foreach ($totalOrders as $month => $count) {
+            $totalOrdersData[] = [$month, (float)$count];
+        }
+
+        if (request()->has('total-order-chart')) {
+            // dd($totalOrdersData);
+            return Excel::download(new TotalOrdersExport($totalOrdersData), 'total_orders.xlsx');
+        }
 
         //weekly chart
-        // Get the start and end dates of the current week
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
 
-        // Get the daily revenue for the current week
         $dailyRevenue = Order::select(
             DB::raw('SUM(total_amount) as total_revenue'),
             DB::raw('DATE(created_at) as date')
@@ -85,10 +98,9 @@ class ChartDashboardController extends Controller
             ->pluck('total_revenue', 'date')
             ->toArray();
 
-        // Initialize an array for the daily revenue with zeros for each day of the current week
+        // Initialize revenue data array for each day of the week (0 to 6)
         $revenueData = array_fill(0, 7, 0);
 
-        // Fill the revenueData array with the actual values from the query
         $dayIndex = 0;
         $totalWeeklyRevenue = 0;
         for ($date = $startOfWeek; $date <= $endOfWeek; $date->addDay()) {
@@ -100,7 +112,16 @@ class ChartDashboardController extends Controller
             $dayIndex++;
         }
 
-
+        // Mapping day indices to day names (Monday to Sunday)
+        $daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        $revenueChartData = [];
+        foreach ($revenueData as $dayIndex => $revenue) {
+            $dayName = $daysOfWeek[$dayIndex];
+            $revenueChartData[] = [$dayName, (float)$revenue];
+        }
+        if (request()->has('weekly-sales-chart')) {
+            return Excel::download(new WeeklySalesExport($revenueChartData), 'weekly_sales.xlsx');
+        }
 
         // top brand selling
         $topBrands = Product::join('order_items', 'products.id', '=', 'order_items.product_id')
@@ -112,49 +133,52 @@ class ChartDashboardController extends Controller
             ->groupBy('brands.name')
             ->orderByDesc('total_revenue')
             ->take(3)
-            ->get()->map(function ($item) {
-                $item->total_revenue = (float) $item->total_revenue;
-                return $item;
+            ->get()->map(function ($item, $index) {
+                return [
+                    'id' => $index + 1,
+                    'name' => $item->brand_name,
+                    'value' => (float) $item->total_revenue,
+                ];
             });
-
-        // dd( $topBrands);
-        // Transform the data into the desired format
-        $topSalesByBrand = $topBrands->map(function ($brand, $index) {
-            return [
-                'id' => $index + 1,
-                'name' => $brand->brand_name,
-                'value' => $brand->total_revenue,
+        $topSalesByBrandData = [];
+        foreach ($topBrands as $brand) {
+            $topSalesByBrandData[] = [
+                'id' => $brand['id'],
+                'name' => $brand['name'],
+                'value' => $brand['value'],
             ];
-        });
+        }
+        if (request()->has('top-sales-by-brand-chart')) {
+            // dd($topSalesByBrandData);
+            return Excel::download(new TopSalesByBrandExport($topSalesByBrandData), 'top_sales_by_brand.xlsx');
+        }
 
-
-        ///topProductsChart
-        $year1 = 2023; // Năm thứ nhất
-        $year2 = 2024; // Năm thứ hai
+        // top selling products
+        $year1 = 2023;
+        $year2 = 2024;
 
         $topProducts = OrderItems::selectRaw('products.product_name as product_name,
-                                      SUM(CASE WHEN YEAR(orders.order_date) = ? THEN order_items.quantity ELSE 0 END) as year1_total,
-                                      SUM(CASE WHEN YEAR(orders.order_date) = ? THEN order_items.quantity ELSE 0 END) as year2_total', [$year1, $year2])
+                                          SUM(CASE WHEN YEAR(orders.order_date) = ? THEN order_items.quantity ELSE 0 END) as year1_total,
+                                          SUM(CASE WHEN YEAR(orders.order_date) = ? THEN order_items.quantity ELSE 0 END) as year2_total', [$year1, $year2])
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->join('products', 'order_items.product_id', '=', 'products.id')
             ->groupBy('products.product_name')
             ->orderBy('products.product_name')
             ->get();
 
-        // Tạo một mảng để lưu trữ kết quả
-        $dataTopProducts = [['product', (string)$year1, (string)$year2]];
-
-        // Lặp qua kết quả và thêm vào mảng kết quả
+        $topProductsData = [];
         foreach ($topProducts as $product) {
-            $productName = $product->product_name;
-            $year1Total = $product->year1_total;
-            $year2Total = $product->year2_total;
-
-            // Thêm vào mảng
-            $dataTopProducts[] = [$productName, (float)$year1Total, (float)$year2Total];
+            $topProductsData[] = [
+                'product' => $product->product_name,
+                'year1_total' => (float) $product->year1_total,
+                'year2_total' => (float) $product->year2_total,
+            ];
         }
 
-        // Sử dụng câu truy vấn để tính tổng số đơn hàng Referral theo tháng
+        if (request()->has('top-products-chart')) {
+            return Excel::download(new TopProductsExport($topProductsData), 'top_products.xlsx');
+        }
+
         $currentYear = Carbon::now()->year;
 
         $totalOrdersReferral = Referral::select(
@@ -165,25 +189,35 @@ class ChartDashboardController extends Controller
             ->groupBy(DB::raw('MONTH(created_at)'))
             ->orderBy(DB::raw('MONTH(created_at)'))
             ->get()
-            ->toArray(); // Chuyển đổi Collection thành mảng
+            ->toArray();
 
-        $data = [];
+        $totalOrdersReferralData = [];
 
-        // Điền vào mảng dữ liệu cho tất cả các tháng trong năm hiện tại
-        for ($i = 1; $i <= 12; $i++) {
-            $data[$i] = 0; // Khởi tạo số đơn hàng của mỗi tháng thành 0
+        // Initialize the array with all 12 months set to 0 (as strings)
+        for ($month = 1; $month <= 12; $month++) {
+            $totalOrdersReferralData[$month] = [
+                'month' => $month,
+                'total_orders_referral' => 0,
+            ];
         }
 
+        // Update the array with actual data from the query
         foreach ($totalOrdersReferral as $order) {
-            $data[$order['month']] = (float)$order['total']; // Gán số đơn hàng của tháng
+            $totalOrdersReferralData[$order['month']] = [
+                'month' => $order['month'],
+                'total_orders_referral' => $order['total'],
+            ];
         }
 
-        // Chuyển đổi mảng dữ liệu thành mảng chứa tổng số đơn hàng cho từng tháng
-        $result = array_values($data);
+        // Ensure the array is indexed from 0 for Excel export
+        $totalOrdersReferralData = array_values($totalOrdersReferralData);
 
+        if (request()->has('total-orders-referral-chart')) {
+            return Excel::download(new TotalOrdersReferralExport($totalOrdersReferralData), 'total_orders_referral.xlsx');
+        }
         return response()->json([
             'totalOrderChart' => [
-                'totalOrderCount' =>  $totalOrderCount,
+                'totalOrderCount' => $totalOrderCount,
                 'totalOrders' => array_values($totalOrders)
             ],
             'weeklySalesChart' => [
@@ -191,15 +225,14 @@ class ChartDashboardController extends Controller
                 'dailyRevenue' => $revenueData,
             ],
             'topSalesByBrandChart' => [
-                'topSalesByBrand' =>  $topSalesByBrand,
+                'topSalesByBrand' => $topSalesByBrandData,
             ],
             'topProductsChart' => [
-                'topProducts' => $dataTopProducts,
+                'topProducts' => $topProductsData,
             ],
             'totalOrdersReferralChart' => [
-                'totalOrdersReferrals' => $result,
+                'totalOrdersReferrals' => $totalOrdersReferralData,
             ],
-
         ]);
     }
 }
