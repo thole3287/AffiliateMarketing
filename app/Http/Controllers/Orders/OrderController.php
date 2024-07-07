@@ -167,6 +167,7 @@ class OrderController extends Controller
             'order_status' => $request->order_status,
             'note' =>  $request->note ?? null,
             'discount' => $discount,
+            'zalo_order_id' => $request->zalo_order_id ?? null,
             'check_out_order' => $request->checkoutArray ?? [],
         ]);
 
