@@ -13,62 +13,72 @@ class PaymentController extends Controller
     {
         // // Log toàn bộ dữ liệu nhận được từ callback
 
-        // $data = $request->input('data');
-        // $mac = $request->input('mac');
-        // $overallMac = $request->input('overallMac');
+        $data = $request->input('data');
+        $orderId = $data['orderId'];
+        $resultCode = $data['resultCode'];
+        $mac = $request->input('mac');
+        $overallMac = $request->input('overallMac');
 
-        // $privateKey = env('VNPAY_HASH_SECRET');
-        // Log::info('VNPay Callback Data:', $request->all());
+        $privateKey = env('VNPAY_HASH_SECRET');
+        Log::info('VNPay Callback Data:', $request->all());
 
-        // // Kiểm tra tính hợp lệ của dữ liệu giao dịch
-        // if ($this->isValidMac($data, $mac, $privateKey)) {
-        //     // Cập nhật trạng thái đơn hàng
-        //     // $order = Order::where('order_id', $data['orderId'])->first();
-        //     // if ($order) {
-        //     //     $order->status = 'paid';
-        //     //     $order->save();
-        //     //     Log::info('Order updated successfully:', ['order_id' => $order->id]);
-        //     // }
-        //     Log::info('VNPay Callback Data:', $request->all());
+        // Kiểm tra tính hợp lệ của dữ liệu giao dịch
+        if ($this->isValidMac($data, $mac, $privateKey)) {
+            try {
+                // Tìm đơn hàng với zalo_order_id = orderId
+                $order = Order::where('zalo_order_id', $orderId)->first();
 
-        //     return response()->json([
-        //         'success' => true,
-        //         'order' => 'successss',
-        //     ]);
-        // }
+                // Nếu đơn hàng không tồn tại
+                if (!$order) {
+                    return response()->json(['message' => 'Order not found'], 404);
+                }
 
-        // Log::error('Invalid VNPay response:', $request->all());
-        // return response()->json([
-        //     'success' => false,
-        //     'message' => 'Invalid VNPay response',
-        // ], 400);
-         // Lấy dữ liệu từ request
-         $data = $request->input('data');
-         $orderId = $data['orderId'];
-         $resultCode = $data['resultCode'];
-         Log::info('VNPay Callback Data:', $request->all());
+                // Nếu resultCode = 1, cập nhật trạng thái đơn hàng
+                if ($resultCode == 1) {
+                    $order->payment_method = 'paid';
+                    $order->save();
+                }
 
-         try {
-             // Tìm đơn hàng với zalo_order_id = orderId
-             $order = Order::where('zalo_order_id', $orderId)->first();
+                return response()->json(['message' => 'Order updated successfully']);
+            } catch (\Exception $e) {
+                // Ghi lại lỗi nếu có
+                Log::error('Error updating order: ' . $e->getMessage());
+                return response()->json(['message' => 'An error occurred while updating the order'], 500);
+            }
+        }
 
-             // Nếu đơn hàng không tồn tại
-             if (!$order) {
-                 return response()->json(['message' => 'Order not found'], 404);
-             }
+        Log::error('Invalid VNPay response:', $request->all());
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid VNPay response',
+        ], 400);
+        // Lấy dữ liệu từ request
+        //  $data = $request->input('data');
+        //  $orderId = $data['orderId'];
+        //  $resultCode = $data['resultCode'];
+        //  Log::info('VNPay Callback Data:', $request->all());
 
-             // Nếu resultCode = 1, cập nhật trạng thái đơn hàng
-             if ($resultCode == 1) {
-                 $order->payment_method = 'paid';
-                 $order->save();
-             }
+        //  try {
+        //      // Tìm đơn hàng với zalo_order_id = orderId
+        //      $order = Order::where('zalo_order_id', $orderId)->first();
 
-             return response()->json(['message' => 'Order updated successfully']);
-         } catch (\Exception $e) {
-             // Ghi lại lỗi nếu có
-             Log::error('Error updating order: ' . $e->getMessage());
-             return response()->json(['message' => 'An error occurred while updating the order'], 500);
-         }
+        //      // Nếu đơn hàng không tồn tại
+        //      if (!$order) {
+        //          return response()->json(['message' => 'Order not found'], 404);
+        //      }
+
+        //      // Nếu resultCode = 1, cập nhật trạng thái đơn hàng
+        //      if ($resultCode == 1) {
+        //          $order->payment_method = 'paid';
+        //          $order->save();
+        //      }
+
+        //      return response()->json(['message' => 'Order updated successfully']);
+        //  } catch (\Exception $e) {
+        //      // Ghi lại lỗi nếu có
+        //      Log::error('Error updating order: ' . $e->getMessage());
+        //      return response()->json(['message' => 'An error occurred while updating the order'], 500);
+        //  }
     }
 
     private function isValidMac($data, $mac, $privateKey)
@@ -83,7 +93,7 @@ class PaymentController extends Controller
         unset($data['overallMac']);
         $dataOverallMac = collect($data)
             ->sortKeys()
-            ->map(function($value, $key) {
+            ->map(function ($value, $key) {
                 return "{$key}={$value}";
             })
             ->implode('&');
