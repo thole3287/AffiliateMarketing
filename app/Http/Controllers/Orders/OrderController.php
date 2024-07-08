@@ -54,7 +54,7 @@ class OrderController extends Controller
                     'order_items' => $order->orderItems,
                     'payment_method' => $order->payment_method,
                     'payment_status' => $order->payment_status,
-                    'approved_by' => $order->approvedBy, // Thêm thông tin người duyệt đơn hàng
+                    'approved_by' => $order->approvedBy->name ?? null, // Thêm thông tin người duyệt đơn hàng
                     'order_status' => $order->order_status,
                     'note' => $order->note,
                     'created_at' => $order->created_at,
@@ -278,6 +278,7 @@ class OrderController extends Controller
             'user_id' => 'nullable|integer|exists:users,id',
             'payment_status' => 'nullable|string|in:paid,unpaid',
             'order_status' => 'nullable|string|in:ordered,confirmed,cancelled,shipping,completed',
+            'status_payment_updated_by' => 'nullable|integer|exists:users,id', // Thêm điều kiện xác thực cho status_payment_updated_by
         ]);
 
         // Tìm đơn hàng bằng ID
@@ -356,15 +357,23 @@ class OrderController extends Controller
 
         $order->save();
 
+        // Nạp thông tin người đã cập nhật trạng thái thanh toán
+        $order->load('approvedBy');
+
         // Trả về phản hồi thành công
         $userInfor = $request->has('user_id') ? User::find($request->input('user_id')) : null;
 
+        // Tạo dữ liệu phản hồi
+        $orderData = $order->toArray();
+        $orderData['approved_by'] = $order->approvedBy->name ?? null; // Thêm thông tin người đã cập nhật trạng thái thanh toán
+
         return response()->json([
             'message' => 'Order updated successfully',
-            'order' => $order,
+            'order' => $orderData,
             'userInfo' => $userInfor,
         ], Response::HTTP_OK);
     }
+
 
     public function updateOrderStatusCallback(Request $request)
     {
