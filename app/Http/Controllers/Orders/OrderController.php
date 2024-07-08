@@ -32,13 +32,25 @@ class OrderController extends Controller
         // Lấy số lượng mục trên mỗi trang từ yêu cầu, mặc định là 10
         $perPage = $request->input('per_page', 10);
 
-        // Lấy danh sách đơn hàng và phân trang
-        $orders = Order::with('user', 'orderItems.product', 'orderItems.productVariation')
+        // Lấy danh sách đơn hàng và phân trang, kèm theo thông tin người dùng và người duyệt đơn hàng
+        $orders = Order::with(['user', 'orderItems.product', 'orderItems.productVariation', 'approvedBy'])
             ->paginate($perPage);
 
         // Tạo một mảng kết quả JSON bao gồm các thông tin phân trang và danh sách đơn hàng
         $responseData = [
-            'orders' => $orders->items(),
+            'orders' => $orders->map(function ($order) {
+                return [
+                    'id' => $order->id,
+                    'user' => $order->user,
+                    'order_items' => $order->orderItems,
+                    'payment_status' => $order->payment_status,
+                    'order_status' => $order->order_status,
+                    'note' => $order->note,
+                    'approved_by' => $order->approvedBy, // Thêm thông tin người duyệt đơn hàng
+                    'created_at' => $order->created_at,
+                    'updated_at' => $order->updated_at,
+                ];
+            }),
             'pagination' => [
                 'total_orders' => $orders->total(),
                 'per_page' => $orders->perPage(),
@@ -51,6 +63,7 @@ class OrderController extends Controller
 
         return response()->json($responseData);
     }
+
 
     public function updateNote(Request $request, $orderId)
     {
@@ -272,6 +285,8 @@ class OrderController extends Controller
         // Cập nhật trạng thái đơn hàng và trạng thái thanh toán nếu có
         if ($request->has('payment_status')) {
             $order->payment_status = $request->input('payment_status');
+            $order->status_payment_updated_by = $request->input('status_payment_updated_by');
+
         }
 
         if ($request->has('order_status')) {

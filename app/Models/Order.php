@@ -45,4 +45,9 @@ class Order extends Model
             ->using(OrderItems::class)
             ->withPivot('quantity', 'variation_id');
     }
+
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'status_payment_updated_by');
+    }
 }
