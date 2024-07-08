@@ -41,12 +41,21 @@ class OrderController extends Controller
             'orders' => $orders->map(function ($order) {
                 return [
                     'id' => $order->id,
+                    'user_id' => $order->user_id,
+                    'shipping_address' => $order->shipping_address,
+                    'total_amount' => $order->total_amount,
+                    'order_date' => $order->order_date,
+                    'zalo_order_id' => $order->zalo_order_id,
+                    'check_out_order' => $order->check_out_order,
+                    'commission_processed' => $order->commission_processed,
+                    'coupon_code' => $order->coupon_code,
                     'user' => $order->user,
                     'order_items' => $order->orderItems,
+                    'payment_method' => $order->payment_method,
                     'payment_status' => $order->payment_status,
+                    'approved_by' => $order->approvedBy, // Thêm thông tin người duyệt đơn hàng
                     'order_status' => $order->order_status,
                     'note' => $order->note,
-                    'approved_by' => $order->approvedBy, // Thêm thông tin người duyệt đơn hàng
                     'created_at' => $order->created_at,
                     'updated_at' => $order->updated_at,
                 ];
