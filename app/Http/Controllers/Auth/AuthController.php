@@ -194,7 +194,7 @@ class AuthController extends Controller
         $user = Auth::user();
 
         // Kiểm tra nếu người dùng không phải là admin
-        if ($user->role !== 'super_admin' || $user->role !== 'admin') {
+        if ($user->role == 'user') {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
