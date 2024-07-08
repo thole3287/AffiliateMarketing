@@ -23,7 +23,7 @@ class PaymentController extends Controller
         Log::info('VNPay Callback Data:', $request->all());
 
         // Kiểm tra tính hợp lệ của dữ liệu giao dịch
-        if ($this->isValidMac($data, $mac, $privateKey)) {
+        if ($this->isValidMac($data, $mac, $privateKey) && $this->isValidOverallMac($request->all(), $overallMac, $privateKey)) {
             try {
                 // Tìm đơn hàng với zalo_order_id = orderId
                 $order = Order::where('zalo_order_id', $orderId)->first();
@@ -47,7 +47,7 @@ class PaymentController extends Controller
             }
         }
 
-        Log::error('Invalid VNPay response:', $request->all());
+        // Log::error('Invalid VNPay response:', $request->all());
         return response()->json([
             'success' => false,
             'message' => 'Invalid VNPay response',
