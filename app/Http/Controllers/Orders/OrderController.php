@@ -34,7 +34,6 @@ class OrderController extends Controller
 
         // Lấy danh sách đơn hàng và phân trang, kèm theo thông tin người dùng và người duyệt đơn hàng
         $orders = Order::with(['user', 'orderItems.product', 'orderItems.productVariation', 'approvedBy'])
-            ->orderBy('created_at', 'desc')
             ->paginate($perPage);
 
         // Tạo một mảng kết quả JSON bao gồm các thông tin phân trang và danh sách đơn hàng
