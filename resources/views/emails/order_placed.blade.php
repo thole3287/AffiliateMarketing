@@ -239,7 +239,7 @@
                 <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                  <tr>
                   <td class="pc-w620-spacing-0-0-28-0" align="center" valign="top" style="padding: 0px 0px 32px 0px;">
-                   <img src="{{$message->embed(asset('public/emails_img/image-17156197629350.png'))}}" class="" width="164" height="32" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:164px; height: auto; max-width: 100%;" />
+                   {{-- <img src="{{$message->embed(asset('public/emails_img/image-17156197629350.png'))}}" class="" width="164" height="32" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:164px; height: auto; max-width: 100%;" /> --}}
                   </td>
                  </tr>
                 </table>
@@ -577,11 +577,13 @@
                        <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                         <tr>
                          <td class="pc-w620-spacing-0-16-12-0 pc-w620-align-left" align="left" valign="top" style="padding: 0px 0px 0px 0px;">
+                            {{-- <img src="{{ $item->product->product_thumbbail }}" class="pc-w620-width-102 pc-w620-height-102 pc-w620-align-left" width="86" height="auto" alt="{{ $item->product->product_name }}" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:100%; height: auto; border-radius: 8px 8px 8px 8px;" /> --}}
                             @if (str_contains($item->product->product_thumbbail, 'http'))
                                 <img src="{{ $item->product->product_thumbbail }}" alt="Product Image" class="pc-w620-width-102 pc-w620-height-102 pc-w620-align-left" width="86" height="auto" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:100%; height: auto; border-radius: 8px 8px 8px 8px;"/>
                             @else
                                 <img src="{{ $message->embed(asset(strstr($item->product->product_thumbbail, 'public'))) }}" alt="Product Image" class="pc-w620-width-102 pc-w620-height-102 pc-w620-align-left" width="86" height="auto" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:100%; height: auto; border-radius: 8px 8px 8px 8px;"/>
                             @endif
+
                           {{-- <img src="{{ $message->embed(asset(strstr($item->product->product_thumbbail, 'public'))) }}" class="pc-w620-width-102 pc-w620-height-102 pc-w620-align-left" width="86" height="auto" alt="{{ $item->product->product_name }}" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:100%; height: auto; border-radius: 8px 8px 8px 8px;" /> --}}
                          </td>
                         </tr>
@@ -621,6 +623,7 @@
                                         {{''}}
                                     @endif
                                 </span>
+
                               </div>
                              </div>
                             </td>
@@ -1406,7 +1409,7 @@
                 <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                  <tr>
                   <td class="pc-w620-spacing-0-0-20-0" align="center" valign="top" style="padding: 0px 0px 20px 0px;">
-                   <img src="{{$message->embed(asset('public/emails_img/image-17156197629350.png'))}}" class="" width="164" height="32" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:164px; height: auto; max-width: 100%;" />
+                   {{-- <img src="{{$message->embed(asset('public/emails_img/image-17156197629350.png'))}}" class="" width="164" height="32" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:164px; height: auto; max-width: 100%;" /> --}}
                   </td>
                  </tr>
                 </table>

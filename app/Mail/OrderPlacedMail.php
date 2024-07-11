@@ -55,7 +55,7 @@ class OrderPlacedMail extends Mailable
     public function content()
     {
         return new Content(
-            view: 'emails.order_placed',
+            view: 'emails.orderPlaced',
             with: [
                 'order' => $this->order,
                 'orderItems' =>  $this->orderItems,
