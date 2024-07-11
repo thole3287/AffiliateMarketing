@@ -239,7 +239,7 @@
                 <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                  <tr>
                   <td class="pc-w620-spacing-0-0-28-0" align="center" valign="top" style="padding: 0px 0px 32px 0px;">
-                   {{-- <img src="{{$message->embed(asset('public/emails_img/image-17156197629350.png'))}}" class="" width="164" height="32" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:164px; height: auto; max-width: 100%;" /> --}}
+                   <img src="https://api.letruongtho2k2.id.vn/public/emails_img/image-17156197629350.png" class="" width="164" height="32" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:164px; height: auto; max-width: 100%;" />
                   </td>
                  </tr>
                 </table>
@@ -510,7 +510,7 @@
                 <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                  <tr>
                   <td valign="top">
-                   <img src="{{asset('public/emails_img/image-17156197629361.png')}}" class="" width="600" height="auto" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:100%; height: auto;" />
+                   <img src="https://api.letruongtho2k2.id.vn/public/emails_img/image-17156197629361.png" class="" width="600" height="auto" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:100%; height: auto;" />
                   </td>
                  </tr>
                 </table>
@@ -577,14 +577,12 @@
                        <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                         <tr>
                          <td class="pc-w620-spacing-0-16-12-0 pc-w620-align-left" align="left" valign="top" style="padding: 0px 0px 0px 0px;">
-                            {{-- <img src="{{ $item->product->product_thumbbail }}" class="pc-w620-width-102 pc-w620-height-102 pc-w620-align-left" width="86" height="auto" alt="{{ $item->product->product_name }}" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:100%; height: auto; border-radius: 8px 8px 8px 8px;" /> --}}
-                            @if (str_contains($item->product->product_thumbbail, 'http'))
+                            {{-- @if (str_contains($item->product->product_thumbbail, 'http'))
                                 <img src="{{ $item->product->product_thumbbail }}" alt="Product Image" class="pc-w620-width-102 pc-w620-height-102 pc-w620-align-left" width="86" height="auto" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:100%; height: auto; border-radius: 8px 8px 8px 8px;"/>
                             @else
                                 <img src="{{ $message->embed(asset(strstr($item->product->product_thumbbail, 'public'))) }}" alt="Product Image" class="pc-w620-width-102 pc-w620-height-102 pc-w620-align-left" width="86" height="auto" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:100%; height: auto; border-radius: 8px 8px 8px 8px;"/>
-                            @endif
-
-                          {{-- <img src="{{ $message->embed(asset(strstr($item->product->product_thumbbail, 'public'))) }}" class="pc-w620-width-102 pc-w620-height-102 pc-w620-align-left" width="86" height="auto" alt="{{ $item->product->product_name }}" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:100%; height: auto; border-radius: 8px 8px 8px 8px;" /> --}}
+                            @endif --}}
+                            <img src="{{ $item->product->product_thumbbail }}" class="pc-w620-width-102 pc-w620-height-102 pc-w620-align-left" width="86" height="auto" alt="{{ $item->product->product_name }}" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:100%; height: auto; border-radius: 8px 8px 8px 8px;" />
                          </td>
                         </tr>
                        </table>
@@ -623,7 +621,6 @@
                                         {{''}}
                                     @endif
                                 </span>
-
                               </div>
                              </div>
                             </td>
@@ -885,7 +882,7 @@
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                                          <tr>
                                           <td align="left" valign="top">
-                                           <img src="{{$message->embed(asset('public/emails_img/image-17156197629724.png'))}}" class="" width="38" height="38" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:38px; height:38px;" />
+                                           <img src="https://api.letruongtho2k2.id.vn/public/emails_img/image-17156197629724.png" class="" width="38" height="38" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:38px; height:38px;" />
                                           </td>
                                          </tr>
                                         </table>
@@ -974,7 +971,7 @@
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                                          <tr>
                                           <td align="left" valign="top">
-                                           <img src="{{$message->embed(asset('public/emails_img/image-17156197630725.png'))}}" class="" width="38" height="38" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:38px; height:38px;" />
+                                           <img src="https://api.letruongtho2k2.id.vn/public/emails_img/image-17156197630725.png" class="" width="38" height="38" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:38px; height:38px;" />
                                           </td>
                                          </tr>
                                         </table>
@@ -1073,7 +1070,7 @@
                       <table class="pc-w620-width-fill" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: separate; border-spacing: 0; width: 100%;">
                        <tr>
                         <!--[if !gte mso 9]><!-- -->
-                        <td class="pc-w620-padding-30-20-20-20 pc-w620-halign-center pc-w620-valign-middle" align="center" valign="top" background="{{$message->embed(asset('public/emails_img/image-17156197631806.png'))}}" style="padding: 30px 30px 30px 30px; background-size: cover; background-position: 50% 0; background-repeat: no-repeat; background-color: #1a110c; border-radius: 40px 40px 40px 40px;">
+                        <td class="pc-w620-padding-30-20-20-20 pc-w620-halign-center pc-w620-valign-middle" align="center" valign="top" background="https://api.letruongtho2k2.id.vn/public/emails_img/image-17156197631806.png" style="padding: 30px 30px 30px 30px; background-size: cover; background-position: 50% 0; background-repeat: no-repeat; background-color: #1a110c; border-radius: 40px 40px 40px 40px;">
                          <!--<![endif]-->
                          <!--[if gte mso 9]>
                 <td class="pc-w620-padding-30-20-20-20 pc-w620-halign-center pc-w620-valign-middle" align="center" valign="top" background="images/image-17156197631806.png" style="background-size: cover; background-position: 50% 0; background-repeat: no-repeat; background-color: #1a110c; border-radius: 40px 40px 40px 40px;">
@@ -1283,7 +1280,7 @@
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                                          <tr>
                                           <td class="pc-w620-halign-center" align="left" valign="top">
-                                           <img src="{{$message->embed(asset('public/emails_img/image-17156197632787.png'))}}" class="pc-w620-width-60 pc-w620-height-60 pc-w620-align-center" width="80" height="80" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:80px; height:80px; border-radius: 8px;" />
+                                           <img src="https://api.letruongtho2k2.id.vn/public/emails_img/image-17156197632787.png" class="pc-w620-width-60 pc-w620-height-60 pc-w620-align-center" width="80" height="80" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:80px; height:80px; border-radius: 8px;" />
                                           </td>
                                          </tr>
                                         </table>
@@ -1409,7 +1406,7 @@
                 <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                  <tr>
                   <td class="pc-w620-spacing-0-0-20-0" align="center" valign="top" style="padding: 0px 0px 20px 0px;">
-                   {{-- <img src="{{$message->embed(asset('public/emails_img/image-17156197629350.png'))}}" class="" width="164" height="32" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:164px; height: auto; max-width: 100%;" /> --}}
+                   <img src="https://api.letruongtho2k2.id.vn/public/emails_img/image-17156197629350.png" class="" width="164" height="32" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:164px; height: auto; max-width: 100%;" />
                   </td>
                  </tr>
                 </table>
