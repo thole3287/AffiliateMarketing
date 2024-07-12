@@ -512,10 +512,21 @@ class ProductsController extends Controller
                 }
             }
         }
+        $elasticModel = new BaseElastic();
+        $params = [
+            'index' => 'products',
+            'type' => '_doc',
+            'id' => $id
+        ];
 
+        try {
+            $response = $elasticModel->getClientBuilder()->delete($params);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to delete product from Elasticsearch', 'message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
         $product->delete();
 
-        return response()->json(['message' => 'Product deleted successfully'], Response::HTTP_OK);
+        return response()->json(['message' => 'Product deleted successfully', 'elasticsearch' => $response], Response::HTTP_OK);
     }
 
     public function updateSpecialCommissionPercentage(Request $request)
