@@ -153,10 +153,21 @@ class ProductsController extends Controller
             $query->where('brand_id', $request->input('brand_id'));
         }
 
+        // Kiểm tra nếu có tham số slug
         if ($request->has('slug')) {
             $query->where('product_slug', $request->input('slug'));
         }
 
+        // Kiểm tra nếu có tham số product_status
+        $hasProductStatus = $request->has('product_status');
+        if ($hasProductStatus) {
+            $query->where('product_status', $request->input('product_status'));
+        }
+
+        // Nếu không có tham số product-list-pos và product_status không được chỉ định, thêm điều kiện kiểm tra status khác inactive
+        if (!$request->has('product-list-pos') && !$hasProductStatus) {
+            $query->where('product_status', '!=', 'inactive');
+        }
         // Phân trang kết quả
         $products = $query->paginate($perPage);
 
