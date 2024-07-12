@@ -437,9 +437,9 @@ class OrderController extends Controller
 
         // Gửi email thông báo hủy đơn hàng
         // $user = $order->user;
-        // $user = User::find($order->user_id);
+        $user = User::find($order->user_id);
 
-        // SendOrderCancelledEmailJob::dispatch($order, $user->email);
+        SendOrderCancelledEmailJob::dispatch($order, $user->email);
 
         // Mail::to($user->email)->send(new OrderCancelled($order));
 
