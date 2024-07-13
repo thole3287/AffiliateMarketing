@@ -112,7 +112,8 @@ class OrderController extends Controller
             $query->where('payment_status', $request->status);
         }
 
-        $orders = $query->paginate($request->input('per_page', 10));
+        $orders = $query->orderByDesc('created_at')->paginate($request->input('per_page', 10));
+
         if (!empty($orders->items())) {
             return response()->json([
                 'orders' => $orders->items(),
@@ -462,7 +463,8 @@ class OrderController extends Controller
             $orders->where('id', $request->order_id);
         }
 
-        $orders = $orders->orderByDesc('order_date')
+        // Thêm điều kiện sắp xếp theo created_at giảm dần
+        $orders = $orders->orderByDesc('created_at')
             ->paginate($request->input('per_page', 10));
 
         if (!empty($orders->items())) {

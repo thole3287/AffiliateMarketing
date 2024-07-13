@@ -42,6 +42,7 @@ class ProductsController extends Controller
                         'must' => [],
                     ],
                 ],
+                'size' => 100000
             ],
         ];
 
