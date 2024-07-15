@@ -805,7 +805,7 @@
                            <tr>
                             <td valign="top" class="pc-w620-align-right" align="right" style="padding: 0px 0px 0px 0px;">
                              <div class="pc-font-alt pc-w620-align-right pc-w620-fontSize-20px pc-w620-lineHeight-32" style="line-height: 34px; letter-spacing: -0px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 18px; font-weight: 600; font-variant-ligatures: normal; color: #1b110c; text-align: right; text-align-last: right;">
-                              <div><span>{{umber_format($order->total_amount, 2)}}</span>
+                              <div><span>{{number_format($order->total_amount, 2)}}</span>
                               </div>
                              </div>
                             </td>
