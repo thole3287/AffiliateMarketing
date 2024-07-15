@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Mail\OrderPlaced;
 use App\Models\UserCommission;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 
@@ -151,6 +152,7 @@ class OrderController extends Controller
             'checkoutArray.*.referral_user_id' => 'nullable|exists:users,id',
             'checkoutArray.*.quantity' => 'nullable|integer|min:1',
         ]);
+        Log::info('data order:', $request->all());
 
         $totalAmount = $request->total_amount;
         $originalTotalAmount = $totalAmount;
