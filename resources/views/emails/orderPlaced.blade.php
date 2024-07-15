@@ -239,7 +239,7 @@
                 <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                  <tr>
                   <td class="pc-w620-spacing-0-0-28-0" align="center" valign="top" style="padding: 0px 0px 32px 0px;">
-                   <img src="https://api.letruongtho2k2.id.vn/public/emails_img/image-17156197629350.png" class="" width="164" height="32" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:164px; height: auto; max-width: 100%;" />
+                   <img src="https://api.letruongtho2k2.id.vn/public/emails_img/logoht.png" class="" width="164" height="32" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:164px; height: auto; max-width: 100%;" />
                   </td>
                  </tr>
                 </table>
@@ -300,7 +300,7 @@
         </table>
         <![endif]-->
                                <!--[if !mso]><!-- -->
-                               <a class="pc-w620-fontSize-14px" style="display: inline-block; box-sizing: border-box; border-radius: 126px 126px 126px 126px; background-color: #ffcb65; padding: 12px 24px 12px 24px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-weight: 600; font-size: 16px; line-height: 150%; letter-spacing: -0.2px; color: #1a110c; vertical-align: top; text-align: center; text-align-last: center; text-decoration: none; -webkit-text-size-adjust: none;" href="https://designmodo.com/postcards" target="_blank">Track Your Order</a>
+                               <a class="pc-w620-fontSize-14px" style="display: inline-block; box-sizing: border-box; border-radius: 126px 126px 126px 126px; background-color: #ffcb65; padding: 12px 24px 12px 24px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-weight: 600; font-size: 16px; line-height: 150%; letter-spacing: -0.2px; color: #1a110c; vertical-align: top; text-align: center; text-align-last: center; text-decoration: none; -webkit-text-size-adjust: none;" href="#" target="_blank">Track Your Order</a>
                                <!--<![endif]-->
                               </th>
                              </tr>
@@ -708,7 +708,7 @@
                             <tr>
                              <td valign="top" class="pc-w620-align-left" align="left">
                               <div class="pc-font-alt pc-w620-align-left pc-w620-fontSize-16 pc-w620-lineHeight-26" style="line-height: 28px; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: normal; font-variant-ligatures: normal; color: #1b110ccc; text-align: left; text-align-last: left;">
-                               <div><span>{{ $discountPercentage }} % OFF</span>
+                               <div><span>Discount: </span>
                                </div>
                               </div>
                              </td>
@@ -726,7 +726,7 @@
                            <tr>
                             <td valign="top" class="pc-w620-align-right" align="right" style="padding: 0px 0px 0px 0px;">
                              <div class="pc-font-alt pc-w620-align-right pc-w620-fontSize-16 pc-w620-lineHeight-26" style="line-height: 28px; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 500; font-variant-ligatures: normal; color: #00af48; text-align: right; text-align-last: right;">
-                              <div><span>{{$discount}}</span>
+                              <div><span>{{number_format($discount, 2)}}</span>
                               </div>
                              </div>
                             </td>
@@ -805,7 +805,7 @@
                            <tr>
                             <td valign="top" class="pc-w620-align-right" align="right" style="padding: 0px 0px 0px 0px;">
                              <div class="pc-font-alt pc-w620-align-right pc-w620-fontSize-20px pc-w620-lineHeight-32" style="line-height: 34px; letter-spacing: -0px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 18px; font-weight: 600; font-variant-ligatures: normal; color: #1b110c; text-align: right; text-align-last: right;">
-                              <div><span>{{ $order->total_amount }}</span>
+                              <div><span>{{umber_format($order->total_amount, 2)}}</span>
                               </div>
                              </div>
                             </td>
@@ -921,7 +921,7 @@
                                             <tr>
                                              <td valign="top" align="left" style="padding: 0px 0px 0px 0px;">
                                               <div class="pc-font-alt" style="line-height: 143%; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 14px; font-weight: normal; font-variant-ligatures: normal; color: #2a1e19; text-align: left; text-align-last: left;">
-                                               <div><span>hi@sweetshop.sweet</span>
+                                               <div><span>htstore@letrongtho2k2.id.vn</span>
                                                </div>
                                               </div>
                                              </td>
@@ -1010,7 +1010,7 @@
                                             <tr>
                                              <td valign="top" align="left" style="padding: 0px 0px 0px 0px;">
                                               <div class="pc-font-alt" style="line-height: 143%; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 14px; font-weight: normal; font-variant-ligatures: normal; color: #2a1e19; text-align: left; text-align-last: left;">
-                                               <div><span>+1 (987) 654-32-13</span>
+                                               <div><span>+84 (392) 619-015</span>
                                                </div>
                                               </div>
                                              </td>
@@ -1061,180 +1061,6 @@
              <table width="100%" border="0" cellspacing="0" cellpadding="0" role="presentation">
               <tr>
                <td valign="top" class="pc-w620-padding-28-28-28-28" style="padding: 28px 40px 40px 40px; border-radius: 0px; background-color: #ffffff;" bgcolor="#ffffff">
-                <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                 <tr>
-                  <td class="pc-w620-valign-middle pc-w620-halign-center" style="padding: 0px 0px 0px 0px;">
-                   <table class="pc-width-fill pc-w620-gridCollapsed-0 pc-w620-halign-center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                    <tr class="pc-grid-tr-first pc-grid-tr-last">
-                     <td class="pc-grid-td-first pc-grid-td-last" align="center" valign="top" style="padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px;">
-                      <table class="pc-w620-width-fill" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: separate; border-spacing: 0; width: 100%;">
-                       <tr>
-                        <!--[if !gte mso 9]><!-- -->
-                        <td class="pc-w620-padding-30-20-20-20 pc-w620-halign-center pc-w620-valign-middle" align="center" valign="top" background="https://api.letruongtho2k2.id.vn/public/emails_img/image-17156197631806.png" style="padding: 30px 30px 30px 30px; background-size: cover; background-position: 50% 0; background-repeat: no-repeat; background-color: #1a110c; border-radius: 40px 40px 40px 40px;">
-                         <!--<![endif]-->
-                         <!--[if gte mso 9]>
-                <td class="pc-w620-padding-30-20-20-20 pc-w620-halign-center pc-w620-valign-middle" align="center" valign="top" background="images/image-17156197631806.png" style="background-size: cover; background-position: 50% 0; background-repeat: no-repeat; background-color: #1a110c; border-radius: 40px 40px 40px 40px;">
-            <![endif]-->
-                         <!--[if gte mso 9]>
-                <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width: 520px;">
-                    <v:fill src="images/image-17156197631806.png" color="#1a110c" type="frame" size="1,1" aspect="atleast" origin="-0.5,-0.5" position="-0.5,-0.5"/>
-                    <v:textbox style="mso-fit-shape-to-text: true;" inset="0,0,0,0">
-                        <div style="font-size: 0; line-height: 0;">
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" align="center">
-                                <tr>
-                                    <td style="font-size: 14px; line-height: 1.5;" valign="top">
-                                        <p style="margin:0;mso-hide:all"><o:p xmlns:o="urn:schemas-microsoft-com:office:office">&nbsp;</o:p></p>
-                                        <table width="100%" border="0" cellspacing="0" cellpadding="0" role="presentation">
-                                            <tr>
-                                                <td colspan="3" height="30" style="line-height: 1px; font-size: 1px;">&nbsp;</td>
-                                            </tr>
-                                            <tr>
-                                                <td width="30" valign="top" style="line-height: 1px; font-size: 1px;">&nbsp;</td>
-                                                <td valign="top" align="left">
-                <![endif]-->
-                         <table class="pc-w620-halign-center pc-w620-width-fill" align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width: 100%;">
-                          <tr>
-                           <td class="pc-w620-halign-center" align="center" valign="top">
-                            <table class="pc-w620-halign-center" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                             <tr>
-                              <td valign="top" style="padding: 0px 0px 15px 0px;">
-                               <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%" style="border-collapse: separate; border-spacing: 0;">
-                                <tr>
-                                 <td valign="top" class="pc-w620-align-center" align="left" style="padding: 0px 0px 0px 0px;">
-                                  <div class="pc-font-alt pc-w620-align-center pc-w620-fontSize-28px pc-w620-lineHeight-140pc" style="line-height: 128%; letter-spacing: -0.6px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 35px; font-weight: 500; font-variant-ligatures: normal; color: #ffffff; text-align: left; text-align-last: left;">
-                                   <div><span>$30 for you, $30 for a friend</span>
-                                   </div>
-                                  </div>
-                                 </td>
-                                </tr>
-                               </table>
-                              </td>
-                             </tr>
-                            </table>
-                           </td>
-                          </tr>
-                          <tr>
-                           <td class="pc-w620-halign-center" align="center" valign="top">
-                            <table class="pc-w620-halign-center" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                             <tr>
-                              <td valign="top" style="padding: 0px 0px 24px 0px;">
-                               <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%" style="border-collapse: separate; border-spacing: 0;">
-                                <tr>
-                                 <td valign="top" class="pc-w620-align-center" align="center" style="padding: 0px 0px 0px 0px;">
-                                  <div class="pc-font-alt pc-w620-align-center" style="line-height: 140%; letter-spacing: -0px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 19px; font-weight: normal; font-variant-ligatures: normal; color: #ffffffcc; text-align: center; text-align-last: center;">
-                                   <div><span style="font-weight: 400;font-style: normal;">Share the link below and you&#39;ll of every friend who places an order over $60. Easy peasy.</span>
-                                   </div>
-                                  </div>
-                                 </td>
-                                </tr>
-                               </table>
-                              </td>
-                             </tr>
-                            </table>
-                           </td>
-                          </tr>
-                          <tr>
-                           <td class="pc-w620-halign-center" align="center" valign="top">
-                            <table class="pc-w620-halign-center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                             <tr>
-                              <td class="pc-w620-valign-middle pc-w620-halign-left">
-                               <table class="pc-width-fill pc-w620-gridCollapsed-1 pc-w620-width-fill pc-w620-halign-left" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                                <tr class="pc-grid-tr-first pc-grid-tr-last">
-                                 <td class="pc-grid-td-first pc-w620-itemsSpacings-0-12" align="center" valign="middle" style="padding-top: 0px; padding-right: 1px; padding-bottom: 0px; padding-left: 0px;">
-                                  <table class="pc-w620-width-fill pc-w620-halign-left" border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: separate; border-spacing: 0;">
-                                   <tr>
-                                    <td class="pc-w620-padding-16-16-16-16 pc-w620-halign-center pc-w620-valign-bottom" align="left" valign="middle" style="padding: 20px 25px 20px 25px; mso-padding-left-alt: 0; margin-left:25px; background-color: #3e3a38; border-radius: 50px 50px 50px 50px;">
-                                     <table class="pc-w620-halign-center pc-w620-width-fill" align="left" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                                      <tr>
-                                       <td class="pc-w620-halign-center" align="left" valign="top">
-                                        <table class="pc-w620-halign-center pc-w620-width-auto" align="left" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                                         <tr>
-                                          <td valign="top">
-                                           <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%" style="border-collapse: separate; border-spacing: 0;">
-                                            <tr>
-                                             <td valign="top" class="pc-w620-textAlign-center" align="left">
-                                              <div class="pc-font-alt pc-w620-textAlign-center" style="line-height: 133%; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: normal; font-variant-ligatures: normal; color: #ffffff; text-decoration: underline; text-align: left; text-align-last: left;">
-                                               <div><span>https://sweetshop.sweet/?u=gemma</span>
-                                               </div>
-                                              </div>
-                                             </td>
-                                            </tr>
-                                           </table>
-                                          </td>
-                                         </tr>
-                                        </table>
-                                       </td>
-                                      </tr>
-                                     </table>
-                                    </td>
-                                   </tr>
-                                  </table>
-                                 </td>
-                                 <td class="pc-grid-td-last pc-w620-itemsSpacings-0-12" align="center" valign="middle" style="padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 1px; mso-padding-left-alt: 0; margin-left: 1px;">
-                                  <table class="pc-w620-width-fill" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: separate; border-spacing: 0; width: 100%;">
-                                   <tr>
-                                    <td class="pc-w620-padding-0-0-0-0 pc-w620-halign-left pc-w620-valign-middle" align="center" valign="middle">
-                                     <table class="pc-w620-halign-left pc-w620-width-fill" align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width: 100%;">
-                                      <tr>
-                                       <td class="pc-w620-halign-left" align="center" valign="top">
-                                        <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                                         <tr>
-                                          <th valign="top" class="pc-w620-align-left pc-w620-spacing-0-0-0-0" align="center" style="padding: 0px 0px 0px 0px; text-align: center; font-weight: normal; line-height: 1;">
-                                           <!--[if mso]>
-        <table border="0" cellpadding="0" cellspacing="0" role="presentation" class="pc-w620-align-left pc-w620-width-100pc" align="center" width="100%" style="border-collapse: separate; border-spacing: 0; margin-right: auto; margin-left: auto;">
-            <tr>
-                <td valign="middle" align="center" style="width: 100%; border-radius: 50px 50px 50px 50px; background-color: #ffcb65; text-align:center; color: #ffffff; padding: 16px 25px 16px 25px;" bgcolor="#ffcb65">
-                                    <a class="pc-font-alt" style="display: inline-block; text-decoration: none; font-variant-ligatures: normal; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-weight: 600; font-size: 16px; line-height: 150%; letter-spacing: -0px; text-align: center; color: #1a110c;" href="https://designmodo.com/postcards" target="_blank">Share Link</a>
-                                </td>
-            </tr>
-        </table>
-        <![endif]-->
-                                           <!--[if !mso]><!-- -->
-                                           <a class="pc-w620-width-100pc pc-w620-fontSize-14px" style="display: inline-block; box-sizing: border-box; border-radius: 50px 50px 50px 50px; background-color: #ffcb65; padding: 16px 25px 16px 25px; width: 100%; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-weight: 600; font-size: 16px; line-height: 150%; letter-spacing: -0px; color: #1a110c; vertical-align: top; text-align: center; text-align-last: center; text-decoration: none; -webkit-text-size-adjust: none;" href="https://designmodo.com/postcards" target="_blank">Share Link</a>
-                                           <!--<![endif]-->
-                                          </th>
-                                         </tr>
-                                        </table>
-                                       </td>
-                                      </tr>
-                                     </table>
-                                    </td>
-                                   </tr>
-                                  </table>
-                                 </td>
-                                </tr>
-                               </table>
-                              </td>
-                             </tr>
-                            </table>
-                           </td>
-                          </tr>
-                         </table>
-                         <!--[if gte mso 9]>
-                                                </td>
-                                                <td width="30" style="line-height: 1px; font-size: 1px;" valign="top">&nbsp;</td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="3" height="30" style="line-height: 1px; font-size: 1px;">&nbsp;</td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                        <p style="margin:0;mso-hide:all"><o:p xmlns:o="urn:schemas-microsoft-com:office:office">&nbsp;</o:p></p>
-                    </v:textbox>
-                </v:rect>
-                <![endif]-->
-                        </td>
-                       </tr>
-                      </table>
-                     </td>
-                    </tr>
-                   </table>
-                  </td>
-                 </tr>
-                </table>
                </td>
               </tr>
              </table>
@@ -1325,7 +1151,7 @@
                                             <tr>
                                              <td valign="top" class="pc-w620-align-center" align="left">
                                               <div class="pc-font-alt pc-w620-align-center" style="line-height: 143%; letter-spacing: -0px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 15px; font-weight: normal; font-variant-ligatures: normal; color: #585858; text-align: left; text-align-last: left;">
-                                               <div><span>Feel free to reach out to us at </span><span style="font-weight: 600;font-style: normal;color: rgb(26, 17, 12);">letruongthoo2k2.id.vn</span><span> </span>
+                                               <div><span>Feel free to reach out to us at email </span><span style="font-weight: 600;font-style: normal;color: rgb(26, 17, 12);">htstore@letrongtho2k2.id.vn</span><span> </span>
                                                </div>
                                                <div><span>We open opportunities for all forms of business collaboration</span>
                                                </div>
@@ -1406,122 +1232,7 @@
                 <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
                  <tr>
                   <td class="pc-w620-spacing-0-0-20-0" align="center" valign="top" style="padding: 0px 0px 20px 0px;">
-                   <img src="https://api.letruongtho2k2.id.vn/public/emails_img/image-17156197629350.png" class="" width="164" height="32" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:164px; height: auto; max-width: 100%;" />
-                  </td>
-                 </tr>
-                </table>
-                <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                 <tr>
-                  <td align="center" style="padding: 0px 0px 20px 0px;">
-                   <table class="pc-width-hug pc-w620-gridCollapsed-0" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                    <tr class="pc-grid-tr-first pc-grid-tr-last">
-                     <td class="pc-grid-td-first pc-w620-itemsSpacings-20-0" valign="middle" style="padding-top: 0px; padding-right: 15px; padding-bottom: 0px; padding-left: 0px;">
-                      <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: separate; border-spacing: 0;">
-                       <tr>
-                        <td align="center" valign="middle">
-                         <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                          <tr>
-                           <td align="center" valign="top">
-                            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                             <tr>
-                              <td valign="top">
-                               <img src="images/778bd539359545eb77f28bf1afe69553.png" class="" width="20" height="20" style="display: block;border: 0;outline: 0;line-height: 100%;-ms-interpolation-mode: bicubic;width:20px;height:20px;" alt="" />
-                              </td>
-                             </tr>
-                            </table>
-                           </td>
-                          </tr>
-                         </table>
-                        </td>
-                       </tr>
-                      </table>
-                     </td>
-                     <td class="pc-w620-itemsSpacings-20-0" valign="middle" style="padding-top: 0px; padding-right: 15px; padding-bottom: 0px; padding-left: 15px;">
-                      <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: separate; border-spacing: 0;">
-                       <tr>
-                        <td align="center" valign="middle">
-                         <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                          <tr>
-                           <td align="center" valign="top">
-                            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                             <tr>
-                              <td valign="top">
-                               <img src="images/e50cd9cb860fac0afcf3544f238a757f.png" class="" width="20" height="20" style="display: block;border: 0;outline: 0;line-height: 100%;-ms-interpolation-mode: bicubic;width:20px;height:20px;" alt="" />
-                              </td>
-                             </tr>
-                            </table>
-                           </td>
-                          </tr>
-                         </table>
-                        </td>
-                       </tr>
-                      </table>
-                     </td>
-                     <td class="pc-w620-itemsSpacings-20-0" valign="middle" style="padding-top: 0px; padding-right: 15px; padding-bottom: 0px; padding-left: 15px;">
-                      <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: separate; border-spacing: 0;">
-                       <tr>
-                        <td align="center" valign="middle">
-                         <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                          <tr>
-                           <td align="center" valign="top">
-                            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                             <tr>
-                              <td valign="top">
-                               <img src="images/b1bd54511d574fcfd332877b5572d9e1.png" class="" width="20" height="20" style="display: block;border: 0;outline: 0;line-height: 100%;-ms-interpolation-mode: bicubic;width:20px;height:20px;" alt="" />
-                              </td>
-                             </tr>
-                            </table>
-                           </td>
-                          </tr>
-                         </table>
-                        </td>
-                       </tr>
-                      </table>
-                     </td>
-                     <td class="pc-w620-itemsSpacings-20-0" valign="middle" style="padding-top: 0px; padding-right: 15px; padding-bottom: 0px; padding-left: 15px;">
-                      <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: separate; border-spacing: 0;">
-                       <tr>
-                        <td align="center" valign="middle">
-                         <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                          <tr>
-                           <td align="center" valign="top">
-                            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                             <tr>
-                              <td valign="top">
-                               <img src="images/dead532988545c7c3bf8e571755865f1.png" class="" width="20" height="20" style="display: block;border: 0;outline: 0;line-height: 100%;-ms-interpolation-mode: bicubic;width:20px;height:20px;" alt="" />
-                              </td>
-                             </tr>
-                            </table>
-                           </td>
-                          </tr>
-                         </table>
-                        </td>
-                       </tr>
-                      </table>
-                     </td>
-                     <td class="pc-grid-td-last pc-w620-itemsSpacings-20-0" valign="middle" style="padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 15px;">
-                      <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: separate; border-spacing: 0;">
-                       <tr>
-                        <td align="center" valign="middle">
-                         <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                          <tr>
-                           <td align="center" valign="top">
-                            <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                             <tr>
-                              <td valign="top">
-                               <img src="images/193c7e94406b9a9160b8842fcba96582.png" class="" width="20" height="20" style="display: block;border: 0;outline: 0;line-height: 100%;-ms-interpolation-mode: bicubic;width:20px;height:20px;" alt="" />
-                              </td>
-                             </tr>
-                            </table>
-                           </td>
-                          </tr>
-                         </table>
-                        </td>
-                       </tr>
-                      </table>
-                     </td>
-                    </tr>
-                   </table>
+                   <img src="https://api.letruongtho2k2.id.vn/public/emails_img/logoht.png" class="" width="164" height="32" alt="" style="display: block; border: 0; outline: 0; line-height: 100%; -ms-interpolation-mode: bicubic; width:164px; height: auto; max-width: 100%;" />
                   </td>
                  </tr>
                 </table>
@@ -1532,7 +1243,7 @@
                     <tr>
                      <td valign="top" align="center">
                       <div class="pc-font-alt" style="line-height: 143%; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 14px; font-weight: normal; font-variant-ligatures: normal; color: #ffffffcc; text-align: center; text-align-last: center;">
-                       <div><span>Sweet  Snack HQ, 123 To Ky Street, 12 Ward, HCM City </span>
+                       <div><span>H&T Store, 123 To Ky Street, 12 Ward, HCM City </span>
                        </div>
                        <div><span>H&T Store</span>
                        </div>
@@ -1549,27 +1260,6 @@
                    <table class="pc-width-hug pc-w620-gridCollapsed-0" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
                     <tr class="pc-grid-tr-first pc-grid-tr-last">
                      <td class="pc-grid-td-first pc-grid-td-last" valign="top" style="padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px;">
-                      <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: separate; border-spacing: 0;">
-                       <tr>
-                        <td align="center" valign="top">
-                         <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                          <tr>
-                           <td align="center" valign="top">
-                            <table border="0" cellpadding="0" cellspacing="0" role="presentation" align="center" style="border-collapse: separate; border-spacing: 0;">
-                             <tr>
-                              <td valign="top" align="left">
-                               <a class="pc-font-alt" href="https://designmodo.com/postcards" target="_blank" style="text-decoration: none; line-height: 171%; letter-spacing: -0px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 14px; font-weight: 600; font-variant-ligatures: normal; color: #ffcb65; text-decoration: underline; text-align: left; text-align-last: left;">
-                                <span style="text-decoration: underline;">Unsubscribe</span>
-                               </a>
-                              </td>
-                             </tr>
-                            </table>
-                           </td>
-                          </tr>
-                         </table>
-                        </td>
-                       </tr>
-                      </table>
                      </td>
                     </tr>
                    </table>
