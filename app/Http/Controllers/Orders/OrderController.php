@@ -152,7 +152,7 @@ class OrderController extends Controller
             'checkoutArray.*.referral_user_id' => 'nullable|exists:users,id',
             'checkoutArray.*.quantity' => 'nullable|integer|min:1',
         ]);
-        Log::info('data order:', $request->all());
+        // Log::info('data order:', $request->all());
 
         $totalAmount = $request->total_amount;
         $originalTotalAmount = $totalAmount;
@@ -176,8 +176,6 @@ class OrderController extends Controller
             }
 
             $discount = $coupon->discount_amount;
-            $totalAmount -= $discount;
-            $totalAmount = max(0, $totalAmount);
         }
 
         $discountPercentage = ($originalTotalAmount > 0) ? ($discount / $originalTotalAmount) * 100 : 0;
@@ -233,15 +231,15 @@ class OrderController extends Controller
             dispatch(new SendOrderEmail($order, $orderData, $user->email, $discount, $subtotal, $discountPercentage));
             // Mail::to($user->email)->send(new OrderPlaced($order, $orderData, $discount, $subtotal, $discountPercentage));
         }
-        Log::info('data order return:', [
-            'message' => 'Order placed successfully',
-            'order' => $orderProduct,
-            'subtotal' => $subtotal,
-            'discount' => $discount,
-            'total_amount' => $totalAmount,
-            'coupon_code' => $coupon ?? null,
-            'discount_percentage' => $discountPercentage,
-        ]);
+        // Log::info('data order return:', [
+        //     'message' => 'Order placed successfully',
+        //     'order' => $orderProduct,
+        //     'subtotal' => $subtotal,
+        //     'discount' => $discount,
+        //     'total_amount' => $totalAmount,
+        //     'coupon_code' => $coupon ?? null,
+        //     'discount_percentage' => $discountPercentage,
+        // ]);
 
         return response()->json([
             'message' => 'Order placed successfully',
