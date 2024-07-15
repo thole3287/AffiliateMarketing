@@ -233,6 +233,16 @@ class OrderController extends Controller
             dispatch(new SendOrderEmail($order, $orderData, $user->email, $discount, $subtotal, $discountPercentage));
             // Mail::to($user->email)->send(new OrderPlaced($order, $orderData, $discount, $subtotal, $discountPercentage));
         }
+        Log::info('data order return:', [
+            'message' => 'Order placed successfully',
+            'order' => $orderProduct,
+            'subtotal' => $subtotal,
+            'discount' => $discount,
+            'total_amount' => $totalAmount,
+            'coupon_code' => $coupon ?? null,
+            'discount_percentage' => $discountPercentage,
+        ]);
+
         return response()->json([
             'message' => 'Order placed successfully',
             'order' => $orderProduct,
