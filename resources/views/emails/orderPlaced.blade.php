@@ -398,7 +398,7 @@
                               <tr>
                                <td valign="top" align="left">
                                 <div class="pc-font-alt" style="line-height: 140%; letter-spacing: -0px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 14px; font-weight: 600; font-variant-ligatures: normal; color: #ffffff; text-align: left; text-align-last: left;">
-                                 <div><span>{{ number_format($order->total_amount, 2) }} vnđ</span>
+                                 <div><span>{{ number_format($order->total_amount) }} vnđ</span>
                                  </div>
                                 </div>
                                </td>
@@ -620,7 +620,7 @@
                            <tr>
                             <td valign="top" class="pc-w620-align-left" align="left">
                              <div class="pc-font-alt pc-w620-align-left" style="line-height: 24px; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 18px; font-weight: 600; font-variant-ligatures: normal; color: #039133; text-align: left; text-align-last: left;">
-                              <div><span>{{ number_format($item->product_price, 2)  }} vnđ</span>
+                              <div><span>{{ number_format($item->product_price)  }} vnđ</span>
                               </div>
                              </div>
                             </td>
@@ -671,7 +671,7 @@
                            <tr>
                             <td valign="top" class="pc-w620-align-right" align="right" style="padding: 0px 0px 0px 0px;">
                              <div class="pc-font-alt pc-w620-align-right pc-w620-fontSize-16 pc-w620-lineHeight-26" style="line-height: 28px; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 500; font-variant-ligatures: normal; color: #19110d; text-align: right; text-align-last: right;">
-                              <div><span>{{ number_format($subtotal, 2)}} vnđ</span>
+                              <div><span>{{ number_format($subtotal)}} vnđ</span>
                               </div>
                              </div>
                             </td>
@@ -710,7 +710,7 @@
                            <tr>
                             <td valign="top" class="pc-w620-align-right" align="right" style="padding: 0px 0px 0px 0px;">
                              <div class="pc-font-alt pc-w620-align-right pc-w620-fontSize-16 pc-w620-lineHeight-26" style="line-height: 28px; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 500; font-variant-ligatures: normal; color: #00af48; text-align: right; text-align-last: right;">
-                              <div><span>{{number_format($discount, 2)}} vnđ</span>
+                              <div><span>{{number_format($discount)}} vnđ</span>
                               </div>
                              </div>
                             </td>
@@ -789,7 +789,7 @@
                            <tr>
                             <td valign="top" class="pc-w620-align-right" align="right" style="padding: 0px 0px 0px 0px;">
                              <div class="pc-font-alt pc-w620-align-right pc-w620-fontSize-20px pc-w620-lineHeight-32" style="line-height: 34px; letter-spacing: -0px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 18px; font-weight: 600; font-variant-ligatures: normal; color: #1b110c; text-align: right; text-align-last: right;">
-                              <div><span>{{number_format($order->total_amount, 2)}} vnđ</span>
+                              <div><span>{{number_format($order->total_amount)}} vnđ</span>
                               </div>
                              </div>
                             </td>
