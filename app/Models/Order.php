@@ -20,7 +20,8 @@ class Order extends Model
         'note',
         'discount',
         'check_out_order',
-        'commission_processed'
+        'commission_processed',
+        'zalo_order_id'
     ];
     protected $casts = [
         'user_id' => 'int',
