@@ -398,7 +398,7 @@
                               <tr>
                                <td valign="top" align="left">
                                 <div class="pc-font-alt" style="line-height: 140%; letter-spacing: -0px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 14px; font-weight: 600; font-variant-ligatures: normal; color: #ffffff; text-align: left; text-align-last: left;">
-                                 <div><span>{{ $order->total_amount }}</span>
+                                 <div><span>{{ number_format($order->total_amount, 2) }} vnđ</span>
                                  </div>
                                 </div>
                                </td>
@@ -455,22 +455,6 @@
                                <td valign="top" align="left" style="padding: 0px 0px 0px 0px;">
                                 <div class="pc-font-alt" style="line-height: 140%; letter-spacing: -0px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 14px; font-weight: normal; font-variant-ligatures: normal; color: #ffffffcc; text-align: left; text-align-last: left;">
                                  <div><span>{{ $order->shipping_address }}</span>
-                                 </div>
-                                </div>
-                               </td>
-                              </tr>
-                             </table>
-                            </td>
-                           </tr>
-                          </table>
-                          <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                           <tr>
-                            <td align="left" valign="top">
-                             <table border="0" cellpadding="0" cellspacing="0" role="presentation" class="pc-w620-width-100pc" width="100%" style="border-collapse: separate; border-spacing: 0; margin-right: auto; margin-left: auto;">
-                              <tr>
-                               <td valign="top" align="left">
-                                <div class="pc-font-alt" style="line-height: 140%; letter-spacing: -0px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 14px; font-weight: normal; font-variant-ligatures: normal; color: #ffffffcc; text-align: left; text-align-last: left;">
-                                 <div><span>Boston, MA 02110</span>
                                  </div>
                                 </div>
                                </td>
@@ -687,7 +671,7 @@
                            <tr>
                             <td valign="top" class="pc-w620-align-right" align="right" style="padding: 0px 0px 0px 0px;">
                              <div class="pc-font-alt pc-w620-align-right pc-w620-fontSize-16 pc-w620-lineHeight-26" style="line-height: 28px; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 500; font-variant-ligatures: normal; color: #19110d; text-align: right; text-align-last: right;">
-                              <div><span>{{ number_format($subtotal, 2)}}</span>
+                              <div><span>{{ number_format($subtotal, 2)}} vnđ</span>
                               </div>
                              </div>
                             </td>
@@ -726,7 +710,7 @@
                            <tr>
                             <td valign="top" class="pc-w620-align-right" align="right" style="padding: 0px 0px 0px 0px;">
                              <div class="pc-font-alt pc-w620-align-right pc-w620-fontSize-16 pc-w620-lineHeight-26" style="line-height: 28px; letter-spacing: -0.2px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 500; font-variant-ligatures: normal; color: #00af48; text-align: right; text-align-last: right;">
-                              <div><span>{{number_format($discount, 2)}}</span>
+                              <div><span>{{number_format($discount, 2)}} vnđ</span>
                               </div>
                              </div>
                             </td>
@@ -805,7 +789,7 @@
                            <tr>
                             <td valign="top" class="pc-w620-align-right" align="right" style="padding: 0px 0px 0px 0px;">
                              <div class="pc-font-alt pc-w620-align-right pc-w620-fontSize-20px pc-w620-lineHeight-32" style="line-height: 34px; letter-spacing: -0px; font-family: 'Outfit', Arial, Helvetica, sans-serif; font-size: 18px; font-weight: 600; font-variant-ligatures: normal; color: #1b110c; text-align: right; text-align-last: right;">
-                              <div><span>{{number_format($order->total_amount, 2)}}</span>
+                              <div><span>{{number_format($order->total_amount, 2)}} vnđ</span>
                               </div>
                              </div>
                             </td>
