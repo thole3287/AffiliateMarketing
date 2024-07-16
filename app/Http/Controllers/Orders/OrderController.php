@@ -55,7 +55,7 @@ class OrderController extends Controller
                     'order_items' => $order->orderItems,
                     'payment_method' => $order->payment_method,
                     'payment_status' => $order->payment_status,
-                    'approved_by' => $order->approvedBy->name ?? null, // Thêm thông tin người duyệt đơn hàng
+                    'approved_by' => $order->approvedBy->id .'-'.$order->approvedBy->name ?? null, // Thêm thông tin người duyệt đơn hàng
                     'order_status' => $order->order_status,
                     'note' => $order->note,
                     'created_at' => $order->created_at,
