@@ -382,7 +382,7 @@ class OrderController extends Controller
 
         // Tạo dữ liệu phản hồi
         $orderData = $order->toArray();
-        $orderData['approved_by'] = $order->approvedBy->name ?? null; // Thêm thông tin người đã cập nhật trạng thái thanh toán
+        $orderData['approved_by'] = $order->approvedBy->id .'-'.$order->approvedBy->name ?? null; // Thêm thông tin người đã cập nhật trạng thái thanh toán
 
         return response()->json([
             'message' => 'Order updated successfully',
