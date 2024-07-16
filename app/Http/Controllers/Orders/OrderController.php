@@ -55,7 +55,7 @@ class OrderController extends Controller
                     'order_items' => $order->orderItems,
                     'payment_method' => $order->payment_method,
                     'payment_status' => $order->payment_status,
-                    'approved_by' => $order->approvedBy->id .'-'.$order->approvedBy->name ?? null, // Thêm thông tin người duyệt đơn hàng
+                    'approved_by' => isset($order->approvedBy->id) ? $order->approvedBy->id . '-' . $order->approvedBy->name : null, // Thêm thông tin người duyệt đơn hàng
                     'order_status' => $order->order_status,
                     'note' => $order->note,
                     'created_at' => $order->created_at,
@@ -311,7 +311,7 @@ class OrderController extends Controller
         $previousPaymentStatus = $order->payment_status;
 
         // Cập nhật trạng thái đơn hàng và trạng thái thanh toán nếu có
-        if ($request->has('payment_status')) {
+        if ($request->has('payment_status') && $request->input('payment_status') !== $previousPaymentStatus) {
             $order->payment_status = $request->input('payment_status');
             $order->status_payment_updated_by = $request->input('status_payment_updated_by');
         }
@@ -382,7 +382,7 @@ class OrderController extends Controller
 
         // Tạo dữ liệu phản hồi
         $orderData = $order->toArray();
-        $orderData['approved_by'] = $order->approvedBy->id .'-'.$order->approvedBy->name ?? null; // Thêm thông tin người đã cập nhật trạng thái thanh toán
+        $orderData['approved_by'] = $order->approvedBy->id . '-' . $order->approvedBy->name ?? null; // Thêm thông tin người đã cập nhật trạng thái thanh toán
 
         return response()->json([
             'message' => 'Order updated successfully',
