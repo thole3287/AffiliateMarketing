@@ -29,6 +29,58 @@ class ProductsController extends Controller
     {
         $this->uploadService = $uploadService;
     }
+    public function searchSQL(Request $request)
+    {
+        $query = DB::table('products')
+            ->select('products.*')
+            ->leftJoin('brands', 'products.brand_id', '=', 'brands.id')
+            ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+            ->leftJoin('product_variations', 'products.id', '=', 'product_variations.product_id');
+
+        // Thêm các điều kiện tìm kiếm nếu có
+        if ($request->has('brand_name')) {
+            $query->where('brands.name', $request->input('brand_name'));
+        }
+
+        if ($request->has('product_price')) {
+            $price = $request->input('product_price');
+            if (isset($price['min']) && isset($price['max'])) {
+                $query->whereBetween('products.product_price', [$price['min'], $price['max']]);
+            } else {
+                // Nếu chỉ có giá tối đa được chỉ định, tìm các sản phẩm có giá chính xác bằng giá đó
+                $query->where('products.product_price', $price);
+            }
+        }
+
+        if ($request->has('product_name')) {
+            $query->where('products.product_name', 'LIKE', '%' . $request->input('product_name') . '%');
+        }
+
+        if ($request->has('category_name')) {
+            $query->where('categories.name', $request->input('category_name'));
+        }
+
+        if ($request->has('product_status')) {
+            $query->where('products.product_status', $request->input('product_status'));
+        }
+
+        // Lấy tất cả các thuộc tính được gửi trong request
+        $attributes = $request->except(['brand_name', 'product_price', 'product_name', 'category_name', 'product_status']);
+
+        // Thêm điều kiện cho tất cả các thuộc tính
+        foreach ($attributes as $attributeName => $attributeValue) {
+            $query->where("product_variations.attributes->{$attributeName}", $attributeValue);
+        }
+
+        // Thực hiện truy vấn và lấy kết quả
+        $products = $query->get();
+
+        if ($products->isEmpty()) {
+            return response()->json(['message' => 'Không tìm thấy dữ liệu tương ứng.'], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json($products);
+    }
 
     public function search(Request $request)
     {

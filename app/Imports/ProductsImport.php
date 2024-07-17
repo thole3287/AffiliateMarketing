@@ -50,21 +50,19 @@ class ProductsImport implements ToModel, WithHeadingRow
         foreach ($row as $column => $value) {
             if (Str::startsWith($column, 'variation_attribute_name_')) {
                 $index = Str::replaceFirst('variation_attribute_name_', '', $column);
-                $attributeName = $value;
-                $variationAttributes[$index] = $attributeName;
+                $variationAttributes[$index] = $value;
             } elseif (Str::startsWith($column, 'variation_')) {
-                $variationKey = Str::replaceFirst('variation_', '', $column);
-                $variationData[$variationKey] = $value;
+                $variationData[$column] = $value;
             }
         }
 
-        // Split the variations into chunks by index
+        // Group variations by index
         $groupedVariations = [];
-        foreach ($variationData as $key => $value) {
-            $parts = explode('_', $key);
-            if (count($parts) == 2) {
-                $index = $parts[1];
-                $field = $parts[0];
+        foreach ($variationData as $column => $value) {
+            preg_match('/variation_(\w+)_(\d+)/', $column, $matches);
+            if (count($matches) == 3) {
+                $field = $matches[1];
+                $index = $matches[2];
                 $groupedVariations[$index][$field] = $value;
             }
         }
